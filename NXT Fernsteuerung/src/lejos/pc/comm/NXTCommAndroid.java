@@ -378,7 +378,7 @@ public class NXTCommAndroid implements NXTComm {
 			//Log.d(TAG, "paired devices :" + device.getName() + "\n" + device.getAddress());
 
 			if (device.getBluetoothClass().getMajorDeviceClass() == 2048) {
-				devices.add(device);
+				//devices.add(device);
 			}
 		}
 
