@@ -241,6 +241,7 @@ public class AndroidHmiPLT implements IAndroidHmi {
 	class MessageHandler extends Handler {
 
 
+		@Override
 		public void handleMessage(Message msg) {
 			try {
 				switch(msg.what) {

@@ -60,6 +60,7 @@ public final class R {
         public static final int distance_back_value=0x7f040013;
         public static final int distance_front_side_value=0x7f040012;
         public static final int distance_front_value=0x7f040011;
+        public static final int enableDebug=0x7f040018;
         public static final int menu_settings=0x7f040001;
         public static final int setupBluetooth=0x7f040009;
         public static final int text_scan_bt_devices=0x7f04000a;

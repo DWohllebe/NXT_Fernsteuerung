@@ -15,6 +15,17 @@
         android:layout_marginBottom="30dp"
         android:layout_marginLeft="30dp"
         android:text="@string/setupBluetooth" />
+    
+    <Button 
+        android:id="@+id/buttonEnableDebug"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="false"
+        android:layout_alingParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="30dp"
+        android:text="@string/enableDebug" />
 
     <TextView
         android:id="@+id/textViewLabelBluetooth"

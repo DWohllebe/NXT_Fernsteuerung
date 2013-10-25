@@ -1,4 +1,4 @@
-package de.amr.plt.rcTestapp;
+package de.amr.plt.rcMainapp;
 
 import java.util.Set;
 
@@ -73,12 +73,14 @@ public class BluetoothActivity extends Activity {
         addPairedDevices();
     }
 	
+	@Override
 	public void onStart(){ 
 		//ensure bluetooth is enabled 
 		ensureBluetoothIsEnabled();
 		super.onStart(); 	
 	}
 	
+	@Override
 	public void onResume(){
 		//necessary if bluetooth-enabling-dialog appears   
 		addPairedDevices();
@@ -119,7 +121,8 @@ public class BluetoothActivity extends Activity {
 		}
 	}
     
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
+    @Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data){
     	if(!mBtAdapter.isEnabled()){
 			Toast.makeText(this, "Please ensure bluetooth is enabled!", Toast.LENGTH_LONG).show();
 			

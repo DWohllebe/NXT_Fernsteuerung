@@ -1,4 +1,4 @@
-package de.amr.plt.rcTestapp;
+package de.amr.plt.rcMainapp;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import de.amr.plt.rcParkingRobot.AndroidHmiPLT;
+import de.amr.plt.rcTestapp.R;
 
 /**
  * The activity visualizes NXT data such as bluetooth connection, current status, x-,y-coordinate, angle and distance values. 
@@ -136,6 +137,7 @@ public class MainActivity extends Activity {
 	 * instantiating AndroidHmiPlt object and display received data(non-Javadoc)
 	 * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
 	 */
+	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data){
 		switch(resultCode){
 		

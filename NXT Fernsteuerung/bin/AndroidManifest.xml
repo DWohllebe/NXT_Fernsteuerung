@@ -23,10 +23,10 @@
             </intent-filter>
         </activity>
 
-        <service android:name="de.amr.plt.rcTestapp.PositionService" />
+        <service android:name="de.amr.plt.rcMainapp.PositionService" />
 
         <activity
-            android:name="de.amr.plt.rcTestapp.BluetoothActivity"
+            android:name="de.amr.plt.rcMainapp.BluetoothActivity"
             android:label="@string/title_activity_bluetooth"
             android:screenOrientation="portrait" >
         </activity>
