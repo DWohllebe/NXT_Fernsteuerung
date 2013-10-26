@@ -21,11 +21,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="false"
-        android:layout_alingParentRight="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:layout_alignBaseline="@+id/buttonSetupBluetooth"
         android:layout_marginBottom="30dp"
         android:layout_marginLeft="30dp"
+        android:onClick="onEnableDebugClicked"
         android:text="@string/enableDebug" />
+    
+    <Button
+        android:id="@+id/buttonOpenMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentRight="false"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/buttonEnableDebug"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="30dp"
+        android:onClick="onOpenMapClicked"
+        android:text="@string/bt_OpenMap"/>
 
     <TextView
         android:id="@+id/textViewLabelBluetooth"

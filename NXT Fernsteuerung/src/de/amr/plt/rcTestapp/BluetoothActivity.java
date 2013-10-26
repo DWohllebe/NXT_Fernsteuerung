@@ -1,8 +1,7 @@
-package de.amr.plt.rcMainapp;
+package de.amr.plt.rcTestapp;
 
 import java.util.Set;
 
-import de.amr.plt.rcTestapp.R;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -20,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import de.amr.plt.rcTestapp.R;
 
 /**
  * providing MAC-address of the chosen device to the PositionService

@@ -1,4 +1,4 @@
-package de.amr.plt.rcMainapp;
+package de.amr.plt.rcTestapp;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,8 +20,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-import de.amr.plt.rcParkingRobot.AndroidHmiPLT;
 import de.amr.plt.rcTestapp.R;
+import de.amr.plt.rcParkingRobot.AndroidHmiPLT;
 
 /**
  * The activity visualizes NXT data such as bluetooth connection, current status, x-,y-coordinate, angle and distance values. 
@@ -276,6 +276,28 @@ public class MainActivity extends Activity {
 		Intent restartIntent = new Intent(getApplicationContext(),MainActivity.class);                    			
 		startActivity(restartIntent);
 		finish();
+	}
+	
+	/**
+	 * Ein kleiner Testknopf, der mit beliebigen Debug-Funktionen belegt
+	 * werden kann. 
+	 * @param View
+	 */
+	public void onEnableDebugClicked(View View) {
+		Toast.makeText(this, "Hallo. Ich bin ein Debug-Knopf.", Toast.LENGTH_LONG).show();
+	}
+	
+	/**
+	 * starts the map activity
+	 * @param View
+	 */
+	public void onOpenMapClicked(View View) {
+		Intent intent = new Intent (this, MapActivity.class);
+		//float xpos= hmiModule.getPosition().getX();
+		//float ypos= hmiModule.getPosition().getY();
+		//intent.putExtra(XPOS, xpos);
+		//intent.putExtra(YPOS, ypos);
+		startActivity(intent);
 	}
 
 }
