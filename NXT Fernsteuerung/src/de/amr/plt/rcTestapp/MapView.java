@@ -32,14 +32,35 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	// DECLARATION OF THREAD
 	/**
 	 * Thread of class MapView. Handles all drawing functionality.
-	 * @author Daniel
-	 *
+	 * @author Daniel Wohllebe
+	 * @version 0.1
 	 */
 	class MapThread extends Thread {
+		//variables
+		private SurfaceHolder mSurfaceHolder;
+		private Context mContext;
+		private Handler mHandler;
 		
 		//Constructor
 		public MapThread(SurfaceHolder surfaceHolder, Context context, Handler handler) {
-			
+			mSurfaceHolder=surfaceHolder;
+			mContext=context;
+			mHandler=handler;		
+		}
+		
+		public void drawRect() {
+			Canvas c = null;
+			Paint mPaint = new Paint();
+			mPaint.setARGB(255, 0, 255, 0);
+			try {
+				c = mSurfaceHolder.lockCanvas(null);
+							
+				c.drawText("Hi, I am text.",  0, 0, mPaint);
+			}
+			finally {
+				if (c != null)
+					mSurfaceHolder.unlockCanvasAndPost(c);
+			}
 		}
 		
 	}
@@ -48,17 +69,16 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	// DECLARATION OF CLASS
 	
 	private MapThread thread;
-	private Context mContext;
 	
-	public MapView(Context context) {
-		//initialise with given context
-		super(context);		
+	public MapView(Context context, AttributeSet attrs) {
+		//initialize with given context
+		super(context, attrs);
 		
 		//register interest to hear about surface changes
 		SurfaceHolder mapholder=getHolder();
 		mapholder.addCallback(this);
 		
-		//create a thread
+		//create a thread, this will be started on surface creation
 		thread = new MapThread(mapholder, context, new Handler());
 		
 	}
@@ -76,7 +96,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 * be used.
 	 */
 	public void surfaceCreated(SurfaceHolder holder){
-		
+		//start thread
+		thread.start();
 	}
 	
 	/**
@@ -84,6 +105,15 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 * must no longer be touched.
 	 */
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		
+		//halt thread and wait for it to finish
+		boolean retry = true;
+		while (retry) {
+			try {
+				thread.join();
+				retry = false;
+			} catch (InterruptedException e) {
+				
+			  } 					
+		}
 	}
 }
