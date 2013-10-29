@@ -21,9 +21,9 @@ import android.widget.TextView;
 /**
  * This class offers functionality as a Surface View. It can therefore
  * be used to implement a dedicated drawing surface within the View
- * hierarchy.
+ * hierarchy, to display related map information about the NXT robot.
  * 
- * @author Daniel
+ * @author Daniel Wohllebe
  *
  */
 public class MapView extends SurfaceView implements SurfaceHolder.Callback {
@@ -45,10 +45,10 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		public MapThread(SurfaceHolder surfaceHolder, Context context, Handler handler) {
 			mSurfaceHolder=surfaceHolder;
 			mContext=context;
-			mHandler=handler;		
+			mHandler=handler;
 		}
 		
-		public void drawRect() {
+		private void drawText() {
 			Canvas c = null;
 			Paint mPaint = new Paint();
 			mPaint.setARGB(255, 0, 255, 0);
