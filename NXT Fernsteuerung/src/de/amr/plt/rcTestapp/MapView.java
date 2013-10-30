@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.graphics.NinePatch;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -40,27 +41,59 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		private SurfaceHolder mSurfaceHolder;
 		private Context mContext;
 		private Handler mHandler;
+		private boolean mRun = false;
+		private Resources res;
+		Bitmap bBackground;
+		Bitmap bRobot;
 		
 		//Constructor
 		public MapThread(SurfaceHolder surfaceHolder, Context context, Handler handler) {
 			mSurfaceHolder=surfaceHolder;
 			mContext=context;
 			mHandler=handler;
+			
+			//fetch Resources
+			res = mContext.getResources();
+			
+			//initialize all Bitmaps
+			bBackground = BitmapFactory.decodeResource(res, R.drawable.bg_map);
+			
+			
+			
 		}
 		
-		private void drawText() {
-			Canvas c = null;
+		public void setRunning(boolean b) {
+			mRun = b;
+		}
+		
+		/**
+		 * Method for testing various Draw-related functions.
+		 */
+		public void drawTestImage() {
+			Canvas c= null;
 			Paint mPaint = new Paint();
-			mPaint.setARGB(255, 0, 255, 0);
+			mPaint.setARGB(255, 255, 255, 255);
 			try {
 				c = mSurfaceHolder.lockCanvas(null);
-							
+				Bitmap image = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt);
+				Bitmap sprite = BitmapFactory.decodeResource(res, R.drawable.spr_self);
+				int magn = 16;   //magnify
+				sprite=Bitmap.createScaledBitmap(sprite, sprite.getWidth()*magn, sprite.getHeight()*magn, false);
+				c.drawColor(0xff00ff00); //draw green background
+				c.drawBitmap(bBackground, 0, 0, null);
+				c.drawBitmap(image, 120, 120, null);
 				c.drawText("Hi, I am text.",  0, 0, mPaint);
-			}
-			finally {
+				c.drawBitmap(sprite, 240, 240, null);
+				//NinePatch patch = new NinePatch(sprite, sprite.getNinePatchChunk(), null);
+				//RectF pRect = new RectF(2,2,2,2);
+				//patch.draw(c, pRect);
+				
+			} finally {
 				if (c != null)
 					mSurfaceHolder.unlockCanvasAndPost(c);
 			}
+			
+			
 		}
 		
 	}
@@ -98,6 +131,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceCreated(SurfaceHolder holder){
 		//start thread
 		thread.start();
+		thread.drawTestImage();
 	}
 	
 	/**
