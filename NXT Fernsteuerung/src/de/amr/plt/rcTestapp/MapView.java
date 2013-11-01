@@ -37,6 +37,10 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 * @version 0.1
 	 */
 	class MapThread extends Thread {
+		//finals
+		//Variable for default background color
+		final private int CLEAR=0xff000000;
+		
 		//variables
 		private SurfaceHolder mSurfaceHolder;
 		private Context mContext;
@@ -91,8 +95,46 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			} finally {
 				if (c != null)
 					mSurfaceHolder.unlockCanvasAndPost(c);
-			}
-			
+			}			
+		}
+		
+		/**
+		 * Draws the Map Background on the Canvas.
+		 */
+		public void drawMap() {
+			Canvas c= null;
+			try {
+				c = mSurfaceHolder.lockCanvas(null);
+				Paint mPaint = new Paint();
+				mPaint.setColor(0xff000000);
+				
+				//clear screen
+				c.drawColor(CLEAR);
+				
+				//draw map from resource
+				Bitmap mBackground = null;
+				mBackground=Bitmap.createScaledBitmap(bBackground, c.getWidth(), c.getHeight(), false);
+				c.drawBitmap(mBackground, 0, 0, null);			
+				
+			} finally {
+				if (c != null)
+					mSurfaceHolder.unlockCanvasAndPost(c);
+			}			
+		}
+		
+		/**
+		 * Resets the screen.
+		 */
+		public void clearScreen() {
+			Canvas c= null;
+			try {	
+				c = mSurfaceHolder.lockCanvas(null);
+				c.drawColor(CLEAR);
+				
+			} finally {
+				if (c != null)
+					mSurfaceHolder.unlockCanvasAndPost(c);
+			}			
 			
 		}
 		
@@ -121,6 +163,17 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 * Callback invoked when the surface dimensions change.
 	 */
 	public void surfaceChanged(SurfaceHolder holder, int format,int width0,int height) {
+		int orientation = this.getResources().getConfiguration().orientation;
+		
+		//check screen orientation
+		//1 = PORTRAIT
+		//2 = LANDSCAPE
+		if (orientation == 1) {
+			thread.clearScreen();
+		}
+		else if (orientation == 2){
+			thread.drawMap();
+		}
 		
 	}
 	
@@ -131,7 +184,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceCreated(SurfaceHolder holder){
 		//start thread
 		thread.start();
-		thread.drawTestImage();
+		thread.drawMap();
 	}
 	
 	/**

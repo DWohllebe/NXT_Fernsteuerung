@@ -23,6 +23,15 @@
     	    android:gravity="center_horizontal"
     	    android:textColor="#88ffffff"
     	    android:textSize="24sp" />
+    	
+    	<Button 
+    	    android:id="@+id/infoButton"
+    	    android:text="@string/map_info_button"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentLeft="true"
+    	    android:layout_alignParentBottom="true"
+    	    android:textSize="24sp" />
          
     </RelativeLayout>   
         

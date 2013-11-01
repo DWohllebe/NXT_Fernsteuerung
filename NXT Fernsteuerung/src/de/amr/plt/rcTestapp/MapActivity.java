@@ -14,6 +14,7 @@ public class MapActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
+		
 		//Bitmap b = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 		//Canvas c = new Canvas(b);
 		//c.drawText("Dies ist ein Canvas-Text", 0, 0, 0, 0, null);
