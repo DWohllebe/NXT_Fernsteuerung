@@ -3,10 +3,7 @@ package de.amr.plt.rcTestapp;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
-import android.graphics.*;
 import android.view.View;
-import android.content.Context;
-//TODO Import context!
 
 public class MapActivity extends Activity {
 
@@ -14,12 +11,6 @@ public class MapActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
-		
-		//Bitmap b = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-		//Canvas c = new Canvas(b);
-		//c.drawText("Dies ist ein Canvas-Text", 0, 0, 0, 0, null);
-		//Context mContext = getBaseContext();
-		//View MapView = new MapView(mContext, null);
 	}
 
 	@Override
@@ -32,5 +23,10 @@ public class MapActivity extends Activity {
 	public void onStart() {
 		super.onStart();
 	}
+	
+	public void onFollowVirtualPosClicked(View view) {
+		//TODO insert content
+	}
+	
 
 }

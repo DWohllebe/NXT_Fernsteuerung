@@ -151,7 +151,8 @@ public class MainActivity extends Activity {
 			//display received data from NXT
 			if(hmiModule.connected){			
 				//After establishing the connection make sure the start mode of the NXT is set to PAUSE
-//				hmiModule.setMode(Mode.PAUSE);
+//				
+				hmiModule.setMode(Mode.PAUSE);
 				
 				//enable toggle button
 				final ToggleButton toggleMode = (ToggleButton) findViewById(R.id.toggleMode);

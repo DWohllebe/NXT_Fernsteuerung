@@ -32,6 +32,45 @@
     	    android:layout_alignParentLeft="true"
     	    android:layout_alignParentBottom="true"
     	    android:textSize="24sp" />
+
+    	<ProgressBar
+    	    android:id="@+id/progressBar1"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentBottom="true"
+    	    android:layout_alignParentRight="true" />
+
+    	<EditText
+    	    android:id="@+id/editText_PosX"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentBottom="true"
+    	    android:layout_toLeftOf="@+id/editText_PosY"
+    	    android:ems="10"
+    	    android:inputType="numberDecimal"
+    	    android:text="@string/map_editText_PosX"
+    	    android:textColor="@android:color/white"
+    	    />
+    	
+    	<EditText
+    	    android:id="@+id/editText_PosY"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentBottom="true"
+    	    android:layout_toLeftOf="@id/progressBar1"
+    	    android:ems="10"
+    	    android:inputType="numberDecimal"
+    	    android:text="@string/map_editText_PosY"
+    	    android:textColor="@android:color/white" />
+    	
+    	<Button
+    	    android:id="@+id/Button_followVirtualPos"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentBottom="true"
+    	    android:layout_toLeftOf="@+id/editText_PosX"
+    	    android:text="@string/map_Button_followVirtualPos"
+    	    android:onClick="onFollowVirtualPosClicked" />
          
     </RelativeLayout>   
         

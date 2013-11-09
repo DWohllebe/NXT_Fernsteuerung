@@ -32,6 +32,9 @@
     <string name="bt_OpenMap">Map</string>
     <string name="map_view_text">MAP VIEW</string>
     <string name="map_info_button">Info</string>
+    <string name="map_editText_PosX">set x value</string>
+    <string name="map_editText_PosY">set y value</string>
+    <string name="map_Button_followVirtualPos">Activiate virtual values</string>
 
 
 </resources>

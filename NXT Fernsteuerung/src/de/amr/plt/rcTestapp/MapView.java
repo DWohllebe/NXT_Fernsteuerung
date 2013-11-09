@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
@@ -34,12 +35,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	/**
 	 * Thread of class MapView. Handles all drawing functionality.
 	 * @author Daniel Wohllebe
-	 * @version 0.1
+	 * @version 0.1.1
 	 */
 	class MapThread extends Thread {
 		//finals
 		//Variable for default background color
-		final private int CLEAR=0xff000000;
+		final private int CLEAR=0xff000000; 
 		
 		//variables
 		private SurfaceHolder mSurfaceHolder;
@@ -114,7 +115,16 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 				//draw map from resource
 				Bitmap mBackground = null;
 				mBackground=Bitmap.createScaledBitmap(bBackground, c.getWidth(), c.getHeight(), false);
-				c.drawBitmap(mBackground, 0, 0, null);			
+				c.drawBitmap(mBackground, 0, 0, null);
+				
+				RectF rect2 = new RectF(0, 0, c.getWidth()*11/15, c.getHeight()*(float)(4.1/9));
+				rect2.offset(c.getWidth()*(float)((1.2)/15), c.getHeight()*(float)(1.1/7));
+				mPaint.setAntiAlias(true);
+				mPaint.setColor(Color.CYAN);
+				mPaint.setStyle(Paint.Style.STROKE); 
+				mPaint.setStrokeWidth(4.5f);
+				//rect.offset(5, 5);
+				c.drawRect(rect2, mPaint); //TODO Cleanup
 				
 			} finally {
 				if (c != null)
@@ -136,6 +146,77 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 					mSurfaceHolder.unlockCanvasAndPost(c);
 			}			
 			
+		}
+		
+		/**
+		 * Draws the coordinate system in which the robot is
+		 * supposed to move.
+		 */
+		private void drawCoordinateSystem() {
+			Canvas c= null;
+			try {	
+				c = mSurfaceHolder.lockCanvas(null);
+				Bitmap mBackground=Bitmap.createScaledBitmap(bBackground, c.getWidth(), c.getHeight(), false);
+				
+				//define a rectangle that covers the entire screen
+				//left, top, right, bottom
+				RectF rect2 = new RectF(c.getWidth()/8, c.getHeight()/8, c.getWidth()/4, c.getHeight()/2+c.getHeight()/9);
+				Paint mPaint = new Paint();
+				mPaint.setAntiAlias(true);
+				mPaint.setColor(Color.RED);
+				mPaint.setStyle(Paint.Style.STROKE); 
+				mPaint.setStrokeWidth(4.5f);
+				//rect.offset(5, 5);
+				c.drawRect(rect2, mPaint);
+				
+				
+				
+				//mBackground.getScaledHeight(c)
+			} finally {
+				if (c != null)
+					mSurfaceHolder.unlockCanvasAndPost(c);
+			}			
+			
+		}
+		
+		/**
+		 * Executes the main algorithm of the thread. This draws...
+		 */
+		public void grun() {
+			while (mRun=true) {
+				Canvas c = null;
+				try {	
+					c = mSurfaceHolder.lockCanvas(null);
+					
+				/*
+				 * set the origin-point for the coordinate-system, in which the robot
+				 * is supposed to be drawn	
+				 */
+				final float POSX0= c.getWidth()*(float)(((1.2)/15) + (4.1/9));
+				final float POSY0= c.getHeight()*(float)((1.1/7)+ (4.1/9));
+				
+				//TODO set robot starting position in the relative grid
+				float posx = 0;
+				float posy = 0;
+				
+				//load pointer image
+				Bitmap pointer = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt);
+				//Bitmap.createScaledBitmap(src, dstWidth, dstHeight, filter)
+				//draw the Pointer
+				c.drawBitmap(pointer, 
+						POSX0-pointer.getWidth()/2, //draw left-side on POS0X and shift to center
+						POSY0-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
+						null);
+				
+			
+				
+				} finally {
+					if (c != null)
+						mSurfaceHolder.unlockCanvasAndPost(c);
+				}
+				
+				
+			}
 		}
 		
 	}
@@ -163,6 +244,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 * Callback invoked when the surface dimensions change.
 	 */
 	public void surfaceChanged(SurfaceHolder holder, int format,int width0,int height) {
+		//get current screen orientation
 		int orientation = this.getResources().getConfiguration().orientation;
 		
 		//check screen orientation
@@ -170,8 +252,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		//2 = LANDSCAPE
 		if (orientation == 1) {
 			thread.clearScreen();
+			
+			thread.drawCoordinateSystem();
+			
 		}
 		else if (orientation == 2){
+			thread.clearScreen();
 			thread.drawMap();
 		}
 		
@@ -184,7 +270,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceCreated(SurfaceHolder holder){
 		//start thread
 		thread.start();
-		thread.drawMap();
+		thread.setRunning(true);
+		thread.run();
 	}
 	
 	/**
@@ -203,4 +290,5 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			  } 					
 		}
 	}
+	
 }
