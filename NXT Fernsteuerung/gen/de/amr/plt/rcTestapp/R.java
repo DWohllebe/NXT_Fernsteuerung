@@ -91,6 +91,7 @@ public final class R {
         public static final int hello_world=0x7f05001b;
         public static final int map_Button_followVirtualPos=0x7f050021;
         public static final int map_editText_PosX=0x7f05001f;
+        public static final int map_editText_PosX_Hint=0x7f050022;
         public static final int map_editText_PosY=0x7f050020;
         public static final int map_info_button=0x7f05001e;
         public static final int map_view_text=0x7f05001d;

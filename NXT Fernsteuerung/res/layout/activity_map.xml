@@ -47,10 +47,10 @@
     	    android:layout_alignParentBottom="true"
     	    android:layout_toLeftOf="@+id/editText_PosY"
     	    android:ems="10"
+    	    android:hint="@string/map_editText_PosX_Hint"
     	    android:inputType="numberDecimal"
     	    android:text="@string/map_editText_PosX"
-    	    android:textColor="@android:color/white"
-    	    />
+    	    android:textColor="@android:color/white" />
     	
     	<EditText
     	    android:id="@+id/editText_PosY"

@@ -37,7 +37,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 * @author Daniel Wohllebe
 	 * @version 0.1.1
 	 */
-	class MapThread extends Thread {
+	static class MapThread extends Thread { //TODO extend with AsyncTask!
 		//finals
 		//Variable for default background color
 		final private int CLEAR=0xff000000; 
@@ -48,8 +48,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		private Handler mHandler;
 		private boolean mRun = false;
 		private Resources res;
+		private boolean vPosActive;
+		private float vPOSX = 0;
+		private float vPOSY = 0;
 		Bitmap bBackground;
 		Bitmap bRobot;
+		Bitmap pointer;
 		
 		//Constructor
 		public MapThread(SurfaceHolder surfaceHolder, Context context, Handler handler) {
@@ -62,7 +66,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			
 			//initialize all Bitmaps
 			bBackground = BitmapFactory.decodeResource(res, R.drawable.bg_map);
-			
+			pointer = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt);
 			
 			
 		}
@@ -180,43 +184,77 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 		
 		/**
-		 * Executes the main algorithm of the thread. This draws...
+		 * Draws a map and pointer on the given canvas.
+		 * @param c
 		 */
-		public void grun() {
-			while (mRun=true) {
+		public void doDraw(Canvas c) {
+			/*
+			 * set the origin-point for the coordinate-system, in which the robot
+			 * is supposed to be drawn	
+			 */
+			final float POSX0= c.getWidth()*(float)(((1.2)/15) + (4.1/9));
+			final float POSY0= c.getHeight()*(float)((1.1/7)+ (4.1/9));
+			
+			//TODO set robot starting position in the relative grid
+			float posx = 0;
+			float posy = 0;
+			
+			//load pointer image
+			pointer = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt);
+			//Bitmap.createScaledBitmap(src, dstWidth, dstHeight, filter)
+			
+			//draw the background image, this counts as clearing the screen
+			Bitmap mBackground = null;
+			mBackground=Bitmap.createScaledBitmap(bBackground, c.getWidth(), c.getHeight(), false);
+			c.drawBitmap(mBackground, 0, 0, null);
+			
+			//draw the Pointer
+			if (vPosActive == false) {
+			c.drawBitmap(pointer, 
+					POSX0-pointer.getWidth()/2, //draw left-side on POS0X and shift to center
+					POSY0-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
+					null);
+			} else {
+				c.drawBitmap(pointer, 
+						vPOSX-pointer.getWidth()/2, //draw left-side on POS0X and shift to center
+						vPOSY-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
+						null);
+			}
+			
+		}
+		
+		/**
+		 * Executes the main algorithm of the thread.
+		 */
+		@Override		
+		public void run() {
+			while (mRun=true) {  //TODO add this again later
 				Canvas c = null;
 				try {	
 					c = mSurfaceHolder.lockCanvas(null);
-					
-				/*
-				 * set the origin-point for the coordinate-system, in which the robot
-				 * is supposed to be drawn	
-				 */
-				final float POSX0= c.getWidth()*(float)(((1.2)/15) + (4.1/9));
-				final float POSY0= c.getHeight()*(float)((1.1/7)+ (4.1/9));
-				
-				//TODO set robot starting position in the relative grid
-				float posx = 0;
-				float posy = 0;
-				
-				//load pointer image
-				Bitmap pointer = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt);
-				//Bitmap.createScaledBitmap(src, dstWidth, dstHeight, filter)
-				//draw the Pointer
-				c.drawBitmap(pointer, 
-						POSX0-pointer.getWidth()/2, //draw left-side on POS0X and shift to center
-						POSY0-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
-						null);
-				
-			
+					synchronized (mSurfaceHolder) {
+						if (c != null) {  //FIXME This strangely leads to a freeze, without this line you get a NullPointerException
+							doDraw(c);
+						}
+					}
 				
 				} finally {
 					if (c != null)
 						mSurfaceHolder.unlockCanvasAndPost(c);
-				}
-				
-				
+				}			
 			}
+		}
+		
+		public void setVPOS(boolean b) {
+			vPosActive=b;
+		}
+		
+		public void setVPosX(float f) {
+			vPOSX=f;
+		}
+		
+		public void setVPosY(float f) {
+			vPOSY=f;
 		}
 		
 	}
@@ -225,6 +263,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	// DECLARATION OF CLASS
 	
 	private MapThread thread;
+	private SurfaceHolder mapholder;
+	private Context context;
 	
 	public MapView(Context context, AttributeSet attrs) {
 		//initialize with given context
@@ -243,23 +283,23 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	/**
 	 * Callback invoked when the surface dimensions change.
 	 */
-	public void surfaceChanged(SurfaceHolder holder, int format,int width0,int height) {
+	public void surfaceChanged(SurfaceHolder holder, int format,int width,int height) {
 		//get current screen orientation
-		int orientation = this.getResources().getConfiguration().orientation;
+		//int orientation = this.getResources().getConfiguration().orientation;
 		
 		//check screen orientation
 		//1 = PORTRAIT
 		//2 = LANDSCAPE
-		if (orientation == 1) {
-			thread.clearScreen();
+		//if (orientation == 1) {
+			//thread.clearScreen();
 			
-			thread.drawCoordinateSystem();
+			//thread.drawCoordinateSystem();
 			
-		}
-		else if (orientation == 2){
-			thread.clearScreen();
-			thread.drawMap();
-		}
+		//}
+		//else if (orientation == 2){
+			//thread.clearScreen();
+			//thread.drawMap();
+	//	}
 		
 	}
 	
@@ -269,9 +309,9 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 */
 	public void surfaceCreated(SurfaceHolder holder){
 		//start thread
-		thread.start();
+		//thread = new MapThread(mapholder, context, new Handler());
 		thread.setRunning(true);
-		thread.run();
+		thread.start();
 	}
 	
 	/**
@@ -289,6 +329,18 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 				
 			  } 					
 		}
+	}
+	
+	public void setVPointer(boolean b) {
+		thread.setVPOS(b);
+	}
+	
+	public void setVPosX(float f) {
+		thread.setVPosX(f);	
+	}
+	
+	public void setVPosY(float f) {
+		thread.setVPosY(f);
 	}
 	
 }

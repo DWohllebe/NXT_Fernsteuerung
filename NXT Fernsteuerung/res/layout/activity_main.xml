@@ -220,7 +220,7 @@
         android:layout_toLeftOf="@+id/textViewValueDistanceFrontSide"
         android:paddingLeft="30dp"
         android:text="@string/distance_front_side_value"
-        android:textSize="24dp" />
+        android:textSize="24sp" />
 
     <TextView
         android:id="@+id/textViewValueDistanceFrontSide"
