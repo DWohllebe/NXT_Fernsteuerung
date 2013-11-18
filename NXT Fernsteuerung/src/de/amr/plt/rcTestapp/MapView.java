@@ -37,7 +37,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 * @author Daniel Wohllebe
 	 * @version 0.1.1
 	 */
-	static class MapThread extends Thread { //TODO extend with AsyncTask!
+	static class MapThread extends Thread {
 		//finals
 		//Variable for default background color
 		final private int CLEAR=0xff000000; 
@@ -51,6 +51,10 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		private boolean vPosActive;
 		private float vPOSX = 0;
 		private float vPOSY = 0;
+		private float dPOSX = 0;
+		private float dPOSY = 0;
+		private float ANGLE0 = 0;
+		private float dANGLE = 0;
 		Bitmap bBackground;
 		Bitmap bRobot;
 		Bitmap pointer;
@@ -137,22 +141,6 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 		
 		/**
-		 * Resets the screen.
-		 */
-		public void clearScreen() {
-			Canvas c= null;
-			try {	
-				c = mSurfaceHolder.lockCanvas(null);
-				c.drawColor(CLEAR);
-				
-			} finally {
-				if (c != null)
-					mSurfaceHolder.unlockCanvasAndPost(c);
-			}			
-			
-		}
-		
-		/**
 		 * Draws the coordinate system in which the robot is
 		 * supposed to move.
 		 */
@@ -187,23 +175,25 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		 * Draws a map and pointer on the given canvas.
 		 * @param c
 		 */
-		public void doDraw(Canvas c) {
+		private void doDraw(Canvas c) {
 			/*
 			 * set the origin-point for the coordinate-system, in which the robot
 			 * is supposed to be drawn	
 			 */
-			final float POSX0= c.getWidth()*(float)(((1.2)/15) + (4.1/9));
-			final float POSY0= c.getHeight()*(float)((1.1/7)+ (4.1/9));
+			//final float POSX0= c.getWidth()*(float)(((1.2)/15) + (4.1/9));
+			final float POSY0= c.getHeight()*(float)((1.1/7)+ (4.2/9));
+			final float POSX0= c.getWidth()*(float)(1.3/15.5);
+			//final float POSY0= c.getWidth()*(float)(4.4/7);
 			
-			//TODO set robot starting position in the relative grid
-			float posx = 0;
-			float posy = 0;
 			
 			//load pointer image
 			pointer = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt);
 			//Bitmap.createScaledBitmap(src, dstWidth, dstHeight, filter)
 			
-			//draw the background image, this counts as clearing the screen
+			//clear the Screen
+			c.drawColor(CLEAR);
+			
+			//draw the background image
 			Bitmap mBackground = null;
 			mBackground=Bitmap.createScaledBitmap(bBackground, c.getWidth(), c.getHeight(), false);
 			c.drawBitmap(mBackground, 0, 0, null);
@@ -211,8 +201,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			//draw the Pointer
 			if (vPosActive == false) {
 			c.drawBitmap(pointer, 
-					POSX0-pointer.getWidth()/2, //draw left-side on POS0X and shift to center
-					POSY0-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
+					POSX0+dPOSX-pointer.getWidth()/2, //draw left-side on POS0X and shift to center
+					POSY0+dPOSY-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
 					null);
 			} else {
 				c.drawBitmap(pointer, 
@@ -224,11 +214,11 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 		
 		/**
-		 * Executes the main algorithm of the thread.
-		 */
-		@Override		
+		 * Executes the main algorithm of the thread. This is not to be called
+		 * directly.
+		 */		
 		public void run() {
-			while (mRun=true) {  //TODO add this again later
+			while (mRun=true) {
 				Canvas c = null;
 				try {	
 					c = mSurfaceHolder.lockCanvas(null);
@@ -245,16 +235,41 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			}
 		}
 		
-		public void setVPOS(boolean b) {
+		/**
+		 * Activates virtual position drawing.
+		 * @param b
+		 */
+		public void activateVPos(boolean b) {
 			vPosActive=b;
 		}
 		
-		public void setVPosX(float f) {
-			vPOSX=f;
+		/**
+		 * Sets virtual position parameters.
+		 * @param fx
+		 * @param fy
+		 */
+		public void setVPos(float fx, float fy) {
+			vPOSX=fx;
+			vPOSY=fy;
 		}
 		
-		public void setVPosY(float f) {
-			vPOSY=f;
+		/**
+		 * Sets the parameter for the relative distance from the
+		 * origin point.
+		 * @param fx
+		 * @param fy
+		 */
+		public void setDPos(float fx, float fy) {
+			dPOSX=fx;
+			dPOSY=fy;
+		}
+		
+		/**
+		 * Returns true, if the vPointer is currently activated.
+		 * @return
+		 */
+		public boolean vPointerIsActive() {
+			return vPosActive;
 		}
 		
 	}
@@ -332,15 +347,15 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	}
 	
 	public void setVPointer(boolean b) {
-		thread.setVPOS(b);
+		thread.activateVPos(b);
 	}
 	
-	public void setVPosX(float f) {
-		thread.setVPosX(f);	
+	public void setVPos(float fx, float fy) {
+		thread.setVPos(fx, fy);	
 	}
 	
-	public void setVPosY(float f) {
-		thread.setVPosY(f);
+	public boolean vPointerIsActive() {
+		return thread.vPointerIsActive();
 	}
 	
 }
