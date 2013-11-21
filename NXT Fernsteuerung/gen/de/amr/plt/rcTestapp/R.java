@@ -8,6 +8,9 @@
 package de.amr.plt.rcTestapp;
 
 public final class R {
+    public static final class array {
+        public static final int controlmodes=0x7f060000;
+    }
     public static final class attr {
     }
     public static final class dimen {
@@ -25,44 +28,46 @@ public final class R {
         public static final int ic_action_search=0x7f020001;
         public static final int ic_launcher=0x7f020002;
         public static final int ic_launcher_nxt=0x7f020003;
-        public static final int spr_self=0x7f020004;
+        public static final int infobalken_z=0x7f020004;
+        public static final int spr_self=0x7f020005;
     }
     public static final class id {
-        public static final int Button_followVirtualPos=0x7f08001f;
-        public static final int Button_updateVirtualPos=0x7f080020;
-        public static final int RelativeLayout1=0x7f080002;
-        public static final int TextViewLableAngle=0x7f08000e;
-        public static final int TextViewValueAngle=0x7f08000f;
-        public static final int action_settings=0x7f080022;
-        public static final int bt_connect_hint=0x7f080000;
-        public static final int buttonEnableDebug=0x7f080004;
-        public static final int buttonOpenMap=0x7f080005;
-        public static final int buttonSetupBluetooth=0x7f080003;
-        public static final int editText_PosX=0x7f08001d;
-        public static final int editText_PosY=0x7f08001e;
-        public static final int infoButton=0x7f08001b;
-        public static final int map=0x7f080019;
-        public static final int menu_settings=0x7f080021;
-        public static final int paired_devices=0x7f080001;
-        public static final int progressBar1=0x7f08001c;
-        public static final int text=0x7f08001a;
-        public static final int textViewLabelBluetooth=0x7f080006;
-        public static final int textViewLabelDistanceBack=0x7f080012;
-        public static final int textViewLabelDistanceBackSide=0x7f080016;
-        public static final int textViewLabelDistanceFront=0x7f080010;
-        public static final int textViewLabelDistanceFrontSide=0x7f080014;
-        public static final int textViewLabelX=0x7f08000a;
-        public static final int textViewLabelY=0x7f08000c;
-        public static final int textViewValueBluetooth=0x7f080007;
-        public static final int textViewValueDistanceBack=0x7f080013;
-        public static final int textViewValueDistanceBackSide=0x7f080017;
-        public static final int textViewValueDistanceFront=0x7f080011;
-        public static final int textViewValueDistanceFrontSide=0x7f080015;
-        public static final int textViewValueLabel=0x7f080008;
-        public static final int textViewValueStatus=0x7f080009;
-        public static final int textViewValueX=0x7f08000b;
-        public static final int textViewValueY=0x7f08000d;
-        public static final int toggleMode=0x7f080018;
+        public static final int Button_followVirtualPos=0x7f090020;
+        public static final int Button_updateVirtualPos=0x7f090021;
+        public static final int RelativeLayout1=0x7f090002;
+        public static final int TextViewLableAngle=0x7f09000e;
+        public static final int TextViewValueAngle=0x7f09000f;
+        public static final int action_settings=0x7f090023;
+        public static final int bt_connect_hint=0x7f090000;
+        public static final int buttonEnableDebug=0x7f090004;
+        public static final int buttonOpenMap=0x7f090005;
+        public static final int buttonSetupBluetooth=0x7f090003;
+        public static final int editText_PosX=0x7f09001e;
+        public static final int editText_PosY=0x7f09001f;
+        public static final int infoButton=0x7f09001c;
+        public static final int map=0x7f09001a;
+        public static final int menu_settings=0x7f090022;
+        public static final int modeSpinner=0x7f090019;
+        public static final int paired_devices=0x7f090001;
+        public static final int progressBar1=0x7f09001d;
+        public static final int text=0x7f09001b;
+        public static final int textViewLabelBluetooth=0x7f090006;
+        public static final int textViewLabelDistanceBack=0x7f090012;
+        public static final int textViewLabelDistanceBackSide=0x7f090016;
+        public static final int textViewLabelDistanceFront=0x7f090010;
+        public static final int textViewLabelDistanceFrontSide=0x7f090014;
+        public static final int textViewLabelX=0x7f09000a;
+        public static final int textViewLabelY=0x7f09000c;
+        public static final int textViewValueBluetooth=0x7f090007;
+        public static final int textViewValueDistanceBack=0x7f090013;
+        public static final int textViewValueDistanceBackSide=0x7f090017;
+        public static final int textViewValueDistanceFront=0x7f090011;
+        public static final int textViewValueDistanceFrontSide=0x7f090015;
+        public static final int textViewValueLabel=0x7f090008;
+        public static final int textViewValueStatus=0x7f090009;
+        public static final int textViewValueX=0x7f09000b;
+        public static final int textViewValueY=0x7f09000d;
+        public static final int toggleMode=0x7f090018;
     }
     public static final class layout {
         public static final int activity_bluetooth=0x7f030000;
@@ -71,9 +76,9 @@ public final class R {
         public static final int device_name=0x7f030003;
     }
     public static final class menu {
-        public static final int activity_bluetooth=0x7f070000;
-        public static final int activity_main=0x7f070001;
-        public static final int map=0x7f070002;
+        public static final int activity_bluetooth=0x7f080000;
+        public static final int activity_main=0x7f080001;
+        public static final int map=0x7f080002;
     }
     public static final class string {
         public static final int action_settings=0x7f05001a;
@@ -115,6 +120,6 @@ public final class R {
         public static final int y_Value=0x7f050005;
     }
     public static final class style {
-        public static final int AppTheme=0x7f060000;
+        public static final int AppTheme=0x7f070000;
     }
 }

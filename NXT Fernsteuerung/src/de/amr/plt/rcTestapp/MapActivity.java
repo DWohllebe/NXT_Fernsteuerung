@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Toast;
 import android.widget.EditText;
 import android.widget.Button;
+import android.app.ActionBar;
 
 public class MapActivity extends Activity {
 
@@ -14,6 +15,11 @@ public class MapActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
+		
+		//hide the action bar, might cause problems with the API level
+		ActionBar actionbar = getActionBar();
+		actionbar.hide();
+		
 	}
 
 	@Override

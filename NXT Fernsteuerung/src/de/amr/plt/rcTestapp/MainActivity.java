@@ -20,6 +20,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
 import de.amr.plt.rcTestapp.R;
 import de.amr.plt.rcParkingRobot.AndroidHmiPLT;
 
@@ -84,6 +86,15 @@ public class MainActivity extends Activity {
     		    }
         	}
         });
+        
+        //prepare Spinner
+        //Source: http://developer.android.com/guide/topics/ui/controls/spinner.html
+        Spinner Spinner = (Spinner) findViewById(R.id.modeSpinner);
+        ArrayAdapter<CharSequence> Adapter = ArrayAdapter.createFromResource(this,
+        R.array.controlmodes, android.R.layout.simple_spinner_item);
+        Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        Spinner.setAdapter(Adapter); 
+        
         
     }
 

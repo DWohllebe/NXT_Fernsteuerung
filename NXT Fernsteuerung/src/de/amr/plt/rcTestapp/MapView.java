@@ -211,6 +211,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 						null);
 			}
 			
+			//draw the info bar
+			Bitmap mInfobar = BitmapFactory.decodeResource(res, R.drawable.infobalken_z);
+			mInfobar=Bitmap.createScaledBitmap(mInfobar, c.getWidth(), mInfobar.getHeight(), false);
+			c.drawBitmap(mInfobar, 0, c.getHeight()-mInfobar.getHeight(), null);
+						
+			
 		}
 		
 		/**

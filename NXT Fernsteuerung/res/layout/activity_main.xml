@@ -269,4 +269,13 @@
         android:textOff="SCOUT"
         android:textOn="SCOUT" />
 
+    <Spinner
+        android:id="@+id/modeSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/buttonSetupBluetooth"
+        android:layout_alignTop="@+id/toggleMode"
+        android:layout_toLeftOf="@+id/buttonOpenMap"
+        android:layout_toRightOf="@+id/toggleMode" />
+
 </RelativeLayout>
