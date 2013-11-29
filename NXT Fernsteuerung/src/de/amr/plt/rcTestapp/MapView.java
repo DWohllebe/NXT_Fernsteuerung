@@ -176,6 +176,10 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		 * @param c
 		 */
 		private void doDraw(Canvas c) {
+			final int BUTTON_COUNT=4;
+			final int BUTTON_WIDTH=60;
+			Paint BUTTON_COLOR= new Paint();
+			BUTTON_COLOR.setColor(Color.RED);
 			/*
 			 * set the origin-point for the coordinate-system, in which the robot
 			 * is supposed to be drawn	
@@ -193,9 +197,20 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			//clear the Screen
 			c.drawColor(CLEAR);
 			
-			//draw the background image
+			//draw the Buttons on right-hand side
+			for (int i=0; (i<BUTTON_COUNT); i++) {
+				c.drawRect(new RectF(c.getWidth()-BUTTON_WIDTH, 
+						i*c.getHeight()/BUTTON_COUNT, 
+						c.getWidth(),
+						c.getHeight()/BUTTON_COUNT*(1+i)), 
+						BUTTON_COLOR);
+						//c.getHeight()/BUTTON_COUNT+i*c.getHeight()/BUTTON_COUNT);			
+			}
+			
+			
+			//draw the background image, scale it so that it is left to the Buttons
 			Bitmap mBackground = null;
-			mBackground=Bitmap.createScaledBitmap(bBackground, c.getWidth(), c.getHeight(), false);
+			mBackground=Bitmap.createScaledBitmap(bBackground, c.getWidth()-BUTTON_WIDTH, c.getHeight(), false);
 			c.drawBitmap(mBackground, 0, 0, null);
 			
 			//draw the Pointer
