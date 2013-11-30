@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -40,7 +41,23 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	static class MapThread extends Thread {
 		//finals
 		//Variable for default background color
-		final private int CLEAR=0xff000000; 
+		final private int CLEAR=0xff000000;
+		
+		//Variables for Menu Button properties
+		final private int BUTTON_COUNT=4;
+		final private int BUTTON_WIDTH=60;
+		
+		//Array containing the current and past locations of the pointer
+		private float[] path = new float[20];
+		private int pathcount=0;
+		
+		//variables for drawing
+		boolean draw_initialized;
+		boolean button_hover;
+		boolean button_pressed;
+		boolean button_visible;
+		boolean info_bar_visible=true;
+		boolean map_visible=true;
 		
 		//variables
 		private SurfaceHolder mSurfaceHolder;
@@ -171,31 +188,27 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			
 		}
 		
-		/**
-		 * Draws a map and pointer on the given canvas.
+/*		/**
+		 * Draws graphics which are supposed to be static background or
+		 * not part of a regular screen update.
 		 * @param c
-		 */
-		private void doDraw(Canvas c) {
-			final int BUTTON_COUNT=4;
-			final int BUTTON_WIDTH=60;
+		 
+		private void doInitDraw(Canvas c) {
 			Paint BUTTON_COLOR= new Paint();
 			BUTTON_COLOR.setColor(Color.RED);
-			/*
-			 * set the origin-point for the coordinate-system, in which the robot
-			 * is supposed to be drawn	
-			 */
-			//final float POSX0= c.getWidth()*(float)(((1.2)/15) + (4.1/9));
+			BUTTON_COLOR.setStyle(Paint.Style.STROKE); 
+			BUTTON_COLOR.setStrokeWidth(4.5f);
+			
 			final float POSY0= c.getHeight()*(float)((1.1/7)+ (4.2/9));
 			final float POSX0= c.getWidth()*(float)(1.3/15.5);
-			//final float POSY0= c.getWidth()*(float)(4.4/7);
-			
-			
-			//load pointer image
-			pointer = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt);
-			//Bitmap.createScaledBitmap(src, dstWidth, dstHeight, filter)
 			
 			//clear the Screen
 			c.drawColor(CLEAR);
+			
+			//draw the background image, scale it so that it is left to the Buttons
+			Bitmap mBackground = null;
+			mBackground=Bitmap.createScaledBitmap(bBackground, c.getWidth()-BUTTON_WIDTH, c.getHeight(), false);
+			c.drawBitmap(mBackground, 0, 0, null);
 			
 			//draw the Buttons on right-hand side
 			for (int i=0; (i<BUTTON_COUNT); i++) {
@@ -204,17 +217,49 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 						c.getWidth(),
 						c.getHeight()/BUTTON_COUNT*(1+i)), 
 						BUTTON_COLOR);
-						//c.getHeight()/BUTTON_COUNT+i*c.getHeight()/BUTTON_COUNT);			
 			}
+			 
+		}
+*/
+		
+		/**
+		 * Draws all graphics which are supposed to change dynamically.
+		 * @param c
+		 */
+		private void doDraw(Canvas c) {
+			Paint BUTTON_COLOR= new Paint();
+			BUTTON_COLOR.setColor(Color.RED);
+			BUTTON_COLOR.setStyle(Paint.Style.STROKE); 
+			BUTTON_COLOR.setStrokeWidth(4.5f);
+			/*
+			 * set the origin-point for the coordinate-system, in which the robot
+			 * is supposed to be drawn	
+			 */
+	
+			final float POSY0= c.getHeight()*(float)((1.1/7)+ (4.2/9));
+			final float POSX0= c.getWidth()*(float)(1.3/15.5);
+
 			
+			
+			//load pointer image
+			pointer = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt);
+			
+			//clear the Screen
+			c.drawColor(CLEAR);
 			
 			//draw the background image, scale it so that it is left to the Buttons
+			if (map_visible) {
 			Bitmap mBackground = null;
 			mBackground=Bitmap.createScaledBitmap(bBackground, c.getWidth()-BUTTON_WIDTH, c.getHeight(), false);
 			c.drawBitmap(mBackground, 0, 0, null);
+			}
 			
+			
+			//c.drawPoints(pts, offset, count, paint)
 			//draw the Pointer
 			if (vPosActive == false) {
+				alignPath(POSX0, POSY0);
+			c.drawPoints(path, 0 , 10 , BUTTON_COLOR);
 			c.drawBitmap(pointer, 
 					POSX0+dPOSX-pointer.getWidth()/2, //draw left-side on POS0X and shift to center
 					POSY0+dPOSY-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
@@ -227,11 +272,21 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			}
 			
 			//draw the info bar
+			if (info_bar_visible) {
 			Bitmap mInfobar = BitmapFactory.decodeResource(res, R.drawable.infobalken_z);
 			mInfobar=Bitmap.createScaledBitmap(mInfobar, c.getWidth(), mInfobar.getHeight(), false);
 			c.drawBitmap(mInfobar, 0, c.getHeight()-mInfobar.getHeight(), null);
-						
+			}
 			
+			//draw the Buttons on right-hand side
+			for (int i=0; (i<BUTTON_COUNT); i++) {
+				c.drawRect(new RectF(c.getWidth()-BUTTON_WIDTH, 
+						i*c.getHeight()/BUTTON_COUNT, 
+						c.getWidth(),
+						c.getHeight()/BUTTON_COUNT*(1+i)), 
+						BUTTON_COLOR);
+						//c.getHeight()/BUTTON_COUNT+i*c.getHeight()/BUTTON_COUNT);			
+			}
 		}
 		
 		/**
@@ -240,12 +295,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		 */		
 		public void run() {
 			while (mRun=true) {
-				Canvas c = null;
+				Canvas c = null;				
 				try {	
 					c = mSurfaceHolder.lockCanvas(null);
 					synchronized (mSurfaceHolder) {
-						if (c != null) {  //FIXME This strangely leads to a freeze, without this line you get a NullPointerException
-							doDraw(c);
+						if (c != null) {//FIXME This strangely leads to a freeze, without this line you get a NullPointerException						
+							doDraw(c); //
 						}
 					}
 				
@@ -253,6 +308,29 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 					if (c != null)
 						mSurfaceHolder.unlockCanvasAndPost(c);
 				}			
+			}
+		}
+		
+		/**
+		 * Aligns path to given view point with known relative
+		 * deviation. Returns true if successful
+		 * @param POSX0
+		 * @param POSY0
+		 * @return success
+		 */
+		private boolean alignPath(float POSX0, float POSY0) { //TODO integrate / cleanup
+			try {
+			if (pathcount<18 && pathcount>=0) {
+				path[pathcount]=dPOSX+POSX0;
+				path[pathcount+1]=dPOSY=POSY0;
+				pathcount=pathcount+2;
+				return true;
+			}
+			else
+				return false;
+			}
+			catch (NullPointerException e) {
+				return false;
 			}
 		}
 		
@@ -367,6 +445,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 	}
 	
+	/*@Override
+	public boolean onTouchEvent(MotionEvent event) { //TODO implement Touch-Detection
+		
+	}
+	*/
+	
 	public void setVPointer(boolean b) {
 		thread.activateVPos(b);
 	}
@@ -379,4 +463,19 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		return thread.vPointerIsActive();
 	}
 	
+	public int getMenuButtonCount() {
+		return thread.BUTTON_COUNT;	
+	}
+	
+	public int getMenuButtonWidth() {
+		return thread.BUTTON_WIDTH;
+	}
+	
+	public void setMapVisibility(boolean b) {
+		thread.map_visible=b;
+	}
+	
+	public void setInfoBarVisibility(boolean b) {
+		thread.info_bar_visible=b;
+	}
 }
