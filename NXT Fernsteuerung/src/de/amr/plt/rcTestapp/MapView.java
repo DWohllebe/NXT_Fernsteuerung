@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -373,12 +375,39 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		
 	}
 	
+	/**
+	 * Listens to gestures concerning every element which is transposed
+	 * on the map canvas.
+	 * @author Daniel
+	 *
+	 */
+	class MapGestureListener extends GestureDetector.SimpleOnGestureListener { //TODO Test this.
+        private static final String DEBUG_TAG = "Gestures"; 
+        
+        @Override
+        public boolean onDown(MotionEvent event) { 
+            Log.d(DEBUG_TAG,"onDown: " + event.toString()); 
+            return true;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent event) {
+            Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
+           // event.getX(); //TODO get X and compare with a RectF
+            return true;
+        }
+    }
+
+	
 	//------------------------------------
 	// DECLARATION OF CLASS
 	
 	private MapThread thread;
 	private SurfaceHolder mapholder;
 	private Context context;
+	private MapGestureListener GestureListener;
+	private GestureDetector mDetector;
+	
 	
 	public MapView(Context context, AttributeSet attrs) {
 		//initialize with given context
@@ -391,6 +420,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		//create a thread, this will be started on surface creation
 		thread = new MapThread(mapholder, context, new Handler());
 		
+		//create a gesture listener
+		mDetector = new GestureDetector(new MapGestureListener()); //FIXME		
 	}
 	
 	
@@ -445,11 +476,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 	}
 	
-	/*@Override
-	public boolean onTouchEvent(MotionEvent event) { //TODO implement Touch-Detection
-		
+	@Override
+	public boolean onTouchEvent(MotionEvent event) { //FIXME implement Touch-Detection
+		this.mDetector.onTouchEvent(event);
+		return super.onTouchEvent(event);
 	}
-	*/
+	
 	
 	public void setVPointer(boolean b) {
 		thread.activateVPos(b);
