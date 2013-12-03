@@ -1,15 +1,23 @@
 package de.amr.plt.rcTestapp;
 
+import de.amr.plt.rcParkingRobot.AndroidHmiPLT;
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.EditText;
 import android.widget.Button;
 import android.app.ActionBar;
 
 public class MapActivity extends Activity {
+	
+	AndroidHmiPLT hmiModule =null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +28,52 @@ public class MapActivity extends Activity {
 		ActionBar actionbar = getActionBar();
 		actionbar.hide();
 		
-	}
+		//prepare Spinner
+        //Source: http://developer.android.com/guide/topics/ui/controls/spinner.html
+        Spinner Spinner = (Spinner) findViewById(R.id.modeSpinner);
+        ArrayAdapter<CharSequence> Adapter = ArrayAdapter.createFromResource(this,
+        R.array.controlmodes, android.R.layout.simple_spinner_item);
+        Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        Spinner.setAdapter(Adapter);
+		
+        //create a listener for the Spinner
+        Spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				//change Mode depending on the selected item
+				switch(arg2) {
+				case 0: 
+					//hmiModule.setMode(parkingRobot.INxtHmi.Mode.SCOUT);
+					Log.d("Spinner", "SCOUT selected");
+					break;
+				case 1: 
+					//hmiModule.setMode(parkingRobot.INxtHmi.Mode.PARK_NOW);
+					Log.d("Spinner", "PARK_NOW selected");
+					break;
+				case 2:
+					//hmiModule.setMode(parkingRobot.INxtHmi.Mode.PARK_THIS);
+					Log.d("Spinner", "PARK_THIS selected");
+					break;
+				case 3:
+					//hmiModule.setMode(parkingRobot.INxtHmi.Mode.PAUSE);
+					Log.d("Spinner", "PAUSE selected");
+					break;
+				case 4:
+					//hmiModule.setMode(parkingRobot.INxtHmi.Mode.DISCONNECT);
+					Log.d("Spinner", "DISCONNECT selected");
+					break;
+				default:
+					Log.e("Spinner","Could not settle for any case in onItemSelected()");		
+				}
+				
+			}
+
+			public void onNothingSelected(AdapterView<?> arg0) {
+				Log.d("Spinner","No Item was selected.");	
+			}
+        });
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

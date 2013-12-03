@@ -38,7 +38,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	/**
 	 * Thread of class MapView. Handles all drawing functionality.
 	 * @author Daniel Wohllebe
-	 * @version 0.1.1
+	 * @version 0.1.2
 	 */
 	static class MapThread extends Thread {
 		//finals
@@ -52,6 +52,9 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		//Array containing the current and past locations of the pointer
 		private float[] path = new float[20];
 		private int pathcount=0;
+		
+		//last known motion event
+		private MotionEvent histMotionEvent = null;
 		
 		//variables for drawing
 		boolean draw_initialized;
@@ -267,6 +270,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 					POSY0+dPOSY-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
 					null);
 			} else {
+				alignPath(vPOSX, vPOSY);
+				c.drawPoints(path, 0, 10, BUTTON_COLOR);
 				c.drawBitmap(pointer, 
 						vPOSX-pointer.getWidth()/2, //draw left-side on POS0X and shift to center
 						vPOSY-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
@@ -315,7 +320,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		
 		/**
 		 * Aligns path to given view point with known relative
-		 * deviation. Returns true if successful
+		 * deviation. Returns true if successful.
 		 * @param POSX0
 		 * @param POSY0
 		 * @return success
@@ -329,9 +334,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 				return true;
 			}
 			else
+				pathcount=0;
 				return false;
 			}
 			catch (NullPointerException e) {
+				pathcount=0;
+				Log.d("MapView","alignPath:",e);
 				return false;
 			}
 		}
@@ -378,23 +386,31 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	/**
 	 * Listens to gestures concerning every element which is transposed
 	 * on the map canvas.
-	 * @author Daniel
+	 * @author Daniel Wohllebe
 	 *
 	 */
+	private MotionEvent histEvent;
+	
 	class MapGestureListener extends GestureDetector.SimpleOnGestureListener { //TODO Test this.
         private static final String DEBUG_TAG = "Gestures"; 
         
         @Override
         public boolean onDown(MotionEvent event) { 
-            Log.d(DEBUG_TAG,"onDown: " + event.toString()); 
+            Log.d(DEBUG_TAG,"onDown: " + event.toString());
+            histEvent=event;
             return true;
         }
 
         @Override
-        public boolean onDoubleTap(MotionEvent event) {
-            Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
+        public boolean onSingleTapConfirmed(MotionEvent event) {
+            Log.d(DEBUG_TAG, "onSingleTapConfirmed: " + event.toString());
+            histEvent=event;
            // event.getX(); //TODO get X and compare with a RectF
             return true;
+        }
+        
+        public MotionEvent getLastEvent() {
+        	return histEvent;
         }
     }
 
@@ -510,4 +526,5 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	public void setInfoBarVisibility(boolean b) {
 		thread.info_bar_visible=b;
 	}
+	
 }

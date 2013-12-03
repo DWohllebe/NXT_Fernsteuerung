@@ -38,6 +38,8 @@
     <string name="map_editText_PosY_Hint">y</string>
     <string name="map_Button_followVirtualPos">Activate virtual values</string> 
     <string name="map_Button_updateVirtualPos">Update</string>
+    <string name="map_textView_State">STATE UNDETERMINED</string>
+    <string name="map_textView_Info">NO INFORMATION GIVEN</string>
     
     <string-array name="controlmodes">
         <item>Scout</item>

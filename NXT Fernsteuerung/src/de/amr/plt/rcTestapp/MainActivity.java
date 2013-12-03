@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -89,14 +90,13 @@ public class MainActivity extends Activity {
         
         //prepare Spinner
         //Source: http://developer.android.com/guide/topics/ui/controls/spinner.html
-        Spinner Spinner = (Spinner) findViewById(R.id.modeSpinner);
+       /* Spinner Spinner = (Spinner) findViewById(R.id.modeSpinner);
         ArrayAdapter<CharSequence> Adapter = ArrayAdapter.createFromResource(this,
         R.array.controlmodes, android.R.layout.simple_spinner_item);
         Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        Spinner.setAdapter(Adapter); 
+        Spinner.setAdapter(Adapter);   */   
+	}
         
-        
-    }
 
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {

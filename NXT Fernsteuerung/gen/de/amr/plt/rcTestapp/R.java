@@ -32,8 +32,8 @@ public final class R {
         public static final int spr_self=0x7f020005;
     }
     public static final class id {
-        public static final int Button_followVirtualPos=0x7f090020;
-        public static final int Button_updateVirtualPos=0x7f090021;
+        public static final int Button_followVirtualPos=0x7f09001e;
+        public static final int Button_updateVirtualPos=0x7f09001f;
         public static final int RelativeLayout1=0x7f090002;
         public static final int TextViewLableAngle=0x7f09000e;
         public static final int TextViewValueAngle=0x7f09000f;
@@ -42,16 +42,14 @@ public final class R {
         public static final int buttonEnableDebug=0x7f090004;
         public static final int buttonOpenMap=0x7f090005;
         public static final int buttonSetupBluetooth=0x7f090003;
-        public static final int editText_PosX=0x7f09001e;
-        public static final int editText_PosY=0x7f09001f;
-        public static final int infoButton=0x7f09001c;
-        public static final int map=0x7f09001a;
+        public static final int editText_PosX=0x7f09001c;
+        public static final int editText_PosY=0x7f09001d;
+        public static final int map=0x7f090019;
         public static final int menu_settings=0x7f090023;
-        public static final int modeSpinner=0x7f090019;
+        public static final int modeSpinner=0x7f090022;
         public static final int paired_devices=0x7f090001;
-        public static final int progressBar1=0x7f09001d;
-        public static final int spinner1=0x7f090022;
-        public static final int text=0x7f09001b;
+        public static final int progressBar1=0x7f09001b;
+        public static final int text=0x7f09001a;
         public static final int textViewLabelBluetooth=0x7f090006;
         public static final int textViewLabelDistanceBack=0x7f090012;
         public static final int textViewLabelDistanceBackSide=0x7f090016;
@@ -68,6 +66,8 @@ public final class R {
         public static final int textViewValueStatus=0x7f090009;
         public static final int textViewValueX=0x7f09000b;
         public static final int textViewValueY=0x7f09000d;
+        public static final int textView_Info=0x7f090021;
+        public static final int textView_State=0x7f090020;
         public static final int toggleMode=0x7f090018;
     }
     public static final class layout {
@@ -103,6 +103,8 @@ public final class R {
         public static final int map_editText_PosY=0x7f050020;
         public static final int map_editText_PosY_Hint=0x7f050022;
         public static final int map_info_button=0x7f05001e;
+        public static final int map_textView_Info=0x7f050026;
+        public static final int map_textView_State=0x7f050025;
         public static final int map_view_text=0x7f05001d;
         public static final int menu_settings=0x7f050001;
         public static final int setupBluetooth=0x7f050009;
