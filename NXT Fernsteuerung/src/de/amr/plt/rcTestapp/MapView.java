@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.NinePatch;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Handler.Callback;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -236,11 +237,11 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			BUTTON_COLOR.setColor(Color.RED);
 			BUTTON_COLOR.setStyle(Paint.Style.STROKE); 
 			BUTTON_COLOR.setStrokeWidth(4.5f);
+			
 			/*
 			 * set the origin-point for the coordinate-system, in which the robot
 			 * is supposed to be drawn	
 			 */
-	
 			final float POSY0= c.getHeight()*(float)((1.1/7)+ (4.2/9));
 			final float POSX0= c.getWidth()*(float)(1.3/15.5);
 
@@ -391,14 +392,24 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 */
 	private MotionEvent histEvent;
 	
-	class MapGestureListener extends GestureDetector.SimpleOnGestureListener { //TODO Test this.
+	class MapGestureListener extends GestureDetector.SimpleOnGestureListener implements OnGenericMotionListener { //TODO Test this.
         private static final String DEBUG_TAG = "Gestures"; 
+       // protected MotionEventHandler mHandler = new MotionEventHandler();
+       // Message message = new Message();
+        
+        /*
+        Callback callback = new Callback() {
+        	public boolean handleMessage(Message msg) {
+        		
+        	}
+        }; */
         
         @Override
         public boolean onDown(MotionEvent event) { 
             Log.d(DEBUG_TAG,"onDown: " + event.toString());
             histEvent=event;
             return true;
+            
         }
 
         @Override
@@ -409,9 +420,26 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
             return true;
         }
         
+        public boolean onGenericMotion(View view, MotionEvent event) { //TODO make callback work
+        	Log.d("MotionCallback","Callback recieved.");
+        	return true;
+        }
+        
         public MotionEvent getLastEvent() {
         	return histEvent;
         }
+        
+        //define a handler to pass information about Motion Inputs
+     /*   class MotionEventHandler extends Handler {
+        	
+        	public MotionEventHandler(Handler.Callback cb) {
+        		super(cb); //FIXME
+        	}
+        	
+        	
+        	
+        
+        } */
     }
 
 	

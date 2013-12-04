@@ -33,12 +33,16 @@ import de.amr.plt.rcParkingRobot.AndroidHmiPLT;
 
 public class MainActivity extends Activity {
 
+	private static final String USER_MODE = "de.amr.plt.rcTestapp.userMode";
+	enum usermode {NORMAL, DEBUG};
+	
+	private static final String HMI_MODULE = "de.amr.plt.rcTestapp.hmiModule";
+	
 	//representing local Bluetooth adapter
 	BluetoothAdapter mBtAdapter = null;
 	//representing the bluetooth hardware device
 	BluetoothDevice btDevice = null;
 	//instance handels bluetooth communication to NXT
-	
 	AndroidHmiPLT hmiModule = null;	
 	//request code 
 	final int REQUEST_SETUP_BT_CONNECTION = 1;		
@@ -307,7 +311,7 @@ public class MainActivity extends Activity {
 		Intent intent = new Intent (this, MapActivity.class);
 		//float xpos= hmiModule.getPosition().getX();
 		//float ypos= hmiModule.getPosition().getY();
-		//intent.putExtra(XPOS, xpos);
+		//intent.putExtra(HMI_MODULE, hmiModule);
 		//intent.putExtra(YPOS, ypos);
 		startActivity(intent);
 	}
