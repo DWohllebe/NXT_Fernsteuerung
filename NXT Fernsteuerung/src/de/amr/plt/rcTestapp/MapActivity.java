@@ -6,6 +6,7 @@ import java.util.TimerTask;
 import parkingRobot.INxtHmi.Mode;
 import parkingRobot.hsamr1.GuidanceAT.CurrentStatus;
 import de.amr.plt.rcParkingRobot.AndroidHmiPLT;
+import de.amr.plt.rcTestapp.R;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -45,7 +46,7 @@ public class MapActivity extends Activity {
 	final int REQUEST_SETUP_BT_CONNECTION = 1;
 	
 	//create a listener for the MapView Motion Events
-    Handler mMotionHandler = new Handler() {
+    static Handler mMotionHandler = new Handler() {
     	public void handleMessage(Message msg) {
     		Log.d("Motion Handler","Message recieved"); //TODO insert stuff
     	}
@@ -69,7 +70,7 @@ public class MapActivity extends Activity {
             return;
         } 
            
-        final Button connectButton = (Button) findViewById(R.id.buttonSetupBluetooth); //TODO change button
+        final Button connectButton = (Button) findViewById(R.id.buttonBluetoothConnect); //TODO change button
         //on click call the BluetoothActivity to choose a listed device
         connectButton.setOnClickListener(new OnClickListener() {
         	public void onClick(View v){
@@ -90,61 +91,7 @@ public class MapActivity extends Activity {
 		
 		//hide the action bar, might cause problems with the API level
 		ActionBar actionbar = getActionBar();
-		actionbar.hide();
-		
-		//prepare Spinner
-        //Source: http://developer.android.com/guide/topics/ui/controls/spinner.html
-        Spinner Spinner = (Spinner) findViewById(R.id.modeSpinner);
-        ArrayAdapter<CharSequence> Adapter = ArrayAdapter.createFromResource(this,
-        R.array.controlmodes, android.R.layout.simple_spinner_item);
-        Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        Spinner.setAdapter(Adapter);
-		
-        //create a listener for the Spinner
-        Spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				//TextView which shows the target state
-				TextView textview = (TextView)findViewById(R.id.textView_State);
-				//change Mode depending on the selected item
-				switch(arg2) {
-				case 0: 
-					hmiModule.setMode(parkingRobot.INxtHmi.Mode.SCOUT); //TODO outsource setText to actual State?
-					textview.setText("SCOUT");
-					Log.d("Spinner", "SCOUT selected");
-					break;
-				case 1: 
-					hmiModule.setMode(parkingRobot.INxtHmi.Mode.PARK_NOW);
-					textview.setText("PARK NOW");
-					Log.d("Spinner", "PARK_NOW selected");
-					break;
-				case 2:
-					hmiModule.setMode(parkingRobot.INxtHmi.Mode.PARK_THIS);
-					textview.setText("PARK THIS");
-					Log.d("Spinner", "PARK_THIS selected");
-					break;
-				case 3:
-					hmiModule.setMode(parkingRobot.INxtHmi.Mode.PAUSE);
-					textview.setText("PAUSE");
-					Log.d("Spinner", "PAUSE selected");
-					break;
-				case 4:
-					hmiModule.setMode(parkingRobot.INxtHmi.Mode.DISCONNECT);
-					textview.setText("DISCONNECTED");
-					Log.d("Spinner", "DISCONNECT selected");
-					break;
-				default:
-					Log.e("Spinner","Could not settle for any case in onItemSelected(...)");		
-				}
-				
-			}
-
-			public void onNothingSelected(AdapterView<?> arg0) {
-				Log.d("Spinner","No Item was selected.");	
-			}
-        });
-        
+		actionbar.hide();      
         
     }
 
@@ -250,7 +197,7 @@ public class MapActivity extends Activity {
 		String btDeviceAddress = btDevice.getAddress();		
 		String btDeviceName = btDevice.getName();
 		
-		//instantiate client modul
+		//instantiate client module
 		hmiModule = new AndroidHmiPLT(btDeviceName, btDeviceAddress);
 		
 		//connect to the specified device
@@ -261,6 +208,9 @@ public class MapActivity extends Activity {
 		while (!hmiModule.isConnected()&& i<100000000/2) {
 			i++;
 		}
+		
+		//now prepare the Spinner which links the Module with the user
+		createModeSpinner();
 	}
 	
 	/**
@@ -408,6 +358,70 @@ public class MapActivity extends Activity {
 			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 		//FIXME Get this to work.
+	}
+	
+	/**
+	 * Creates a Spinner for the Mode-Selection,
+	 * if an hmiModule has been established.
+	 * @return success
+	 */
+	private boolean createModeSpinner() {
+		if (hmiModule != null) {
+			//prepare Spinner
+	        //Source: http://developer.android.com/guide/topics/ui/controls/spinner.html
+	        Spinner Spinner = (Spinner) findViewById(R.id.modeSpinner);
+	        ArrayAdapter<CharSequence> Adapter = ArrayAdapter.createFromResource(this,
+	        R.array.controlmodes, android.R.layout.simple_spinner_item);
+	        Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	        Spinner.setAdapter(Adapter);
+			
+	        //create a listener for the Spinner
+	        Spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+				public void onItemSelected(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					//TextView which shows the target state
+					TextView textview = (TextView)findViewById(R.id.textView_State);
+					//change Mode depending on the selected item
+					switch(arg2) {
+					case 0: 
+						hmiModule.setMode(parkingRobot.INxtHmi.Mode.SCOUT); //TODO outsource setText to actual State?
+						textview.setText("SCOUT");
+						Log.d("Spinner", "SCOUT selected");
+						break;
+					case 1: 
+						hmiModule.setMode(parkingRobot.INxtHmi.Mode.PARK_NOW);
+						textview.setText("PARK NOW");
+						Log.d("Spinner", "PARK_NOW selected");
+						break;
+					case 2:
+						hmiModule.setMode(parkingRobot.INxtHmi.Mode.PARK_THIS);
+						textview.setText("PARK THIS");
+						Log.d("Spinner", "PARK_THIS selected");
+						break;
+					case 3:
+						hmiModule.setMode(parkingRobot.INxtHmi.Mode.PAUSE);
+						textview.setText("PAUSE");
+						Log.d("Spinner", "PAUSE selected");
+						break;
+					case 4:
+						hmiModule.setMode(parkingRobot.INxtHmi.Mode.DISCONNECT);
+						textview.setText("DISCONNECTED");
+						Log.d("Spinner", "DISCONNECT selected");
+						break;
+					default:
+						Log.e("Spinner","Could not settle for any case in onItemSelected(...)");		
+					}
+					
+				}
+
+				public void onNothingSelected(AdapterView<?> arg0) {
+					Log.d("Spinner","No Item was selected.");	
+				}
+	        });
+	        return true;
+		}
+		return false;
 	}
 		
 

@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-        //get the BT-Adapter
+       //get the BT-Adapter
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();       
      
         //If the adapter is null, then Bluetooth is not supported
