@@ -37,19 +37,22 @@ public final class R {
         public static final int RelativeLayout1=0x7f090002;
         public static final int TextViewLableAngle=0x7f09000e;
         public static final int TextViewValueAngle=0x7f09000f;
-        public static final int action_settings=0x7f090025;
+        public static final int action_settings=0x7f09002e;
         public static final int bt_connect_hint=0x7f090000;
         public static final int buttonBluetoothConnect=0x7f090023;
         public static final int buttonEnableDebug=0x7f090004;
         public static final int buttonOpenMap=0x7f090005;
         public static final int buttonSetupBluetooth=0x7f090003;
-        public static final int editText_PosX=0x7f09001c;
-        public static final int editText_PosY=0x7f09001d;
+        public static final int editText_PosX=0x7f09001b;
+        public static final int editText_PosY=0x7f09001c;
+        public static final int imageButton_BluetoothConnect=0x7f09002c;
+        public static final int imageButton_ChangeMode=0x7f09002b;
+        public static final int imageButton_SensorInfoToggle=0x7f09002a;
         public static final int map=0x7f090019;
-        public static final int menu_settings=0x7f090024;
+        public static final int menu_settings=0x7f09002d;
         public static final int modeSpinner=0x7f090022;
         public static final int paired_devices=0x7f090001;
-        public static final int progressBar1=0x7f09001b;
+        public static final int progressBar1=0x7f09001d;
         public static final int text=0x7f09001a;
         public static final int textViewLabelBluetooth=0x7f090006;
         public static final int textViewLabelDistanceBack=0x7f090012;
@@ -67,8 +70,14 @@ public final class R {
         public static final int textViewValueStatus=0x7f090009;
         public static final int textViewValueX=0x7f09000b;
         public static final int textViewValueY=0x7f09000d;
+        public static final int textView_AngleValue=0x7f090029;
+        public static final int textView_AngleValue_Label=0x7f090026;
         public static final int textView_Info=0x7f090021;
         public static final int textView_State=0x7f090020;
+        public static final int textView_XValue=0x7f090027;
+        public static final int textView_XValue_Label=0x7f090024;
+        public static final int textView_YValue=0x7f090028;
+        public static final int textView_YValue_Label=0x7f090025;
         public static final int toggleMode=0x7f090018;
     }
     public static final class layout {
@@ -104,8 +113,14 @@ public final class R {
         public static final int map_editText_PosY=0x7f050020;
         public static final int map_editText_PosY_Hint=0x7f050022;
         public static final int map_info_button=0x7f05001e;
+        public static final int map_textView_AngleValue=0x7f05002c;
+        public static final int map_textView_AngleValue_Label=0x7f050029;
         public static final int map_textView_Info=0x7f050026;
         public static final int map_textView_State=0x7f050025;
+        public static final int map_textView_XValue=0x7f05002a;
+        public static final int map_textView_XValue_Label=0x7f050027;
+        public static final int map_textView_YValue=0x7f05002b;
+        public static final int map_textView_YValue_Label=0x7f050028;
         public static final int map_view_text=0x7f05001d;
         public static final int menu_settings=0x7f050001;
         public static final int setupBluetooth=0x7f050009;

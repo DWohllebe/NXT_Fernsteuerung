@@ -16,13 +16,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-import android.widget.Spinner;
-import android.widget.ArrayAdapter;
 import de.amr.plt.rcTestapp.R;
 import de.amr.plt.rcParkingRobot.AndroidHmiPLT;
 
@@ -82,7 +79,12 @@ public class MainActivity extends Activity {
     		    boolean checked = ((ToggleButton) v).isChecked();    		    
     		    if (checked) {
     		        //if toggle is checked change mode to SCOUT 
-    		    	hmiModule.setMode(Mode.SCOUT);
+    		    	try {
+    		    		hmiModule.setMode(Mode.SCOUT);	  		
+    		    	}
+    		    	catch (NoClassDefFoundError e) {
+    		    		Log.e("hmiModule",e.getMessage());
+    		    	}
     		    	Log.e("Toggle","Toggled to Scout");
     		    } else{
     		    	// otherwise change mode to PAUSE
@@ -166,8 +168,12 @@ public class MainActivity extends Activity {
 			//display received data from NXT
 			if(hmiModule.connected){			
 				//After establishing the connection make sure the start mode of the NXT is set to PAUSE
-//				
+			try {
 				hmiModule.setMode(Mode.PAUSE);
+			}
+			catch (NoClassDefFoundError e) {
+				Log.e("hmiModule","ERROR:"+e.getMessage()+"! No enum Mode exists at runtime.");
+			}
 				
 				//enable toggle button
 				final ToggleButton toggleMode = (ToggleButton) findViewById(R.id.toggleMode);
@@ -259,10 +265,16 @@ public class MainActivity extends Activity {
                     			fld_bluetooth.setText("not connected");
                     		}
                     		//restart activity when disconnecting
-                    		if(hmiModule.getCurrentStatus()==CurrentStatus.EXIT){
-                    			terminateBluetoothConnection();
-                    			restartActivity();
+                    		try {
+                    			if(hmiModule.getCurrentStatus()==CurrentStatus.EXIT){
+                    				terminateBluetoothConnection();
+                    				restartActivity();
+                    			}
                     		}
+                    		catch (NoClassDefFoundError e) {
+                    			Log.e("hmiModule","ERROR:"+e.getMessage()+"! No enum Mode exists at runtime.");
+                    		}
+                    		
                     	}
                     }
                 });

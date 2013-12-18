@@ -40,12 +40,18 @@
     <string name="map_Button_updateVirtualPos">Update</string>
     <string name="map_textView_State">STATE UNDETERMINED</string>
     <string name="map_textView_Info">NO INFORMATION GIVEN</string>
+    <string name="map_textView_XValue_Label">X value:</string>
+    <string name="map_textView_YValue_Label">Y value:</string>
+    <string name="map_textView_AngleValue_Label">Angle:</string>
+    <string name="map_textView_XValue">(undefined)</string>
+    <string name="map_textView_YValue">(undefined)</string>
+    <string name="map_textView_AngleValue">(undefined)</string>
     
     <string-array name="controlmodes">
-        <item>Scout</item>
+        <item>Pause</item>
         <item>Park now</item>
         <item>Park this</item>
-        <item>Pause</item>
+        <item>Scout</item>
         <item>Disconnect</item>
     </string-array>
     

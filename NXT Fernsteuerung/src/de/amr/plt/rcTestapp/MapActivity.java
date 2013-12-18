@@ -27,6 +27,7 @@ import android.widget.Toast;
 import android.widget.EditText;
 import android.widget.Button;
 import android.widget.ToggleButton;
+import android.widget.ImageButton;
 import android.app.ActionBar;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -47,7 +48,8 @@ public class MapActivity extends Activity {
 	
 	//create a listener for the MapView Motion Events
     static Handler mMotionHandler = new Handler() {
-    	public void handleMessage(Message msg) {
+    	@Override
+		public void handleMessage(Message msg) {
     		Log.d("Motion Handler","Message recieved"); //TODO insert stuff
     	}
     	
@@ -70,7 +72,7 @@ public class MapActivity extends Activity {
             return;
         } 
            
-        final Button connectButton = (Button) findViewById(R.id.buttonBluetoothConnect); //TODO change button
+        final ImageButton connectButton = (ImageButton) findViewById(R.id.imageButton_BluetoothConnect); //TODO change button
         //on click call the BluetoothActivity to choose a listed device
         connectButton.setOnClickListener(new OnClickListener() {
         	public void onClick(View v){
@@ -91,7 +93,10 @@ public class MapActivity extends Activity {
 		
 		//hide the action bar, might cause problems with the API level
 		ActionBar actionbar = getActionBar();
-		actionbar.hide();      
+		actionbar.hide();
+		
+		//FIXME THE FOLLOWING IS FOR DEBUG AND SHOULD BE REMOVED:
+		//createTestModeSpinner();
         
     }
 
@@ -107,6 +112,7 @@ public class MapActivity extends Activity {
 		super.onStart();
 	}
 	
+	@Override
 	public void onDestroy(){
 		super.onDestroy();
     	if(mBtAdapter != null){
@@ -227,37 +233,15 @@ public class MapActivity extends Activity {
                     public void run() {
                     	if(hmiModule != null){
                     		//display x value
-                        	final TextView fld_xPos = (TextView) findViewById(R.id.textViewValueX);
+                        	final TextView fld_xPos = (TextView) findViewById(R.id.textView_XValue);
                     		fld_xPos.setText(String.valueOf(hmiModule.getPosition().getX()+" cm"));
                     		//display y value
-                    		final TextView fld_yPos = (TextView) findViewById(R.id.textViewValueY);
+                    		final TextView fld_yPos = (TextView) findViewById(R.id.textView_YValue);
                     		fld_yPos.setText(String.valueOf(hmiModule.getPosition().getY()+" cm"));
                     		//display angle value
-                    		final TextView fld_angle = (TextView) findViewById(R.id.TextViewValueAngle); 
+                    		final TextView fld_angle = (TextView) findViewById(R.id.textView_AngleValue); 
                     		fld_angle.setText(String.valueOf(hmiModule.getPosition().getAngle()+"°"));
-                    		//display status of NXT
-                    		final TextView fld_status = (TextView) findViewById(R.id.textViewValueStatus);
-                    		fld_status.setText(String.valueOf(hmiModule.getCurrentStatus()));
-                    		//display distance front
-                    		final TextView fld_distance_front = (TextView) findViewById(R.id.textViewValueDistanceFront);
-                    		fld_distance_front.setText(String.valueOf(hmiModule.getPosition().getDistanceFront())+" mm");
-                    		//display distance back
-                    		final TextView fld_distance_back = (TextView) findViewById(R.id.textViewValueDistanceBack);
-                    		fld_distance_back.setText(String.valueOf(hmiModule.getPosition().getDistanceBack())+" mm");
-                    		//display distance right	
-                    		final TextView fld_distance_front_side = (TextView) findViewById(R.id.textViewValueDistanceFrontSide);
-                    		fld_distance_front_side.setText(String.valueOf(hmiModule.getPosition().getDistanceFrontSide())+" mm");
-                    		//display distance left
-                    		final TextView fld_distance_back_side = (TextView) findViewById(R.id.textViewValueDistanceBackSide);
-                    		fld_distance_back_side.setText(String.valueOf(hmiModule.getPosition().getDistanceBackSide())+" mm");
-                    		//display bluetooth connection status
-                    		final TextView fld_bluetooth = (TextView) findViewById(R.id.textViewValueBluetooth);
-                    		//display connection status
-                    		if(hmiModule.isConnected()){
-                    			fld_bluetooth.setText("connected");
-                    		} else {
-                    			fld_bluetooth.setText("not connected");
-                    		}
+                    		
                     		//restart activity when disconnecting
                     		if(hmiModule.getCurrentStatus()==CurrentStatus.EXIT){
                     			terminateBluetoothConnection();
@@ -337,6 +321,9 @@ public class MapActivity extends Activity {
 		}
 	}
 	
+	/**
+	 * Manually updates the virtual Pointer. For debug purposes.
+	 */
 	private void updateVPos() {
 		View MapView = findViewById(R.id.map);
 		
@@ -385,10 +372,10 @@ public class MapActivity extends Activity {
 					//change Mode depending on the selected item
 					switch(arg2) {
 					case 0: 
-						hmiModule.setMode(parkingRobot.INxtHmi.Mode.SCOUT); //TODO outsource setText to actual State?
-						textview.setText("SCOUT");
-						Log.d("Spinner", "SCOUT selected");
-						break;
+						hmiModule.setMode(parkingRobot.INxtHmi.Mode.PAUSE);
+						textview.setText("PAUSE");
+						Log.d("Spinner", "PAUSE selected");
+						break;					
 					case 1: 
 						hmiModule.setMode(parkingRobot.INxtHmi.Mode.PARK_NOW);
 						textview.setText("PARK NOW");
@@ -400,9 +387,9 @@ public class MapActivity extends Activity {
 						Log.d("Spinner", "PARK_THIS selected");
 						break;
 					case 3:
-						hmiModule.setMode(parkingRobot.INxtHmi.Mode.PAUSE);
-						textview.setText("PAUSE");
-						Log.d("Spinner", "PAUSE selected");
+						hmiModule.setMode(parkingRobot.INxtHmi.Mode.SCOUT); //TODO outsource setText to actual State?
+						textview.setText("SCOUT");
+						Log.d("Spinner", "SCOUT selected");
 						break;
 					case 4:
 						hmiModule.setMode(parkingRobot.INxtHmi.Mode.DISCONNECT);
@@ -423,6 +410,121 @@ public class MapActivity extends Activity {
 		}
 		return false;
 	}
+	
+	/**
+	 * Switches the visibility of the additional sensor information output.
+	 * @param View
+	 */
+	public void onToggleSensorInfoClicked(View View) {	
+		final TextView fld_xPos = (TextView) findViewById(R.id.textView_XValue);
+		final TextView fld_xPosL = (TextView) findViewById(R.id.textView_XValue_Label);
+		final TextView fld_yPos = (TextView) findViewById(R.id.textView_YValue);
+		final TextView fld_yPosL = (TextView) findViewById(R.id.textView_YValue_Label);
+		final TextView fld_angle = (TextView) findViewById(R.id.textView_AngleValue);
+		final TextView fld_angleL = (TextView) findViewById(R.id.textView_AngleValue_Label);
+		
+		//check if TextViewLabels are visible, 
+		//if yes, make them and their values invisible
+		//and reverse
+		
+		if (fld_xPos.isShown()) {
+			fld_xPos.setVisibility(android.view.View.INVISIBLE);
+			fld_xPosL.setVisibility(android.view.View.INVISIBLE);
+		}
+		else {
+			fld_xPos.setVisibility(android.view.View.VISIBLE);
+			fld_xPosL.setVisibility(android.view.View.VISIBLE);
+		}
+		
+		if (fld_yPos.isShown()) {
+			fld_yPos.setVisibility(android.view.View.INVISIBLE);
+			fld_yPosL.setVisibility(android.view.View.INVISIBLE);
+		}
+		else {
+			fld_yPos.setVisibility(android.view.View.VISIBLE);
+			fld_yPosL.setVisibility(android.view.View.VISIBLE);
+		}
+		
+		if (fld_angle.isShown()) {
+			fld_angle.setVisibility(android.view.View.INVISIBLE);
+			fld_angleL.setVisibility(android.view.View.INVISIBLE);
+		}
+		else {
+			fld_angle.setVisibility(android.view.View.VISIBLE);
+			fld_angleL.setVisibility(android.view.View.VISIBLE);
+		}
+	}
+	
+	public void onChangeModeClicked(View View) {
+		
+		//tell the user what to do
+		final TextView infotext = (TextView) findViewById(R.id.textView_Info);
+		infotext.setText("Please select a mode");
+		
+		//activate the Spinner
+		final Spinner spinner = (Spinner) findViewById(R.id.modeSpinner);
+		spinner.performClick();
+	}
+	
+	private void createTestModeSpinner() {
+		//TODO DELETE THIS LATER
+		//prepare Spinner
+        //Source: http://developer.android.com/guide/topics/ui/controls/spinner.html
+        final Spinner Spinner = (Spinner) findViewById(R.id.modeSpinner);
+        ArrayAdapter<CharSequence> Adapter = ArrayAdapter.createFromResource(this,
+        R.array.controlmodes, android.R.layout.simple_spinner_item);
+        Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        Spinner.setAdapter(Adapter);
+		
+        //create a listener for the Spinner
+        Spinner.post(new Runnable() {
+        	public void run() {
+        		Spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+        			public void onItemSelected(AdapterView<?> arg0, View arg1,
+        					int arg2, long arg3) {
+        				//TextView which shows the target state
+        				TextView textview = (TextView)findViewById(R.id.textView_State);
+        				//change Mode depending on the selected item
+        				switch(arg2) {
+        				case 0: 
+        					textview.setText("TEST!PAUSE");
+        					Log.d("Spinner", "PAUSE selected");
+        					break;
+        				case 1: 
+        					textview.setText("TEST!SCOUT");
+        					Log.d("Spinner", "SCOUT selected");
+        					break;
+        				case 2:
+        					textview.setText("TEST!PARK THIS");
+        					Log.d("Spinner", "PARK_THIS selected");
+        					break;
+        				case 3:
+        					textview.setText("TEST!PARK NOW");
+        					Log.d("Spinner", "PARK_NOW selected");
+        					break;
+        				case 4:
+        					textview.setText("TEST!DISCONNECTED");
+        					Log.d("Spinner", "DISCONNECT selected");
+        					break;
+        				default:
+        					Log.e("Spinner","Could not settle for any case in onItemSelected(...)");		
+        				}
+        				
+        			}
+
+        			public void onNothingSelected(AdapterView<?> arg0) {
+        				Log.d("Spinner","No Item was selected.");	
+        			}
+                });
+        	}
+        	
+        });
+        
+		
+	}
+	
+	
 		
 
 }

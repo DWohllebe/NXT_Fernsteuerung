@@ -1,8 +1,7 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<FrameLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MapActivity">
+    tools:context=".MapActivity" xmlns:android="http://schemas.android.com/apk/res/android">
     
       <de.amr.plt.rcTestapp.MapView
         android:id="@+id/map"
@@ -25,13 +24,6 @@
     	    android:textColor="#88ffffff"
     	    android:textSize="24sp" />
 
-    	<ProgressBar
-    	    android:id="@+id/progressBar1"
-    	    android:layout_width="wrap_content"
-    	    android:layout_height="wrap_content"
-    	    android:layout_alignParentBottom="true"
-    	    android:layout_alignParentRight="true" />
-
     	<EditText
     	    android:id="@+id/editText_PosX"
     	    android:layout_width="80dp"
@@ -49,7 +41,7 @@
     	    android:layout_width="80dp"
     	    android:layout_height="wrap_content"
     	    android:layout_alignParentBottom="true"
-    	    android:layout_toLeftOf="@id/progressBar1"
+    	    android:layout_toLeftOf="@+id/progressBar1"
     	    android:ems="10"
     	    android:inputType="numberDecimal"
     	    android:text="@string/map_editText_PosY"
@@ -109,6 +101,104 @@
     	    android:layout_above="@+id/Button_updateVirtualPos"
     	    android:layout_alignParentLeft="true"
     	    android:text="Test" />
+
+
+    	<ProgressBar
+    	    android:id="@+id/progressBar1"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentBottom="true"
+    	    android:layout_alignParentRight="true" />
+
+    	<TextView
+    	    android:id="@+id/textView_XValue_Label"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentLeft="true"
+    	    android:layout_alignParentTop="true"
+    	    android:text="@string/map_textView_XValue_Label"
+    	    android:textAppearance="?android:attr/textAppearanceSmall"
+    	    android:textColor="@android:color/white" />
+
+    	<TextView
+    	    android:id="@+id/textView_YValue_Label"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentLeft="true"
+    	    android:layout_below="@+id/textView_XValue_Label"
+    	    android:text="@string/map_textView_YValue_Label"
+    	    android:textAppearance="?android:attr/textAppearanceSmall"
+    	    android:textColor="@android:color/white" />
+
+    	<TextView
+    	    android:id="@+id/textView_AngleValue_Label"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentLeft="true"
+    	    android:layout_below="@+id/textView_YValue_Label"
+    	    android:text="@string/map_textView_AngleValue_Label"
+    	    android:textAppearance="?android:attr/textAppearanceSmall"
+    	    android:textColor="@android:color/white" />
+
+    	<TextView
+    	    android:id="@+id/textView_XValue"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignBaseline="@+id/textView_XValue_Label"
+    	    android:layout_toRightOf="@+id/textView_XValue_Label"
+    	    android:text="@string/map_textView_XValue"
+    	    android:textAppearance="?android:attr/textAppearanceSmall"
+    	    android:textColor="@android:color/white" />
+
+    	<TextView
+    	    android:id="@+id/textView_YValue"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignBaseline="@+id/textView_YValue_Label"
+    	    android:layout_toRightOf="@+id/textView_YValue_Label"
+    	    android:text="@string/map_textView_YValue"
+    	    android:textAppearance="?android:attr/textAppearanceSmall"
+    	    android:textColor="@android:color/white" />
+
+    	<TextView
+    	    android:id="@+id/textView_AngleValue"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignBaseline="@+id/textView_AngleValue_Label"
+    	    android:layout_toRightOf="@+id/textView_AngleValue_Label"
+    	    android:text="@string/map_textView_AngleValue"
+    	    android:textAppearance="?android:attr/textAppearanceSmall"
+    	    android:textColor="@android:color/black" />
+
+    	<ImageButton
+    	    android:id="@+id/imageButton_SensorInfoToggle"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="140dp"
+    	    android:layout_alignParentRight="true"
+    	    android:layout_centerVertical="true"
+    	    android:onClick="onToggleSensorInfoClicked"
+    	    android:src="@android:drawable/btn_star_big_off" />
+
+    	<ImageButton
+    	    android:id="@+id/imageButton_ChangeMode"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentRight="true"
+    	    android:layout_alignParentTop="true"
+    	    android:layout_alignLeft="@+id/imageButton_SensorInfoToggle"
+    	    android:layout_above="@+id/imageButton_SensorInfoToggle"
+    	    android:onClick="onChangeModeClicked"
+    	    android:src="@android:drawable/ic_menu_sort_by_size" />
+
+    	<ImageButton
+    	    android:id="@+id/imageButton_BluetoothConnect"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignLeft="@+id/imageButton_SensorInfoToggle"
+    	    android:layout_alignParentBottom="true"
+    	    android:layout_alignParentRight="true"
+    	    android:layout_below="@+id/imageButton_SensorInfoToggle"
+    	    android:src="@drawable/spr_self" />
          
     </RelativeLayout>   
         

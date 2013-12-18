@@ -8,21 +8,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
-import android.graphics.NinePatch;
-import android.os.Bundle;
 import android.os.Handler;
-import android.os.Handler.Callback;
-import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.widget.TextView;
 
 /**
  * This class offers functionality as a Surface View. It can therefore
@@ -301,6 +294,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		 * Executes the main algorithm of the thread. This is not to be called
 		 * directly.
 		 */		
+		@Override
 		public void run() {
 			while (mRun=true) {
 				Canvas c = null;				
