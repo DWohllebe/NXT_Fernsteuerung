@@ -31,8 +31,12 @@ import android.widget.ImageButton;
 import android.app.ActionBar;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 public class MapActivity extends Activity {
 	
@@ -54,6 +58,16 @@ public class MapActivity extends Activity {
     	}
     	
     };
+    
+    //prepare picture resources
+    Bitmap bScout; //TODO create routine that updates image buttons
+    Bitmap bPark_this;
+    Bitmap bPark_now;
+    Bitmap bPause;
+    Bitmap bDisconnect;
+    Bitmap bSensorInfoToggle;
+    Bitmap bBluetoothOn;
+    Bitmap bBluetoothOff;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -95,8 +109,16 @@ public class MapActivity extends Activity {
 		ActionBar actionbar = getActionBar();
 		actionbar.hide();
 		
-		//FIXME THE FOLLOWING IS FOR DEBUG AND SHOULD BE REMOVED:
-		//createTestModeSpinner();
+		//decode the Bitmap-Resources	
+		Resources res = this.getBaseContext().getResources();
+		bScout = BitmapFactory.decodeResource(res, R.drawable.bt_scout);
+		bPark_this = BitmapFactory.decodeResource(res, R.drawable.bt_park_this);
+		bPark_now = BitmapFactory.decodeResource(res, R.drawable.bt_park_now);
+		bPause = BitmapFactory.decodeResource(res, R.drawable.bt_pause);
+		bDisconnect = BitmapFactory.decodeResource(res, R.drawable.bt_disconnect);
+		//bSensorInfoToggle = BitmapFactory.decodeResource(res, ...); //TODO draw something
+		bBluetoothOn = BitmapFactory.decodeResource(res, R.drawable.bt_bluetooth_on);
+		bBluetoothOff = BitmapFactory.decodeResource(res, R.drawable.bt_bluetooth_off);
         
     }
 

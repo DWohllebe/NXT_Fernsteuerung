@@ -75,6 +75,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		Bitmap bRobot;
 		Bitmap pointer;
 		
+		Paint BUTTON_COLOR;
+		
 		//Constructor
 		public MapThread(SurfaceHolder surfaceHolder, Context context, Handler handler) {
 			mSurfaceHolder=surfaceHolder;
@@ -85,9 +87,11 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			res = mContext.getResources();
 			
 			//initialize all Bitmaps
-			bBackground = BitmapFactory.decodeResource(res, R.drawable.bg_map);
+			bBackground = BitmapFactory.decodeResource(res, R.drawable.bg_map);	
 			pointer = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt);
 			
+			//create a paint-set for the color of selection areas
+			BUTTON_COLOR= new Paint();
 			
 		}
 		
@@ -226,7 +230,6 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		 * @param c
 		 */
 		private void doDraw(Canvas c) {
-			Paint BUTTON_COLOR= new Paint();
 			BUTTON_COLOR.setColor(Color.RED);
 			BUTTON_COLOR.setStyle(Paint.Style.STROKE); 
 			BUTTON_COLOR.setStrokeWidth(4.5f);
@@ -235,8 +238,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			 * set the origin-point for the coordinate-system, in which the robot
 			 * is supposed to be drawn	
 			 */
-			final float POSY0= c.getHeight()*(float)((1.1/7)+ (4.2/9));
-			final float POSX0= c.getWidth()*(float)(1.3/15.5);
+			float POSY0= c.getHeight()*(float)((1.1/7)+ (4.2/9));
+			float POSX0= c.getWidth()*(float)(1.3/15.5);
 
 			
 			
@@ -249,7 +252,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			//draw the background image, scale it so that it is left to the Buttons
 			if (map_visible) {
 			Bitmap mBackground = null;
-			mBackground=Bitmap.createScaledBitmap(bBackground, c.getWidth()-BUTTON_WIDTH, c.getHeight(), false);
+			//Bitmap mBackground = Bitmap.createBitmap(bBackground, 0, 0, c.getWidth(), c.getHeight());
+			mBackground=Bitmap.createScaledBitmap(bBackground, c.getWidth()-BUTTON_WIDTH, c.getHeight(), false); //FIXME createScaledBitmap and all other applications lead to a memory leak!
 			c.drawBitmap(mBackground, 0, 0, null);
 			}
 			
@@ -386,7 +390,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 */
 	private MotionEvent histEvent;
 	
-	class MapGestureListener extends GestureDetector.SimpleOnGestureListener implements OnGenericMotionListener { //TODO Test this.
+	class MapGestureListener extends GestureDetector.SimpleOnGestureListener implements OnGenericMotionListener {
         private static final String DEBUG_TAG = "Gestures"; 
        // protected MotionEventHandler mHandler = new MotionEventHandler();
        // Message message = new Message();
@@ -412,6 +416,19 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
             histEvent=event;
            // event.getX(); //TODO get X and compare with a RectF
             return true;
+        }
+        
+        @Override
+        public void onLongPress(MotionEvent event) {
+        	Log.d(DEBUG_TAG, "onLongPress: " + event.toString());
+        	histEvent=event;
+        }
+        
+        @Override
+        public boolean onDoubleTap(MotionEvent event) {
+        	Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
+        	histEvent=event;
+        	return true;
         }
         
         public boolean onGenericMotion(View view, MotionEvent event) { //TODO make callback work
@@ -459,7 +476,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		thread = new MapThread(mapholder, context, new Handler());
 		
 		//create a gesture listener
-		mDetector = new GestureDetector(new MapGestureListener()); //FIXME		
+		mDetector = new GestureDetector(context, new MapGestureListener(), new Handler()); //FIXME		
 	}
 	
 	
