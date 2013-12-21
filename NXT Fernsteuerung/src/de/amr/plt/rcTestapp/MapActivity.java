@@ -4,7 +4,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import parkingRobot.INxtHmi.Mode;
-import parkingRobot.hsamr1.GuidanceAT.CurrentStatus;
 import de.amr.plt.rcParkingRobot.AndroidHmiPLT;
 import de.amr.plt.rcTestapp.R;
 import android.os.Bundle;
@@ -37,6 +36,8 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import parkingRobot.hsamr1.GuidanceAT;
+import parkingRobot.hsamr1.GuidanceAT.*;
 
 public class MapActivity extends Activity {
 	
@@ -120,6 +121,9 @@ public class MapActivity extends Activity {
 		bBluetoothOn = BitmapFactory.decodeResource(res, R.drawable.bt_bluetooth_on);
 		bBluetoothOff = BitmapFactory.decodeResource(res, R.drawable.bt_bluetooth_off);
         
+		//instruct the user to connect to the parking robot
+		TextView infotext = (TextView) findViewById(R.id.textView_Info);
+		infotext.setText("Please connect your device via Bluetooth.");
     }
 
 	@Override
@@ -202,7 +206,8 @@ public class MapActivity extends Activity {
 				final Button connectButton = (Button) findViewById(R.id.buttonSetupBluetooth);
 				connectButton.setEnabled(false);
 				
-				displayDataNXT();
+				//start listening for status updates
+				startStatusListener();
 				break;
 			} else{
 				Toast.makeText(this, "Bluetooth connection failed!", Toast.LENGTH_SHORT).show();
@@ -390,32 +395,40 @@ public class MapActivity extends Activity {
 				public void onItemSelected(AdapterView<?> arg0, View arg1,
 						int arg2, long arg3) {
 					//TextView which shows the target state
-					TextView textview = (TextView)findViewById(R.id.textView_State);
+					//TextView textview = (TextView)findViewById(R.id.textView_State);
+					final ImageButton btMode= (ImageButton) findViewById(R.id.imageButton_ChangeMode);
+					final TextView infotext= (TextView) findViewById(R.id.textView_Info);
+					
 					//change Mode depending on the selected item
 					switch(arg2) {
 					case 0: 
 						hmiModule.setMode(parkingRobot.INxtHmi.Mode.PAUSE);
-						textview.setText("PAUSE");
+						btMode.setImageBitmap(bPause);
+						infotext.setText("PAUSE-mode selected!");
 						Log.d("Spinner", "PAUSE selected");
 						break;					
 					case 1: 
 						hmiModule.setMode(parkingRobot.INxtHmi.Mode.PARK_NOW);
-						textview.setText("PARK NOW");
+						btMode.setImageBitmap(bPark_now);
+						infotext.setText("PARK_NOW-mode selected!");
 						Log.d("Spinner", "PARK_NOW selected");
 						break;
 					case 2:
 						hmiModule.setMode(parkingRobot.INxtHmi.Mode.PARK_THIS);
-						textview.setText("PARK THIS");
+						btMode.setImageBitmap(bPark_this);
+						infotext.setText("PARK_THIS-mode selected!");
 						Log.d("Spinner", "PARK_THIS selected");
 						break;
 					case 3:
 						hmiModule.setMode(parkingRobot.INxtHmi.Mode.SCOUT); //TODO outsource setText to actual State?
-						textview.setText("SCOUT");
+						btMode.setImageBitmap(bScout);
+						infotext.setText("SCOUT-mode selected!");	
 						Log.d("Spinner", "SCOUT selected");
 						break;
 					case 4:
 						hmiModule.setMode(parkingRobot.INxtHmi.Mode.DISCONNECT);
-						textview.setText("DISCONNECTED");
+						btMode.setImageBitmap(bDisconnect);
+						infotext.setText("Attempting to DISCONNECT!");
 						Log.d("Spinner", "DISCONNECT selected");
 						break;
 					default:
@@ -546,7 +559,62 @@ public class MapActivity extends Activity {
 		
 	}
 	
-	
-		
+	private void startStatusListener() {
+new Timer().schedule(new TimerTask() {
+			
+			@Override
+            public void run() {
+				
+                runOnUiThread(new Runnable() {
+                    public void run() {                  	
+                    	final ImageButton btBluetooth = (ImageButton) findViewById(R.id.imageButton_BluetoothConnect);
+                    	final TextView tvState = (TextView) findViewById(R.id.textView_State);
+                    	
+                    	//propagate changes to Bluetooth-button
+                    	if (hmiModule!= null) {
+                    		if (hmiModule.isConnected()) {
+                    			btBluetooth.setImageBitmap(bBluetoothOn);
+                    		}
+                    		else {
+                    			btBluetooth.setImageBitmap(bBluetoothOff);
+                    		}
+                    		
+                    		
+                    	//propagate changes to Status-Text
+                    	switch (GuidanceAT.getCurrentStatus()) {
+                    		case DRIVING:
+                    			tvState.setText("DRIVING"); break;
+                   			case INACTIVE:
+                    			tvState.setText("INACTIVE"); break;
+                    		case EXIT:
+                    			tvState.setText("ABORTING"); break;
+                    		}
+                    	
+                    	//propagate changes to additional sensor info text
+                    	//display x value
+                    	final TextView fld_xPos = (TextView) findViewById(R.id.textView_XValue);
+                		fld_xPos.setText(String.valueOf(hmiModule.getPosition().getX()+" cm"));
+                		//display y value
+                		final TextView fld_yPos = (TextView) findViewById(R.id.textView_YValue);
+                		fld_yPos.setText(String.valueOf(hmiModule.getPosition().getY()+" cm"));
+                		//display angle value
+                		final TextView fld_angle = (TextView) findViewById(R.id.textView_AngleValue); 
+                		fld_angle.setText(String.valueOf(hmiModule.getPosition().getAngle()+"°"));
+                		
+                		//restart activity when disconnecting
+                		if(hmiModule.getCurrentStatus()==CurrentStatus.EXIT){
+                			terminateBluetoothConnection();
+                			restartActivity();
+                    	
+                    	}
+                    }
+                    	
+                 }                
+                });
+			};
+	}, 200, 100);
+
+	}
 
 }
+

@@ -87,8 +87,11 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			res = mContext.getResources();
 			
 			//initialize all Bitmaps
-			bBackground = BitmapFactory.decodeResource(res, R.drawable.bg_map);	
-			pointer = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt);
+			BitmapFactory.Options options=new BitmapFactory.Options();
+			options.inSampleSize = 8;
+			
+			bBackground = BitmapFactory.decodeResource(res, R.drawable.bg_map, options);	
+			pointer = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt, options);
 			
 			//create a paint-set for the color of selection areas
 			BUTTON_COLOR= new Paint();
@@ -233,6 +236,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			BUTTON_COLOR.setColor(Color.RED);
 			BUTTON_COLOR.setStyle(Paint.Style.STROKE); 
 			BUTTON_COLOR.setStrokeWidth(4.5f);
+			
 			
 			/*
 			 * set the origin-point for the coordinate-system, in which the robot
