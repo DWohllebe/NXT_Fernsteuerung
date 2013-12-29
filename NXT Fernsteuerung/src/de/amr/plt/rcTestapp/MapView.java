@@ -76,7 +76,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		private float dPOSY = 0;
 		private float ANGLE0 = 0;
 		private float dANGLE = 0;
-		Bitmap bBackground;
+		Bitmap bBackground;  //original bitmap of Background
+		Bitmap mBackground;  //scaled bitmap of Background
 		Bitmap bRobot;
 		Bitmap pointer;
 		
@@ -111,7 +112,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			//options.inSampleSize = 8;
 			
 			bBackground = BitmapFactory.decodeResource(res, R.drawable.bg_map);	
-			pointer = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt);
+			pointer = BitmapFactory.decodeResource(res, R.drawable.spr_ptr_nxtbot);
+			
+							
+			
+				
+			
 			
 			//create a paint-set for the color of selection areas
 			BUTTON_COLOR= new Paint();
@@ -288,16 +294,15 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			
 			
 			//load pointer image
-			pointer = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt);
+			//pointer = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt);
 			
 			//clear the Screen
 			c.drawColor(CLEAR);
 			
 			//draw the background image, scale it so that it is left to the Buttons
 			if (map_visible) {
-			Bitmap mBackground = null;
 			//Bitmap mBackground = Bitmap.createBitmap(bBackground, 0, 0, c.getWidth(), c.getHeight());
-			mBackground=Bitmap.createScaledBitmap(bBackground, c.getWidth(), c.getHeight(), false); //FIXME createScaledBitmap and all other applications lead to a memory leak!
+			 //FIXME createScaledBitmap and all other applications lead to a memory leak!
 			c.drawBitmap(mBackground, 0, 0, null);
 			}
 			
@@ -376,8 +381,26 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		 */		
 		@Override
 		public void run() {
+			//at start, initialize Background once
+			Canvas c=null;
+			//scale Background
+			try {
+				c = mSurfaceHolder.lockCanvas(null);
+				synchronized (mSurfaceHolder) {
+					mBackground=Bitmap.createScaledBitmap(bBackground, 
+							c.getWidth(),
+							c.getHeight(), 
+							false);
+				}
+			}
+			finally {
+				if (c != null)
+					mSurfaceHolder.unlockCanvasAndPost(c);
+			}			
+			
+			//enter run loop
 			while (mRun=true) {
-				Canvas c = null;				
+				c = null;				
 				try {	
 					c = mSurfaceHolder.lockCanvas(null);
 					synchronized (mSurfaceHolder) {
@@ -599,6 +622,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 * Callback invoked when the Surface has been created and is ready to
 	 * be used.
 	 */
+	@Override
 	public void surfaceCreated(SurfaceHolder holder){
 		//start thread
 		//thread = new MapThread(mapholder, context, new Handler());
@@ -610,15 +634,18 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 * Callback invoked when the Surface has been destroyed and
 	 * must no longer be touched.
 	 */
+	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		//halt thread and wait for it to finish
 		boolean retry = true;
+		thread.setRunning(false);
 		while (retry) {
 			try {
 				thread.join();
+				Log.d("MapThread", "MapThread joined");
 				retry = false;
 			} catch (InterruptedException e) {
-				
+				Log.e("MapThread", e.getMessage());
 			  } 					
 		}
 	}

@@ -12,13 +12,13 @@
         android:layout_toLeftOf="@+id/imageButton_SensorInfoToggle"  />
       
       <ImageButton
-    	    android:id="@+id/imageButton_SensorInfoToggle"
-    	    android:layout_width="wrap_content"
-    	    android:layout_height="140dp"
-    	    android:layout_alignParentRight="true"
-    	    android:layout_centerVertical="true"
-    	    android:onClick="onToggleSensorInfoClicked"
-    	    android:src="@drawable/ic_launcher_nxt" />
+          android:id="@+id/imageButton_SensorInfoToggle"
+          android:layout_width="wrap_content"
+          android:layout_height="140dp"
+          android:layout_alignParentRight="true"
+          android:layout_centerVertical="true"
+          android:onClick="onToggleSensorInfoClicked"
+          android:src="@drawable/bt_sensorinfo" />
 
     	<ImageButton
     	    android:id="@+id/imageButton_ChangeMode"
