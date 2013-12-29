@@ -1,17 +1,50 @@
-<FrameLayout android:layout_width="match_parent"
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MapActivity" xmlns:android="http://schemas.android.com/apk/res/android">
+    android:background="@android:color/background_dark"
+    tools:context=".MapActivity" >
     
       <de.amr.plt.rcTestapp.MapView
         android:id="@+id/map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"  />
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@+id/imageButton_SensorInfoToggle"  />
       
+      <ImageButton
+    	    android:id="@+id/imageButton_SensorInfoToggle"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="140dp"
+    	    android:layout_alignParentRight="true"
+    	    android:layout_centerVertical="true"
+    	    android:onClick="onToggleSensorInfoClicked"
+    	    android:src="@drawable/ic_launcher_nxt" />
+
+    	<ImageButton
+    	    android:id="@+id/imageButton_ChangeMode"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_above="@+id/imageButton_SensorInfoToggle"
+    	    android:layout_alignLeft="@+id/imageButton_SensorInfoToggle"
+    	    android:layout_alignParentRight="true"
+    	    android:layout_alignParentTop="true"
+    	    android:onClick="onChangeModeClicked"
+    	    android:src="@drawable/bt_disconnect" />
+
+    	<ImageButton
+    	    android:id="@+id/imageButton_BluetoothConnect"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignLeft="@+id/imageButton_SensorInfoToggle"
+    	    android:layout_alignParentBottom="true"
+    	    android:layout_alignParentRight="true"
+    	    android:layout_below="@+id/imageButton_SensorInfoToggle"
+    	    android:src="@drawable/bt_bluetooth_off" /> 
     
-    <RelativeLayout    
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@+id/imageButton_SensorInfoToggle" >
        
     	<TextView
     	    android:id="@+id/text"
@@ -83,6 +116,7 @@
     	    android:layout_height="wrap_content"
     	    android:layout_alignParentBottom="true"
     	    android:layout_toRightOf="@+id/textView_State"
+    	    android:paddingLeft="20dp"
     	    android:text="@string/map_textView_Info"
     	    android:textAppearance="?android:attr/textAppearanceLarge"
     	    android:textColor="@android:color/white" />
@@ -170,39 +204,11 @@
     	    android:textAppearance="?android:attr/textAppearanceSmall"
     	    android:textColor="@android:color/black" />
 
-    	<ImageButton
-    	    android:id="@+id/imageButton_SensorInfoToggle"
-    	    android:layout_width="wrap_content"
-    	    android:layout_height="140dp"
-    	    android:layout_alignParentRight="true"
-    	    android:layout_centerVertical="true"
-    	    android:onClick="onToggleSensorInfoClicked"
-    	    android:src="@android:drawable/btn_star_big_off" />
-
-    	<ImageButton
-    	    android:id="@+id/imageButton_ChangeMode"
-    	    android:layout_width="wrap_content"
-    	    android:layout_height="wrap_content"
-    	    android:layout_alignParentRight="true"
-    	    android:layout_alignParentTop="true"
-    	    android:layout_alignLeft="@+id/imageButton_SensorInfoToggle"
-    	    android:layout_above="@+id/imageButton_SensorInfoToggle"
-    	    android:onClick="onChangeModeClicked"
-    	    android:src="@android:drawable/ic_menu_sort_by_size" />
-
-    	<ImageButton
-    	    android:id="@+id/imageButton_BluetoothConnect"
-    	    android:layout_width="wrap_content"
-    	    android:layout_height="wrap_content"
-    	    android:layout_alignLeft="@+id/imageButton_SensorInfoToggle"
-    	    android:layout_alignParentBottom="true"
-    	    android:layout_alignParentRight="true"
-    	    android:layout_below="@+id/imageButton_SensorInfoToggle"
-    	    android:src="@drawable/spr_self" />
+    	
          
     </RelativeLayout>   
         
-</FrameLayout>
+</RelativeLayout>
 
 
 

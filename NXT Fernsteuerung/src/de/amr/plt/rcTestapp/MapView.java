@@ -87,11 +87,11 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			res = mContext.getResources();
 			
 			//initialize all Bitmaps
-			BitmapFactory.Options options=new BitmapFactory.Options();
-			options.inSampleSize = 8;
+			//BitmapFactory.Options options=new BitmapFactory.Options();
+			//options.inSampleSize = 8;
 			
-			bBackground = BitmapFactory.decodeResource(res, R.drawable.bg_map, options);	
-			pointer = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt, options);
+			bBackground = BitmapFactory.decodeResource(res, R.drawable.bg_map);	
+			pointer = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt);
 			
 			//create a paint-set for the color of selection areas
 			BUTTON_COLOR= new Paint();
@@ -257,7 +257,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			if (map_visible) {
 			Bitmap mBackground = null;
 			//Bitmap mBackground = Bitmap.createBitmap(bBackground, 0, 0, c.getWidth(), c.getHeight());
-			mBackground=Bitmap.createScaledBitmap(bBackground, c.getWidth()-BUTTON_WIDTH, c.getHeight(), false); //FIXME createScaledBitmap and all other applications lead to a memory leak!
+			mBackground=Bitmap.createScaledBitmap(bBackground, c.getWidth(), c.getHeight(), false); //FIXME createScaledBitmap and all other applications lead to a memory leak!
 			c.drawBitmap(mBackground, 0, 0, null);
 			}
 			
@@ -287,15 +287,15 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			c.drawBitmap(mInfobar, 0, c.getHeight()-mInfobar.getHeight(), null);
 			}
 			
-			//draw the Buttons on right-hand side
-			for (int i=0; (i<BUTTON_COUNT); i++) {
+			//draw the Buttons on right-hand side  TODO remove
+			/*for (int i=0; (i<BUTTON_COUNT); i++) {
 				c.drawRect(new RectF(c.getWidth()-BUTTON_WIDTH, 
 						i*c.getHeight()/BUTTON_COUNT, 
 						c.getWidth(),
 						c.getHeight()/BUTTON_COUNT*(1+i)), 
 						BUTTON_COLOR);
-						//c.getHeight()/BUTTON_COUNT+i*c.getHeight()/BUTTON_COUNT);			
-			}
+						//c.getHeight()/BUTTON_COUNT+i*c.getHeight()/BUTTON_COUNT);
+			} */
 		}
 		
 		/**

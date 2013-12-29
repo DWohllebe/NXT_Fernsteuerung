@@ -155,7 +155,7 @@ public class MainActivity extends Activity {
 	 * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
 	 */
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data){
+	 public void onActivityResult(int requestCode, int resultCode, Intent data){
 		switch(resultCode){
 		
 		//user pressed back button on bluetooth activity, so return to initial screen 
