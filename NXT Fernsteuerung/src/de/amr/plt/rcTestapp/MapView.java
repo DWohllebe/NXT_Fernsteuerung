@@ -1,5 +1,10 @@
 package de.amr.plt.rcTestapp;
 
+import java.util.ArrayList;
+
+import de.amr.plt.rcParkingRobot.IAndroidHmi.ParkingSlot;
+import de.amr.plt.rcParkingRobot.IAndroidHmi.ParkingSlot.ParkingSlotStatus;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -75,7 +80,18 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		Bitmap bRobot;
 		Bitmap pointer;
 		
-		Paint BUTTON_COLOR;
+		//paint
+		Paint BUTTON_COLOR;  //color for general button rects
+		Paint PARKINGSLOT_GOOD; //color for parking slots, which fit the robot
+		Paint PARKINGSLOT_BAD; //color for parking slots, which do not fit the robot
+		Paint PARKINGSLOT_RESCAN;
+		Paint PARKINGSLOT_SELECTED; //color for selected slots
+		
+		
+		//variables for parking slot
+		ArrayList<ParkingSlot> ParkingSlot;
+		ArrayList<RectF> aParkingSlotRectF;
+		int ParkingSlotSelectionID = (-1);
 		
 		//Constructor
 		public MapThread(SurfaceHolder surfaceHolder, Context context, Handler handler) {
@@ -86,6 +102,10 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			//fetch Resources
 			res = mContext.getResources();
 			
+			//build ArrayLists
+			aParkingSlotRectF = new ArrayList<RectF>();
+			ParkingSlot = new ArrayList<ParkingSlot>();
+			
 			//initialize all Bitmaps
 			//BitmapFactory.Options options=new BitmapFactory.Options();
 			//options.inSampleSize = 8;
@@ -95,6 +115,30 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			
 			//create a paint-set for the color of selection areas
 			BUTTON_COLOR= new Paint();
+			PARKINGSLOT_GOOD= new Paint();
+			PARKINGSLOT_BAD=new Paint();
+			PARKINGSLOT_RESCAN=new Paint();
+			PARKINGSLOT_SELECTED=new Paint();
+				
+			BUTTON_COLOR.setColor(Color.RED);
+			BUTTON_COLOR.setStyle(Paint.Style.STROKE); 
+			BUTTON_COLOR.setStrokeWidth(4.5f);
+			
+			PARKINGSLOT_GOOD.setColor(Color.GREEN);
+			PARKINGSLOT_GOOD.setStyle(Paint.Style.STROKE);
+			PARKINGSLOT_GOOD.setStrokeWidth(4.5f);
+			
+			PARKINGSLOT_BAD.setColor(Color.RED);
+			PARKINGSLOT_BAD.setStyle(Paint.Style.STROKE);
+			PARKINGSLOT_BAD.setStrokeWidth(4.5f);
+			
+			PARKINGSLOT_BAD.setColor(Color.DKGRAY);
+			PARKINGSLOT_BAD.setStyle(Paint.Style.STROKE);
+			PARKINGSLOT_BAD.setStrokeWidth(4.5f);
+			
+			PARKINGSLOT_SELECTED.setColor(Color.CYAN);
+			PARKINGSLOT_SELECTED.setStyle(Paint.Style.STROKE);
+			PARKINGSLOT_SELECTED.setStrokeWidth(4.5f);
 			
 		}
 		
@@ -233,10 +277,6 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		 * @param c
 		 */
 		private void doDraw(Canvas c) {
-			BUTTON_COLOR.setColor(Color.RED);
-			BUTTON_COLOR.setStyle(Paint.Style.STROKE); 
-			BUTTON_COLOR.setStrokeWidth(4.5f);
-			
 			
 			/*
 			 * set the origin-point for the coordinate-system, in which the robot
@@ -278,6 +318,38 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 						vPOSX-pointer.getWidth()/2, //draw left-side on POS0X and shift to center
 						vPOSY-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
 						null);
+			}
+			
+			//draw all known ParkingSlots //TODO Scale to map and navigation coordinates!
+			try {
+				aParkingSlotRectF.clear();
+				for (int i=0; i < this.ParkingSlot.size(); i++) {
+					RectF ParkingSlotRect = new RectF(
+							this.ParkingSlot.get(i).getFrontBoundaryPosition().x,
+							this.ParkingSlot.get(i).getFrontBoundaryPosition().y,
+							this.ParkingSlot.get(i).getBackBoundaryPosition().x,
+							this.ParkingSlot.get(i).getBackBoundaryPosition().y);
+					
+					//check if the last MotionEvent marks the RectF as selected and propagate
+					if ( (histEvent.getX() > ParkingSlotRect.left) //is the touch point inside the RectF?
+							&& (histEvent.getX() < ParkingSlotRect.right) 
+							&& (histEvent.getY() > ParkingSlotRect.bottom)
+							&& (histEvent.getY() < ParkingSlotRect.top)
+							&& (this.ParkingSlot.get(i).getParkingSlotStatus()==ParkingSlotStatus.GOOD)) { //and is it okay to select?
+								c.drawRect(ParkingSlotRect, PARKINGSLOT_SELECTED); //if yes, draw it as selected RectF and save, which one it is
+								ParkingSlotSelectionID=i; 
+					}									
+					else {
+								switch (this.ParkingSlot.get(i).getParkingSlotStatus()) {  //switch draw color depending on Status of Parking Slot
+								case GOOD: c.drawRect(ParkingSlotRect, PARKINGSLOT_GOOD); break;
+								case BAD: c.drawRect(ParkingSlotRect, PARKINGSLOT_BAD); break;
+								case RESCAN: c.drawRect(ParkingSlotRect, PARKINGSLOT_RESCAN); break;
+								}
+							}			
+				}
+			} 
+			catch (NullPointerException e) {
+				Log.e("doDraw", e.getMessage() + " Skipping drawing of ParkingSlots!");
 			}
 			
 			//draw the info bar
@@ -376,12 +448,24 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			dPOSY=fy;
 		}
 		
+		public void setDAngle(float angle) {
+			dANGLE=angle;
+		}
+		
 		/**
 		 * Returns true, if the vPointer is currently activated.
 		 * @return
 		 */
 		public boolean vPointerIsActive() {
 			return vPosActive;
+		}
+		
+		public void setParkingSlots(ArrayList<ParkingSlot> sa) {
+			ParkingSlot=sa;
+		}
+		
+		public int getParkingSlotSelectionID() {
+			return ParkingSlotSelectionID;
 		}
 		
 	}
@@ -392,7 +476,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 * @author Daniel Wohllebe
 	 *
 	 */
-	private MotionEvent histEvent;
+	private static MotionEvent histEvent;
 	
 	class MapGestureListener extends GestureDetector.SimpleOnGestureListener implements OnGenericMotionListener {
         private static final String DEBUG_TAG = "Gestures"; 
@@ -466,6 +550,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	private Context context;
 	private MapGestureListener GestureListener;
 	private GestureDetector mDetector;
+	private ArrayList<ParkingSlot> atParkingSlot;
 	
 	
 	public MapView(Context context, AttributeSet attrs) {
@@ -480,7 +565,10 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		thread = new MapThread(mapholder, context, new Handler());
 		
 		//create a gesture listener
-		mDetector = new GestureDetector(context, new MapGestureListener(), new Handler()); //FIXME		
+		mDetector = new GestureDetector(context, new MapGestureListener(), new Handler()); //FIXME	
+		
+		//create temporary ArrayList
+		atParkingSlot = new ArrayList<ParkingSlot>();
 	}
 	
 	
@@ -568,6 +656,37 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	
 	public void setInfoBarVisibility(boolean b) {
 		thread.info_bar_visible=b;
+	}
+	
+	public void setPose(float posx, float posy, float angle) {
+		thread.setDPos(posx, posy);
+		thread.setDAngle(angle);
+	}
+	
+	/**
+	 * Adds a ParkingSlot to the List of Elements
+	 * that should be drawn.
+	 * @param ps
+	 */
+	public void addParkingSlot(ParkingSlot ps) {
+		atParkingSlot.add(ps);
+	}
+	
+	/**
+	 * Pushes all Parking slots to the draw thread
+	 * and clears the list of Parking slots.
+	 */
+	public void propagateParkingSlots() {
+		thread.setParkingSlots(atParkingSlot);
+		atParkingSlot.clear();
+	}
+	
+	/**
+	 * Returns the currently selected ParkingSlots' index number.
+	 * @return
+	 */
+	public int getParkingSlotSelectionID() {
+		return thread.getParkingSlotSelectionID();
 	}
 	
 }

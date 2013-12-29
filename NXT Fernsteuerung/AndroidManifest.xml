@@ -18,11 +18,6 @@
             android:name="de.amr.plt.rcTestapp.MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="portrait" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <service android:name="de.amr.plt.rcTestapp.PositionService" />
@@ -34,7 +29,11 @@
         </activity>
         <activity
             android:name="de.amr.plt.rcTestapp.MapActivity"
-            android:label="@string/title_activity_map" android:screenOrientation="landscape" android:logo="@drawable/ic_launcher_nxt">
+            android:label="@string/title_activity_map" android:screenOrientation="landscape" android:logo="@drawable/ic_launcher_nxt"><intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

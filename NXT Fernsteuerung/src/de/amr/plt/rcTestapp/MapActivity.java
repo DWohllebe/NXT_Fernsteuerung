@@ -1,10 +1,12 @@
 package de.amr.plt.rcTestapp;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import parkingRobot.INxtHmi.Mode;
 import de.amr.plt.rcParkingRobot.AndroidHmiPLT;
+import de.amr.plt.rcParkingRobot.IAndroidHmi.ParkingSlot;
 import de.amr.plt.rcTestapp.R;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,6 +40,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import parkingRobot.hsamr1.GuidanceAT;
 import parkingRobot.hsamr1.GuidanceAT.*;
+import parkingRobot.INavigation;
+
 
 public class MapActivity extends Activity {
 	
@@ -414,10 +418,12 @@ public class MapActivity extends Activity {
 						Log.d("Spinner", "PARK_NOW selected");
 						break;
 					case 2:
+						final MapView map =(MapView)findViewById(R.id.map);
 						hmiModule.setMode(parkingRobot.INxtHmi.Mode.PARK_THIS);
 						btMode.setImageBitmap(bPark_this);
-						infotext.setText("PARK_THIS-mode selected!");
-						Log.d("Spinner", "PARK_THIS selected");
+						infotext.setText("PARK_THIS-mode selected! Parking in selected Slot " + map.getParkingSlotSelectionID() + ".");
+						Log.d("Spinner", "PARK_THIS selected");			
+						hmiModule.setSelectedParkingSlot( map.getParkingSlotSelectionID() ); //give selected ParkingSlot to the HMIModule
 						break;
 					case 3:
 						hmiModule.setMode(parkingRobot.INxtHmi.Mode.SCOUT); //TODO outsource setText to actual State?
@@ -494,7 +500,10 @@ public class MapActivity extends Activity {
 		
 		//tell the user what to do
 		final TextView infotext = (TextView) findViewById(R.id.textView_Info);
-		infotext.setText("Please select a mode");
+		if (hmiModule != null)
+			infotext.setText("Please select a mode");
+		else
+			infotext.setText("No Connection-Interface known. Try connecting!");
 		
 		//activate the Spinner
 		final Spinner spinner = (Spinner) findViewById(R.id.modeSpinner);
@@ -581,25 +590,49 @@ new Timer().schedule(new TimerTask() {
                     		
                     		
                     	//propagate changes to Status-Text
-                    	switch (GuidanceAT.getCurrentStatus()) {
+                    	switch (hmiModule.getCurrentStatus()) {
                     		case DRIVING:
                     			tvState.setText("DRIVING"); break;
+                    		//case PARKING:  TODO add later when declared
+                    		//	tvState.setText("PARKING"); break;
                    			case INACTIVE:
                     			tvState.setText("INACTIVE"); break;
                     		case EXIT:
                     			tvState.setText("ABORTING"); break;
                     		}
                     	
+                    	//give pose information to MapView
+                    	float cXPOS = hmiModule.getPosition().getX();
+                    	float cYPOS = hmiModule.getPosition().getY();
+                    	float cANGLE = hmiModule.getPosition().getAngle();
+                    	
+                    	final MapView map = (MapView) findViewById(R.id.map);
+                    	map.setPose(cXPOS, cYPOS, cANGLE);
+                    	
+                    	//get all current parking slots and pass them directly to MapView
+                    	try {
+                    		//populate the list of ParkingSlots
+                    		for (int i=0; i < hmiModule.getNoOfParkingSlots(); i++) {
+                    		map.addParkingSlot(hmiModule.getParkingSlot(i));
+                    		}
+                    		
+                    		//send them to the Draw-Thread
+                    		map.propagateParkingSlots();
+                    	}
+                    	catch (NullPointerException e) {
+                    		Log.e("StatusListener", e.getMessage() + " Continuing without propagating ParkingSlots!");
+                    	}
+                    	
                     	//propagate changes to additional sensor info text
                     	//display x value
                     	final TextView fld_xPos = (TextView) findViewById(R.id.textView_XValue);
-                		fld_xPos.setText(String.valueOf(hmiModule.getPosition().getX()+" cm"));
+                		fld_xPos.setText(String.valueOf(cXPOS+" cm"));
                 		//display y value
                 		final TextView fld_yPos = (TextView) findViewById(R.id.textView_YValue);
-                		fld_yPos.setText(String.valueOf(hmiModule.getPosition().getY()+" cm"));
+                		fld_yPos.setText(String.valueOf(cYPOS+" cm"));
                 		//display angle value
                 		final TextView fld_angle = (TextView) findViewById(R.id.textView_AngleValue); 
-                		fld_angle.setText(String.valueOf(hmiModule.getPosition().getAngle()+"°"));
+                		fld_angle.setText(String.valueOf(cANGLE+"°"));
                 		
                 		//restart activity when disconnecting
                 		if(hmiModule.getCurrentStatus()==CurrentStatus.EXIT){
