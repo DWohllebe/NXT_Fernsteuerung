@@ -68,6 +68,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		private Context mContext;
 		private Handler mHandler;
 		private boolean mRun = false;
+		private boolean mPaused = false;
 		private Resources res;
 		private boolean vPosActive;
 		private float vPOSX = 0;
@@ -400,6 +401,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			
 			//enter run loop
 			while (mRun=true) {
+				while (mPaused) {
+					try {
+						Thread.sleep(50L);
+					} catch (InterruptedException ignore) {
+					}
+				}
 				c = null;				
 				try {	
 					c = mSurfaceHolder.lockCanvas(null);
@@ -489,6 +496,14 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		
 		public int getParkingSlotSelectionID() {
 			return ParkingSlotSelectionID;
+		}
+		
+		public void setPaused(boolean b) {
+			mPaused=b;
+		}
+		
+		public boolean isPaused() {
+			return mPaused;
 		}
 		
 	}
@@ -627,7 +642,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		//start thread
 		//thread = new MapThread(mapholder, context, new Handler());
 		thread.setRunning(true);
-		thread.start();
+		
+		//if the Thread has been paused, then one instance already exists, so do not create another one
+		if (!thread.isPaused())
+			thread.start();
+		else
+			thread.setPaused(false); //resume paused thread
 	}
 	
 	/**
@@ -637,7 +657,10 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		//halt thread and wait for it to finish
-		boolean retry = true;
+		Log.d("MapThread", "Entered surfaceDestroyed-Callback");
+		thread.setPaused(true);
+		
+		/*boolean retry = true;
 		thread.setRunning(false);
 		while (retry) {
 			try {
@@ -647,8 +670,9 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			} catch (InterruptedException e) {
 				Log.e("MapThread", e.getMessage());
 			  } 					
-		}
+		}*/
 	}
+	
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) { //FIXME implement Touch-Detection

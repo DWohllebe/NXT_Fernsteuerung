@@ -404,6 +404,7 @@ public class MapActivity extends Activity {
 					final TextView infotext= (TextView) findViewById(R.id.textView_Info);
 					
 					//change Mode depending on the selected item
+					try {
 					switch(arg2) {
 					case 0: 
 						hmiModule.setMode(parkingRobot.INxtHmi.Mode.PAUSE);
@@ -440,7 +441,9 @@ public class MapActivity extends Activity {
 					default:
 						Log.e("Spinner","Could not settle for any case in onItemSelected(...)");		
 					}
-					
+					} catch (NullPointerException e) {
+						Log.e("Spinner",e.getMessage() + "PointerException: Does an hmiModule exist? Ignoring...");
+					}
 				}
 
 				public void onNothingSelected(AdapterView<?> arg0) {
@@ -648,6 +651,8 @@ new Timer().schedule(new TimerTask() {
 	}, 200, 100);
 
 	}
+	
+
 
 }
 
