@@ -56,6 +56,11 @@ public class MapActivity extends Activity {
 	//request code 
 	final int REQUEST_SETUP_BT_CONNECTION = 1;
 	
+	boolean test= false;
+	
+	//determines, how incoming Pos-Data should be valued
+	final float MEASUREMENT_SCALE= (1/100);
+	
 	//create a listener for the MapView Motion Events
     static Handler mMotionHandler = new Handler() {
     	@Override
@@ -98,6 +103,18 @@ public class MapActivity extends Activity {
         	public void onClick(View v){
         		Intent serverIntent = new Intent(getApplicationContext(),BluetoothActivity.class);
 				startActivityForResult(serverIntent, REQUEST_SETUP_BT_CONNECTION);
+        	}
+        });
+        
+        final Button testButton = (Button) findViewById(R.id.buttonTest);
+        testButton.setOnClickListener(new OnClickListener() {
+        	public void onClick(View v){
+        		test= true;
+        		for (int i=0; i < 250000; i++) {
+        			MapView map= (MapView)findViewById(R.id.map);
+        			map.setPose((float)(i/10000), 0,(float) (i/1000));
+        		}
+        		test = false;
         	}
         });
 		
@@ -618,13 +635,13 @@ new Timer().schedule(new TimerTask() {
                     			tvState.setText("UNDEFINED");
                     		}
                     		
-                    	
                     	//give pose information to MapView
-                    	float cXPOS = hmiModule.getPosition().getX();
-                    	float cYPOS = hmiModule.getPosition().getY();
+                    	float cXPOS = hmiModule.getPosition().getX()*MEASUREMENT_SCALE;
+                    	float cYPOS = hmiModule.getPosition().getY()*MEASUREMENT_SCALE;
                     	float cANGLE = hmiModule.getPosition().getAngle();
                     	
                     	final MapView map = (MapView) findViewById(R.id.map);
+                    	if (test==false)
                     	map.setPose(cXPOS, cYPOS, cANGLE);
                     	
                     	//get all current parking slots and pass them directly to MapView

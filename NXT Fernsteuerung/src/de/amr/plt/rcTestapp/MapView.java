@@ -45,13 +45,19 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		//Variable for default background color
 		final private int CLEAR=0xff000000;
 		
+		//Scaling parameter for drawing Pose in cm on screen
+		final private float PX_SCALE = ((110/27));
+		
+		//Bitmap matrix
+		Matrix matrix;
+		
 		//Variables for Menu Button properties
 		final private int BUTTON_COUNT=4;
 		final private int BUTTON_WIDTH=60;
 		
 		//Array containing the current and past locations of the pointer
-		final private int MAX_PATH_PTS = 18;
-		private float[] path = new float[20];	
+		final private int MAX_PATH_PTS = 1056;
+		private float[] path = new float[MAX_PATH_PTS+2];	
 		private int pathcount=0;
 		
 		//last known motion event
@@ -83,6 +89,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		Bitmap mBackground;  //scaled bitmap of Background
 		Bitmap bRobot;
 		Bitmap pointer;
+		Bitmap rPointer;
 		
 		//paint
 		Paint BUTTON_COLOR;  //color for general button rects
@@ -102,6 +109,9 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			mSurfaceHolder=surfaceHolder;
 			mContext=context;
 			mHandler=handler;
+			
+			//create Matrix
+			matrix = new Matrix();
 			
 			//fetch Resources
 			res = mContext.getResources();
@@ -308,18 +318,18 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			//draw the Pointer
 			if (vPosActive == false) {
 				alignPath(POSX0, POSY0);
-			c.drawPoints(path, 0 , 10 , BUTTON_COLOR);
-			rotateBitmap(pointer, dANGLE);
-			Log.d("MapView","Drawing pointer X0="+POSX0+" Y0="+POSY0+" dX="+dPOSX+" dY="+dPOSY);
-			c.drawBitmap(pointer, 
-					POSX0+dPOSX-pointer.getWidth()/2, //draw left-side on POS0X and shift to center
-					POSY0+dPOSY-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
+			c.drawPoints(path, 0 , MAX_PATH_PTS , BUTTON_COLOR);
+			rPointer=rotateBitmap(pointer, dANGLE);
+			Log.d("MapView","Drawing pointer X0="+POSX0+" Y0="+POSY0+" dX="+dPOSX+" dY="+dPOSY+" Angle:"+dANGLE);
+			c.drawBitmap(rPointer, 
+					POSX0+(dPOSX*PX_SCALE)-rPointer.getWidth()/2, //draw left-side on POS0X and shift to center
+					POSY0+(dPOSY*PX_SCALE)-rPointer.getHeight()/2, //draw top-side on POS0Y and shift to center
 					null);
 			} else {
 				alignPath(vPOSX, vPOSY);
-				c.drawPoints(path, 0, 10, BUTTON_COLOR);
-				rotateBitmap(pointer, dANGLE);
-				Log.d("MapView","Drawing vpointer");
+				c.drawPoints(path, 0, MAX_PATH_PTS, BUTTON_COLOR);
+				rPointer=rotateBitmap(pointer, dANGLE);
+				//Log.d("MapView","Drawing vpointer");
 				c.drawBitmap(pointer, 
 						POSX0+vPOSX-pointer.getWidth()/2, //draw left-side on POS0X and shift to center
 						POSY0+vPOSY-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
@@ -438,8 +448,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		private boolean alignPath(float POSX0, float POSY0) { //TODO integrate / cleanup
 			try {
 			if (pathcount < MAX_PATH_PTS && pathcount>=0) {
-				path[pathcount]=dPOSX+POSX0;
-				path[pathcount+1]=dPOSY+POSY0;
+				path[pathcount]=dPOSX*PX_SCALE+POSX0;
+				path[pathcount+1]=dPOSY*PX_SCALE+POSY0;
 				pathcount=pathcount+2;
 				return true;
 			}
@@ -543,9 +553,9 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		 * @return 
 		 */
 		private Bitmap rotateBitmap(Bitmap source, float angle) {
-			Matrix matrix = new Matrix();
+			matrix.reset();
 			matrix.postRotate(angle);
-			return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, false);
+			return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
 		}
 		
 	}
