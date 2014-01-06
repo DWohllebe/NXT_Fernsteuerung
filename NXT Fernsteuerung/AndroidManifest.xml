@@ -17,7 +17,7 @@
         <activity
             android:name="de.amr.plt.rcTestapp.MainActivity"
             android:label="@string/title_activity_main"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait" android:enabled="false">
         </activity>
 
         <service android:name="de.amr.plt.rcTestapp.PositionService" />

@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Handler;
@@ -49,7 +50,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		final private int BUTTON_WIDTH=60;
 		
 		//Array containing the current and past locations of the pointer
-		private float[] path = new float[20];
+		final private int MAX_PATH_PTS = 18;
+		private float[] path = new float[20];	
 		private int pathcount=0;
 		
 		//last known motion event
@@ -113,12 +115,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			//options.inSampleSize = 8;
 			
 			bBackground = BitmapFactory.decodeResource(res, R.drawable.bg_map);	
-			pointer = BitmapFactory.decodeResource(res, R.drawable.spr_ptr_nxtbot);
-			
-							
-			
-				
-			
+			pointer = BitmapFactory.decodeResource(res, R.drawable.spr_ptr_nxtbot);			
 			
 			//create a paint-set for the color of selection areas
 			BUTTON_COLOR= new Paint();
@@ -206,7 +203,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 				mPaint.setStyle(Paint.Style.STROKE); 
 				mPaint.setStrokeWidth(4.5f);
 				//rect.offset(5, 5);
-				c.drawRect(rect2, mPaint); //TODO Cleanup
+				c.drawRect(rect2, mPaint);
 				
 			} finally {
 				if (c != null)
@@ -303,7 +300,6 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			//draw the background image, scale it so that it is left to the Buttons
 			if (map_visible) {
 			//Bitmap mBackground = Bitmap.createBitmap(bBackground, 0, 0, c.getWidth(), c.getHeight());
-			 //FIXME createScaledBitmap and all other applications lead to a memory leak!
 			c.drawBitmap(mBackground, 0, 0, null);
 			}
 			
@@ -313,6 +309,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			if (vPosActive == false) {
 				alignPath(POSX0, POSY0);
 			c.drawPoints(path, 0 , 10 , BUTTON_COLOR);
+			rotateBitmap(pointer, dANGLE);
+			Log.d("MapView","Drawing pointer X0="+POSX0+" Y0="+POSY0+" dX="+dPOSX+" dY="+dPOSY);
 			c.drawBitmap(pointer, 
 					POSX0+dPOSX-pointer.getWidth()/2, //draw left-side on POS0X and shift to center
 					POSY0+dPOSY-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
@@ -320,9 +318,11 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			} else {
 				alignPath(vPOSX, vPOSY);
 				c.drawPoints(path, 0, 10, BUTTON_COLOR);
+				rotateBitmap(pointer, dANGLE);
+				Log.d("MapView","Drawing vpointer");
 				c.drawBitmap(pointer, 
-						vPOSX-pointer.getWidth()/2, //draw left-side on POS0X and shift to center
-						vPOSY-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
+						POSX0+vPOSX-pointer.getWidth()/2, //draw left-side on POS0X and shift to center
+						POSY0+vPOSY-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
 						null);
 			}
 			
@@ -355,15 +355,15 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 				}
 			} 
 			catch (NullPointerException e) {
-				Log.e("doDraw", e.getMessage() + " Skipping drawing of ParkingSlots!");
+				Log.e("doDraw", e.getMessage() + ": Skipping drawing of ParkingSlots!");
 			}
 			
-			//draw the info bar
-			if (info_bar_visible) {
+			//draw the info bar  TODO remove
+			/* if (info_bar_visible) {
 			Bitmap mInfobar = BitmapFactory.decodeResource(res, R.drawable.infobalken_z);
-			mInfobar=Bitmap.createScaledBitmap(mInfobar, c.getWidth(), mInfobar.getHeight(), false);
+			mInfobar=Bitmap.createScaledBitmap(mInfobar, c.getWidth(), mInfobar.getHeight()-20, false);
 			c.drawBitmap(mInfobar, 0, c.getHeight()-mInfobar.getHeight(), null);
-			}
+			} */
 			
 			//draw the Buttons on right-hand side  TODO remove
 			/*for (int i=0; (i<BUTTON_COUNT); i++) {
@@ -384,13 +384,18 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		public void run() {
 			//at start, initialize Background once
 			Canvas c=null;
-			//scale Background
+			//scale Background and pointer
 			try {
 				c = mSurfaceHolder.lockCanvas(null);
 				synchronized (mSurfaceHolder) {
 					mBackground=Bitmap.createScaledBitmap(bBackground, 
 							c.getWidth(),
 							c.getHeight(), 
+							false);
+					
+					pointer=Bitmap.createScaledBitmap(pointer,
+							pointer.getWidth()/2,
+							pointer.getHeight()/2,
 							false);
 				}
 			}
@@ -432,9 +437,9 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		 */
 		private boolean alignPath(float POSX0, float POSY0) { //TODO integrate / cleanup
 			try {
-			if (pathcount<18 && pathcount>=0) {
+			if (pathcount < MAX_PATH_PTS && pathcount>=0) {
 				path[pathcount]=dPOSX+POSX0;
-				path[pathcount+1]=dPOSY=POSY0;
+				path[pathcount+1]=dPOSY+POSY0;
 				pathcount=pathcount+2;
 				return true;
 			}
@@ -474,12 +479,20 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		 * @param fy
 		 */
 		public void setDPos(float fx, float fy) {
-			dPOSX=fx;
-			dPOSY=fy;
+			synchronized (mSurfaceHolder) {
+				dPOSX=fx;
+				dPOSY=fy;
+			}
 		}
 		
+		/**
+		 * Sets the parameter for the relative angle.
+		 * @param angle
+		 */
 		public void setDAngle(float angle) {
-			dANGLE=angle;
+			synchronized (mSurfaceHolder) {
+				dANGLE=angle;
+			}
 		}
 		
 		/**
@@ -490,20 +503,49 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			return vPosActive;
 		}
 		
+		/**
+		 * Sets the ParkingSlot Array.
+		 * @param sa
+		 */
 		public void setParkingSlots(ArrayList<ParkingSlot> sa) {
 			ParkingSlot=sa;
 		}
 		
+		/**
+		 * Returns the identification-number of the currently
+		 * chosen Parking Slot.
+		 * @return
+		 */
 		public int getParkingSlotSelectionID() {
 			return ParkingSlotSelectionID;
 		}
 		
+		/**
+		 * Pauses or unpauses the thread.
+		 * @param b
+		 */
 		public void setPaused(boolean b) {
 			mPaused=b;
 		}
 		
+		/**
+		 * Returns whether the thread is paused or not.
+		 * @return mPaused
+		 */
 		public boolean isPaused() {
 			return mPaused;
+		}
+		
+		/**
+		 * Rotates a bitmap. The rotation angle has to be specified.
+		 * @param source
+		 * @param angle
+		 * @return 
+		 */
+		private Bitmap rotateBitmap(Bitmap source, float angle) {
+			Matrix matrix = new Matrix();
+			matrix.postRotate(angle);
+			return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, false);
 		}
 		
 	}

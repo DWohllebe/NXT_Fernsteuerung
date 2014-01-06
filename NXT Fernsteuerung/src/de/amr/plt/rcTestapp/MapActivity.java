@@ -22,6 +22,7 @@ import android.view.View.OnGenericMotionListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -203,11 +204,11 @@ public class MapActivity extends Activity {
 				hmiModule.setMode(Mode.PAUSE);
 				
 				//enable toggle button
-				final ToggleButton toggleMode = (ToggleButton) findViewById(R.id.toggleMode);
-				toggleMode.setEnabled(true);
+				//final ToggleButton toggleMode = (ToggleButton) findViewById(R.id.toggleMode);
+				//toggleMode.setEnabled(true);
 				
 				//disable connect button
-				final Button connectButton = (Button) findViewById(R.id.buttonSetupBluetooth);
+				final ImageButton connectButton = (ImageButton) findViewById(R.id.imageButton_BluetoothConnect);
 				connectButton.setEnabled(false);
 				
 				//start listening for status updates
@@ -304,7 +305,7 @@ public class MapActivity extends Activity {
 	 * restart the activity
 	 */
 	private void restartActivity(){
-		Intent restartIntent = new Intent(getApplicationContext(),MainActivity.class);                    			
+		Intent restartIntent = new Intent(getApplicationContext(),MapActivity.class);                    			
 		startActivity(restartIntent);
 		finish();
 	}
@@ -411,27 +412,27 @@ public class MapActivity extends Activity {
 						btMode.setImageBitmap(bPause);
 						infotext.setText("PAUSE-mode selected!");
 						Log.d("Spinner", "PAUSE selected");
-						break;					
-					case 1: 
+						break;
+					case 1:
+						hmiModule.setMode(parkingRobot.INxtHmi.Mode.SCOUT); //TODO outsource setText to actual State?
+						btMode.setImageBitmap(bScout);
+						infotext.setText("SCOUT-mode selected!");	
+						Log.d("Spinner", "SCOUT selected");
+						break;
+					case 2: 
 						hmiModule.setMode(parkingRobot.INxtHmi.Mode.PARK_NOW);
 						btMode.setImageBitmap(bPark_now);
 						infotext.setText("PARK_NOW-mode selected!");
 						Log.d("Spinner", "PARK_NOW selected");
 						break;
-					case 2:
+					case 3:
 						final MapView map =(MapView)findViewById(R.id.map);
 						hmiModule.setMode(parkingRobot.INxtHmi.Mode.PARK_THIS);
 						btMode.setImageBitmap(bPark_this);
 						infotext.setText("PARK_THIS-mode selected! Parking in selected Slot " + map.getParkingSlotSelectionID() + ".");
 						Log.d("Spinner", "PARK_THIS selected");			
 						hmiModule.setSelectedParkingSlot( map.getParkingSlotSelectionID() ); //give selected ParkingSlot to the HMIModule
-						break;
-					case 3:
-						hmiModule.setMode(parkingRobot.INxtHmi.Mode.SCOUT); //TODO outsource setText to actual State?
-						btMode.setImageBitmap(bScout);
-						infotext.setText("SCOUT-mode selected!");	
-						Log.d("Spinner", "SCOUT selected");
-						break;
+						break;					
 					case 4:
 						hmiModule.setMode(parkingRobot.INxtHmi.Mode.DISCONNECT);
 						btMode.setImageBitmap(bDisconnect);
@@ -466,6 +467,7 @@ public class MapActivity extends Activity {
 		final TextView fld_yPosL = (TextView) findViewById(R.id.textView_YValue_Label);
 		final TextView fld_angle = (TextView) findViewById(R.id.textView_AngleValue);
 		final TextView fld_angleL = (TextView) findViewById(R.id.textView_AngleValue_Label);
+		final ImageView infobox = (ImageView) findViewById(R.id.image_infobox);
 		
 		//check if TextViewLabels are visible, 
 		//if yes, make them and their values invisible
@@ -496,6 +498,13 @@ public class MapActivity extends Activity {
 		else {
 			fld_angle.setVisibility(android.view.View.VISIBLE);
 			fld_angleL.setVisibility(android.view.View.VISIBLE);
+		}
+		
+		if (infobox.isShown()) {
+			infobox.setVisibility(android.view.View.INVISIBLE);
+		}
+		else {
+			infobox.setVisibility(android.view.View.VISIBLE);
 		}
 	}
 	
@@ -593,16 +602,22 @@ new Timer().schedule(new TimerTask() {
                     		
                     		
                     	//propagate changes to Status-Text
-                    	switch (hmiModule.getCurrentStatus()) {
-                    		case DRIVING:
-                    			tvState.setText("DRIVING"); break;
-                    		//case PARKING:  TODO add later when declared
-                    		//	tvState.setText("PARKING"); break;
-                   			case INACTIVE:
-                    			tvState.setText("INACTIVE"); break;
-                    		case EXIT:
-                    			tvState.setText("ABORTING"); break;
+                    		try {
+                    			switch (hmiModule.getCurrentStatus()) {
+                    				case DRIVING:
+                    					tvState.setText("DRIVING"); break;
+                    				//case PARKING:  TODO add later when declared
+                    					//	tvState.setText("PARKING"); break;
+                    				case INACTIVE:
+                    					tvState.setText("INACTIVE"); break;
+                    				case EXIT:
+                    					tvState.setText("ABORTING"); break;
+                    			}
+                    		} catch (NullPointerException e) {
+                    			Log.e("hmiModule", e.getMessage()+"! Cause:"+e.getCause()+". Does a state exist?");
+                    			tvState.setText("UNDEFINED");
                     		}
+                    		
                     	
                     	//give pose information to MapView
                     	float cXPOS = hmiModule.getPosition().getX();
@@ -635,7 +650,7 @@ new Timer().schedule(new TimerTask() {
                 		fld_yPos.setText(String.valueOf(cYPOS+" cm"));
                 		//display angle value
                 		final TextView fld_angle = (TextView) findViewById(R.id.textView_AngleValue); 
-                		fld_angle.setText(String.valueOf(cANGLE+"Â°"));
+                		fld_angle.setText(String.valueOf(cANGLE+"°"));
                 		
                 		//restart activity when disconnecting
                 		if(hmiModule.getCurrentStatus()==CurrentStatus.EXIT){

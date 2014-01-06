@@ -26,7 +26,7 @@
     <string name="disconnetButton">Disconnect</string>
     <string name="bt_connect_hint">Please select a Robot from the list. Make sure it has been paired, is within bluetooth reach and has been set to connect mode.</string>
     <string name="enableDebug">Debug</string>
-    <string name="title_activity_map">Map of parcour</string>
+    <string name="title_activity_map">PBot MapControl</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="bt_OpenMap">Map</string>
@@ -49,9 +49,9 @@
     
     <string-array name="controlmodes">
         <item>Pause</item>
-        <item>Park now</item>
-        <item>Park this</item>
         <item>Scout</item>
+        <item>Park now</item>
+        <item>Park this</item>    
         <item>Disconnect</item>
     </string-array>
     

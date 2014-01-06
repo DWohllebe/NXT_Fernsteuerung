@@ -45,6 +45,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_toLeftOf="@+id/imageButton_SensorInfoToggle" >
+        
+        <ImageView
+    	    android:id="@+id/image_infobar"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentBottom="true"
+    	    android:layout_alignParentLeft="true"
+    	    android:layout_alignTop="@+id/textView_State"
+    	    android:focusable="false"
+    	    android:focusableInTouchMode="false"
+    	    android:scaleType="fitXY"
+    	    android:src="@drawable/infobalken_z" />
        
     	<TextView
     	    android:id="@+id/text"
@@ -67,7 +79,8 @@
     	    android:hint="@string/map_editText_PosX_Hint"
     	    android:inputType="numberDecimal"
     	    android:text="@string/map_editText_PosX"
-    	    android:textColor="@android:color/white" />
+    	    android:textColor="@android:color/white"
+    	    android:visibility="visible" />
     	
     	<EditText
     	    android:id="@+id/editText_PosY"
@@ -76,10 +89,11 @@
     	    android:layout_alignParentBottom="true"
     	    android:layout_toLeftOf="@+id/progressBar1"
     	    android:ems="10"
+    	    android:hint="@string/map_editText_PosY_Hint"
     	    android:inputType="numberDecimal"
     	    android:text="@string/map_editText_PosY"
     	    android:textColor="@android:color/white"
-    	    android:hint="@string/map_editText_PosY_Hint" />
+    	    android:visibility="visible" />
     	
     	<Button
     	    android:id="@+id/Button_followVirtualPos"
@@ -87,8 +101,9 @@
     	    android:layout_height="wrap_content"
     	    android:layout_alignParentBottom="true"
     	    android:layout_toLeftOf="@+id/editText_PosX"
+    	    android:onClick="onFollowVirtualPosClicked"
     	    android:text="@string/map_Button_followVirtualPos"
-    	    android:onClick="onFollowVirtualPosClicked" />
+    	    android:visibility="visible" />
 
     	<Button
     	    android:id="@+id/Button_updateVirtualPos"
@@ -143,6 +158,17 @@
     	    android:layout_height="wrap_content"
     	    android:layout_alignParentBottom="true"
     	    android:layout_alignParentRight="true" />
+    	
+    	<ImageView
+    	    android:id="@+id/image_infobox"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignBottom="@+id/textView_AngleValue_Label"
+    	    android:layout_alignTop="@+id/textView_XValue_Label"
+    	    android:layout_alignRight="@+id/textView_XValue"
+    	    android:layout_below="@+id/textView_XValue_Label"
+    	    android:scaleType="fitXY"
+    	    android:src="@drawable/infobalken_z" />
 
     	<TextView
     	    android:id="@+id/textView_XValue_Label"
@@ -182,7 +208,7 @@
     	    android:layout_toRightOf="@+id/textView_XValue_Label"
     	    android:text="@string/map_textView_XValue"
     	    android:textAppearance="?android:attr/textAppearanceSmall"
-    	    android:textColor="@android:color/white" />
+    	    android:textColor="@android:color/holo_orange_light" />
 
     	<TextView
     	    android:id="@+id/textView_YValue"
@@ -192,7 +218,7 @@
     	    android:layout_toRightOf="@+id/textView_YValue_Label"
     	    android:text="@string/map_textView_YValue"
     	    android:textAppearance="?android:attr/textAppearanceSmall"
-    	    android:textColor="@android:color/white" />
+    	    android:textColor="@android:color/holo_orange_light" />
 
     	<TextView
     	    android:id="@+id/textView_AngleValue"
@@ -202,9 +228,7 @@
     	    android:layout_toRightOf="@+id/textView_AngleValue_Label"
     	    android:text="@string/map_textView_AngleValue"
     	    android:textAppearance="?android:attr/textAppearanceSmall"
-    	    android:textColor="@android:color/black" />
-
-    	
+    	    android:textColor="@android:color/holo_orange_light" />
          
     </RelativeLayout>   
         
