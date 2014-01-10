@@ -43,9 +43,18 @@
     <string name="map_textView_XValue_Label">X value:</string>
     <string name="map_textView_YValue_Label">Y value:</string>
     <string name="map_textView_AngleValue_Label">Angle:</string>
+    <string name="map_textView_DistFront_Label">Dist[front]:</string>
+    <string name="map_textView_DistBack_Label">Dist[back]:</string>
+    <string name="map_textView_DistLeft_Label">Dist[left]:</string>
+ 	<string name="map_textView_DistRight_Label">Dist[right]:</string>
     <string name="map_textView_XValue">(undefined)</string>
     <string name="map_textView_YValue">(undefined)</string>
-    <string name="map_textView_AngleValue">(undefined)</string>
+    <string name="map_textView_AngleValue">(undefined)</string>   
+    <string name="map_textView_DistFront">(undefined)</string>
+    <string name="map_textView_DistBack">(undefined)</string>
+    <string name="map_textView_DistLeft">(undefined)</string>
+    <string name="map_textView_DistRight">(undefined)</string>
+ 	
     
     <string-array name="controlmodes">
         <item>Pause</item>

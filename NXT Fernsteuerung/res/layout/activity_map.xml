@@ -141,7 +141,8 @@
     	    android:layout_width="wrap_content"
     	    android:layout_height="wrap_content"
     	    android:layout_alignParentRight="true"
-    	    android:layout_alignParentTop="true" />
+    	    android:layout_alignParentTop="true"
+    	    android:visibility="invisible" />
 
     	<Button
     	    android:id="@+id/buttonTest"
@@ -163,9 +164,9 @@
     	    android:id="@+id/image_infobox"
     	    android:layout_width="wrap_content"
     	    android:layout_height="wrap_content"
-    	    android:layout_alignBottom="@+id/textView_AngleValue_Label"
+    	    android:layout_alignBottom="@+id/textView_DistRight_Label"
     	    android:layout_alignTop="@+id/textView_XValue_Label"
-    	    android:layout_alignRight="@+id/textView_XValue"
+    	    android:layout_alignRight="@+id/textView_DistRight"
     	    android:layout_below="@+id/textView_XValue_Label"
     	    android:scaleType="fitXY"
     	    android:src="@drawable/infobalken_z" />
@@ -199,6 +200,46 @@
     	    android:text="@string/map_textView_AngleValue_Label"
     	    android:textAppearance="?android:attr/textAppearanceSmall"
     	    android:textColor="@android:color/white" />
+    	
+    	<TextView
+    	    android:id="@+id/textView_DistFront_Label"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentLeft="true"
+    	    android:layout_below="@+id/textView_AngleValue_Label"
+    	    android:text="@string/map_textView_DistFront_Label"
+    	    android:textAppearance="?android:attr/textAppearanceSmall" 
+    	    android:textColor="@android:color/white"/>
+
+    	<TextView
+    	    android:id="@+id/textView_DistLeft_Label"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentLeft="true"
+    	    android:layout_below="@+id/textView_DistBack_Label"
+    	    android:text="@string/map_textView_DistLeft_Label"
+    	    android:textAppearance="?android:attr/textAppearanceSmall" 
+    	    android:textColor="@android:color/white"/>
+    	
+    	<TextView
+    	    android:id="@+id/textView_DistRight_Label"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentLeft="true"
+    	    android:layout_below="@+id/textView_DistLeft_Label"
+    	    android:text="@string/map_textView_DistRight_Label"
+    	    android:textAppearance="?android:attr/textAppearanceSmall" 
+    	    android:textColor="@android:color/white"/>
+    	
+    	<TextView
+    	    android:id="@+id/textView_DistBack_Label"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentLeft="true"
+    	    android:layout_below="@+id/textView_DistFront_Label"
+    	    android:text="@string/map_textView_DistBack_Label"
+    	    android:textAppearance="?android:attr/textAppearanceSmall" 
+    	    android:textColor="@android:color/white"/>
 
     	<TextView
     	    android:id="@+id/textView_XValue"
@@ -229,6 +270,47 @@
     	    android:text="@string/map_textView_AngleValue"
     	    android:textAppearance="?android:attr/textAppearanceSmall"
     	    android:textColor="@android:color/holo_orange_light" />
+    	
+    	<TextView 
+    	    android:id="@+id/textView_DistFront"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignBaseline="@+id/textView_DistFront_Label"
+    	    android:layout_toRightOf="@+id/textView_DistFront_Label"
+    	    android:text="@string/map_textView_DistFront"
+    	    android:textAppearance="?android:attr/textAppearanceSmall"
+    	    android:textColor="@android:color/holo_orange_light" />
+    	
+		<TextView 
+    	    android:id="@+id/textView_DistBack"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignBaseline="@+id/textView_DistBack_Label"
+    	    android:layout_toRightOf="@+id/textView_DistBack_Label"
+    	    android:text="@string/map_textView_DistBack"
+    	    android:textAppearance="?android:attr/textAppearanceSmall"
+    	    android:textColor="@android:color/holo_orange_light" />
+		
+		<TextView 
+    	    android:id="@+id/textView_DistLeft"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignBaseline="@+id/textView_DistLeft_Label"
+    	    android:layout_toRightOf="@+id/textView_DistLeft_Label"
+    	    android:text="@string/map_textView_DistLeft"
+    	    android:textAppearance="?android:attr/textAppearanceSmall"
+    	    android:textColor="@android:color/holo_orange_light" />
+		
+		<TextView 
+    	    android:id="@+id/textView_DistRight"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignBaseline="@+id/textView_DistRight_Label"
+    	    android:layout_toRightOf="@+id/textView_DistRight_Label"
+    	    android:text="@string/map_textView_DistRight"
+    	    android:textAppearance="?android:attr/textAppearanceSmall"
+    	    android:textColor="@android:color/holo_orange_light" />
+    	
          
     </RelativeLayout>   
         

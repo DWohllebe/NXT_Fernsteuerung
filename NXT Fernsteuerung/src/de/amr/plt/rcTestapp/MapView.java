@@ -96,7 +96,9 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		Paint PARKINGSLOT_GOOD; //color for parking slots, which fit the robot
 		Paint PARKINGSLOT_BAD; //color for parking slots, which do not fit the robot
 		Paint PARKINGSLOT_RESCAN;
-		Paint PARKINGSLOT_SELECTED; //color for selected slots
+		Paint PARKINGSLOT_SELECTED; //color for selected slots|
+		int paintcounter=0x00;
+		boolean stepdir=true;
 		
 		
 		//variables for parking slot
@@ -134,7 +136,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			PARKINGSLOT_RESCAN=new Paint();
 			PARKINGSLOT_SELECTED=new Paint();
 				
-			BUTTON_COLOR.setColor(Color.RED);
+			BUTTON_COLOR.setColor(Color.YELLOW);
 			BUTTON_COLOR.setStyle(Paint.Style.STROKE); 
 			BUTTON_COLOR.setStrokeWidth(4.5f);
 			
@@ -146,9 +148,9 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			PARKINGSLOT_BAD.setStyle(Paint.Style.STROKE);
 			PARKINGSLOT_BAD.setStrokeWidth(4.5f);
 			
-			PARKINGSLOT_BAD.setColor(Color.DKGRAY);
-			PARKINGSLOT_BAD.setStyle(Paint.Style.STROKE);
-			PARKINGSLOT_BAD.setStrokeWidth(4.5f);
+			PARKINGSLOT_RESCAN.setColor(Color.DKGRAY);
+			PARKINGSLOT_RESCAN.setStyle(Paint.Style.STROKE);
+			PARKINGSLOT_RESCAN.setStrokeWidth(4.5f);
 			
 			PARKINGSLOT_SELECTED.setColor(Color.CYAN);
 			PARKINGSLOT_SELECTED.setStyle(Paint.Style.STROKE);
@@ -320,10 +322,10 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 				alignPath(POSX0, POSY0);
 			c.drawPoints(path, 0 , MAX_PATH_PTS , BUTTON_COLOR);
 			rPointer=rotateBitmap(pointer, dANGLE);
-			Log.d("MapView","Drawing pointer X0="+POSX0+" Y0="+POSY0+" dX="+dPOSX+" dY="+dPOSY+" Angle:"+dANGLE);
+			//Log.d("MapView","Drawing pointer X0="+POSX0+" Y0="+POSY0+" dX="+dPOSX+" dY="+dPOSY+" Angle:"+dANGLE);
 			c.drawBitmap(rPointer, 
 					POSX0+(dPOSX*PX_SCALE)-rPointer.getWidth()/2, //draw left-side on POS0X and shift to center
-					POSY0+(dPOSY*PX_SCALE)-rPointer.getHeight()/2, //draw top-side on POS0Y and shift to center
+					POSY0-(dPOSY*PX_SCALE)-rPointer.getHeight()/2, //draw top-side on POS0Y and shift to center
 					null);
 			} else {
 				alignPath(vPOSX, vPOSY);
@@ -332,28 +334,50 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 				//Log.d("MapView","Drawing vpointer");
 				c.drawBitmap(pointer, 
 						POSX0+vPOSX-pointer.getWidth()/2, //draw left-side on POS0X and shift to center
-						POSY0+vPOSY-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
+						POSY0-vPOSY-pointer.getHeight()/2, //draw top-side on POS0Y and shift to center
 						null);
 			}
+			
+			//FIXME BUTTON_COLOR-Spielerei
+			BUTTON_COLOR.setColor(Color.rgb(paintcounter, 255-paintcounter, paintcounter/2));
+			
+			if (stepdir == true) {
+				paintcounter++;
+				if (paintcounter >= 255) {
+					paintcounter=255;
+					stepdir=false;
+				}		
+			}
+			else {			
+				paintcounter--;
+				if (paintcounter <=0) {
+					paintcounter=0;
+					stepdir=true;
+				}
+			}
+				
 			
 			//draw all known ParkingSlots //TODO Scale to map and navigation coordinates!
 			try {
 				aParkingSlotRectF.clear();
 				for (int i=0; i < this.ParkingSlot.size(); i++) {
 					RectF ParkingSlotRect = new RectF(
-							this.ParkingSlot.get(i).getFrontBoundaryPosition().x,
-							this.ParkingSlot.get(i).getFrontBoundaryPosition().y,
 							this.ParkingSlot.get(i).getBackBoundaryPosition().x,
-							this.ParkingSlot.get(i).getBackBoundaryPosition().y);
+							this.ParkingSlot.get(i).getBackBoundaryPosition().y,
+							this.ParkingSlot.get(i).getFrontBoundaryPosition().x,
+							this.ParkingSlot.get(i).getFrontBoundaryPosition().y);
+					aParkingSlotRectF.add(ParkingSlotRect); //save the slot in a list
 					
 					//check if the last MotionEvent marks the RectF as selected and propagate
+					Log.d("doDraw","histEvent[" + histEvent.getX() + " | "+histEvent.getY()+"] ParkingSlot [left:"+ParkingSlotRect.left+" right:"+ParkingSlotRect.right+" bottom:"+ParkingSlotRect.bottom+" top:"+ParkingSlotRect.top+"]");
 					if ( (histEvent.getX() > ParkingSlotRect.left) //is the touch point inside the RectF?
 							&& (histEvent.getX() < ParkingSlotRect.right) 
-							&& (histEvent.getY() > ParkingSlotRect.bottom)
-							&& (histEvent.getY() < ParkingSlotRect.top)
+							&& (histEvent.getY() < ParkingSlotRect.bottom)
+							&& (histEvent.getY() > ParkingSlotRect.top)
 							&& (this.ParkingSlot.get(i).getParkingSlotStatus()==ParkingSlotStatus.GOOD)) { //and is it okay to select?
 								c.drawRect(ParkingSlotRect, PARKINGSLOT_SELECTED); //if yes, draw it as selected RectF and save, which one it is
 								ParkingSlotSelectionID=i; 
+								Log.d("doDraw", "ParkingSlotSelection: "+i);
 					}									
 					else {
 								switch (this.ParkingSlot.get(i).getParkingSlotStatus()) {  //switch draw color depending on Status of Parking Slot
@@ -366,6 +390,9 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			} 
 			catch (NullPointerException e) {
 				Log.e("doDraw", e.getMessage() + ": Skipping drawing of ParkingSlots!");
+			}
+			catch (IndexOutOfBoundsException e) {
+				Log.e("doDraw", e.getMessage()+ ": Skipping drawing of ParkingSlots!");
 			}
 			
 			//draw the info bar  TODO remove
@@ -506,7 +533,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 		
 		/**
-		 * Returns true, if the vPointer is currently activated.
+		 * Returns true if the vPointer is currently activated.
 		 * @return
 		 */
 		public boolean vPointerIsActive() {
@@ -514,11 +541,15 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 		
 		/**
-		 * Sets the ParkingSlot Array.
+		 * Sets the ParkingSlot Array. Only passes the list
+		 * if it contains elements.
 		 * @param sa
 		 */
 		public void setParkingSlots(ArrayList<ParkingSlot> sa) {
-			ParkingSlot=sa;
+			synchronized (mSurfaceHolder) {
+				if (sa.size() > 0)
+				ParkingSlot=sa;
+			}
 		}
 		
 		/**
@@ -566,7 +597,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 * @author Daniel Wohllebe
 	 *
 	 */
-	private static MotionEvent histEvent;
+	private static MotionEvent histEvent = null;
 	
 	class MapGestureListener extends GestureDetector.SimpleOnGestureListener implements OnGenericMotionListener {
         private static final String DEBUG_TAG = "Gestures"; 
@@ -599,7 +630,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
         @Override
         public void onLongPress(MotionEvent event) {
         	Log.d(DEBUG_TAG, "onLongPress: " + event.toString());
-        	histEvent=event;
+        	//histEvent=event;
         }
         
         @Override

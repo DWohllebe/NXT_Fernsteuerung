@@ -39,6 +39,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PointF;
 import parkingRobot.hsamr1.GuidanceAT;
 import parkingRobot.hsamr1.GuidanceAT.*;
 import parkingRobot.INavigation;
@@ -59,7 +60,7 @@ public class MapActivity extends Activity {
 	boolean test= false;
 	
 	//determines, how incoming Pos-Data should be valued
-	final float MEASUREMENT_SCALE= (1/100);
+	final float MEASUREMENT_SCALE= (1);   //(1/100)
 	
 	//create a listener for the MapView Motion Events
     static Handler mMotionHandler = new Handler() {
@@ -109,12 +110,23 @@ public class MapActivity extends Activity {
         final Button testButton = (Button) findViewById(R.id.buttonTest);
         testButton.setOnClickListener(new OnClickListener() {
         	public void onClick(View v){
-        		test= true;
+        		   		
+        		runOnUiThread(new Runnable(){
+        			public void run() {
+        				test= true;
+                		final MapView map = (MapView)findViewById(R.id.map);
         		for (int i=0; i < 250000; i++) {
-        			MapView map= (MapView)findViewById(R.id.map);
         			map.setPose((float)(i/10000), 0,(float) (i/1000));
+        			
+            			map.addParkingSlot(new ParkingSlot(0, new PointF(0, 0), new PointF(240,600), ParkingSlot.ParkingSlotStatus.GOOD));
+            			map.addParkingSlot(new ParkingSlot(1, new PointF(250, 250), new PointF(360, 360), ParkingSlot.ParkingSlotStatus.BAD));
+            			map.addParkingSlot(new ParkingSlot(2, new PointF(500,400), new PointF( 585, 480), ParkingSlot.ParkingSlotStatus.RESCAN));
+            			map.propagateParkingSlots();
         		}
         		test = false;
+        			}
+        		});
+        		
         	}
         });
 		
@@ -462,6 +474,8 @@ public class MapActivity extends Activity {
 					} catch (NullPointerException e) {
 						Log.e("Spinner",e.getMessage() + "PointerException: Does an hmiModule exist? Ignoring...");
 					}
+					Spinner thisSpinner = (Spinner)findViewById(R.id.modeSpinner);
+					thisSpinner.setVisibility(android.view.View.INVISIBLE);
 				}
 
 				public void onNothingSelected(AdapterView<?> arg0) {
@@ -484,6 +498,14 @@ public class MapActivity extends Activity {
 		final TextView fld_yPosL = (TextView) findViewById(R.id.textView_YValue_Label);
 		final TextView fld_angle = (TextView) findViewById(R.id.textView_AngleValue);
 		final TextView fld_angleL = (TextView) findViewById(R.id.textView_AngleValue_Label);
+		final TextView fld_distfront = (TextView) findViewById(R.id.textView_DistFront);
+		final TextView fld_distfrontL = (TextView) findViewById(R.id.textView_DistFront_Label);
+		final TextView fld_distback = (TextView) findViewById(R.id.textView_DistBack);
+		final TextView fld_distbackL = (TextView) findViewById(R.id.textView_DistBack_Label);
+		final TextView fld_distleft = (TextView) findViewById(R.id.textView_DistLeft);
+		final TextView fld_distleftL = (TextView) findViewById(R.id.textView_DistLeft_Label);
+		final TextView fld_distright = (TextView) findViewById(R.id.textView_DistRight);
+		final TextView fld_distrightL = (TextView) findViewById(R.id.textView_DistRight_Label);
 		final ImageView infobox = (ImageView) findViewById(R.id.image_infobox);
 		
 		//check if TextViewLabels are visible, 
@@ -517,6 +539,42 @@ public class MapActivity extends Activity {
 			fld_angleL.setVisibility(android.view.View.VISIBLE);
 		}
 		
+		if (fld_distfront.isShown()) {
+			fld_distfront.setVisibility(android.view.View.INVISIBLE);
+			fld_distfrontL.setVisibility(android.view.View.INVISIBLE);
+		}
+		else {
+			fld_distfront.setVisibility(android.view.View.VISIBLE);
+			fld_distfrontL.setVisibility(android.view.View.VISIBLE);
+		}
+		
+		if (fld_distback.isShown()) {
+			fld_distbackL.setVisibility(android.view.View.INVISIBLE);
+			fld_distbackL.setVisibility(android.view.View.INVISIBLE);
+		}
+		else {
+			fld_distback.setVisibility(android.view.View.VISIBLE);
+			fld_distbackL.setVisibility(android.view.View.VISIBLE);
+		}
+		
+		if (fld_distleft.isShown()) {
+			fld_distleft.setVisibility(android.view.View.INVISIBLE);
+			fld_distleftL.setVisibility(android.view.View.INVISIBLE);
+		}
+		else {
+			fld_distleft.setVisibility(android.view.View.VISIBLE);
+			fld_distleftL.setVisibility(android.view.View.VISIBLE);
+		}
+		
+		if (fld_distright.isShown()) {
+			fld_distright.setVisibility(android.view.View.INVISIBLE);
+			fld_distrightL.setVisibility(android.view.View.INVISIBLE);
+		}
+		else {
+			fld_distright.setVisibility(android.view.View.VISIBLE);
+			fld_distrightL.setVisibility(android.view.View.VISIBLE);
+		}
+		
 		if (infobox.isShown()) {
 			infobox.setVisibility(android.view.View.INVISIBLE);
 		}
@@ -526,6 +584,9 @@ public class MapActivity extends Activity {
 	}
 	
 	public void onChangeModeClicked(View View) {
+		//make Spinner visible
+		final Spinner spinner = (Spinner) findViewById(R.id.modeSpinner);
+		spinner.setVisibility(android.view.View.VISIBLE);
 		
 		//tell the user what to do
 		final TextView infotext = (TextView) findViewById(R.id.textView_Info);
@@ -535,7 +596,7 @@ public class MapActivity extends Activity {
 			infotext.setText("No Connection-Interface known. Try connecting!");
 		
 		//activate the Spinner
-		final Spinner spinner = (Spinner) findViewById(R.id.modeSpinner);
+		
 		spinner.performClick();
 	}
 	
@@ -639,17 +700,26 @@ new Timer().schedule(new TimerTask() {
                     	float cXPOS = hmiModule.getPosition().getX()*MEASUREMENT_SCALE;
                     	float cYPOS = hmiModule.getPosition().getY()*MEASUREMENT_SCALE;
                     	float cANGLE = hmiModule.getPosition().getAngle();
+                    	double cDISTFRONT = hmiModule.getPosition().getDistanceBack()*MEASUREMENT_SCALE;
+                    	double cDISTBACK = hmiModule.getPosition().getDistanceFront()*MEASUREMENT_SCALE;
+                    	double cDISTLEFT = hmiModule.getPosition().getDistanceBackSide()*MEASUREMENT_SCALE;
+                    	double cDISTRIGHT = hmiModule.getPosition().getDistanceFrontSide()*MEASUREMENT_SCALE;
+                    	
                     	
                     	final MapView map = (MapView) findViewById(R.id.map);
+                    	
                     	if (test==false)
                     	map.setPose(cXPOS, cYPOS, cANGLE);
                     	
                     	//get all current parking slots and pass them directly to MapView
+                    	
                     	try {
                     		//populate the list of ParkingSlots
-                    		for (int i=0; i < hmiModule.getNoOfParkingSlots(); i++) {
-                    		map.addParkingSlot(hmiModule.getParkingSlot(i));
+                    		if (test==false)
+                    			for (int i=0; i < hmiModule.getNoOfParkingSlots(); i++) {
+                    				map.addParkingSlot(hmiModule.getParkingSlot(i));
                     		}
+                    		
                     		
                     		//send them to the Draw-Thread
                     		map.propagateParkingSlots();
@@ -657,6 +727,8 @@ new Timer().schedule(new TimerTask() {
                     	catch (NullPointerException e) {
                     		Log.e("StatusListener", e.getMessage() + " Continuing without propagating ParkingSlots!");
                     	}
+                    	
+                    	
                     	
                     	//propagate changes to additional sensor info text
                     	//display x value
@@ -668,6 +740,11 @@ new Timer().schedule(new TimerTask() {
                 		//display angle value
                 		final TextView fld_angle = (TextView) findViewById(R.id.textView_AngleValue); 
                 		fld_angle.setText(String.valueOf(cANGLE+"°"));
+                		//display distance to front
+                		final TextView fld_distfront = (TextView) findViewById(R.id.textView_DistFront);
+                		fld_distfront.setText(String.valueOf(cDISTFRONT)+" cm");
+                		final TextView fld_distback = (TextView) findViewById(R.id.textView_DistBack);
+                		fld_distback.setText(String.valueOf(cDISTBACK)+ "cm");
                 		
                 		//restart activity when disconnecting
                 		if(hmiModule.getCurrentStatus()==CurrentStatus.EXIT){
