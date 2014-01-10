@@ -25,21 +25,22 @@ public final class R {
     }
     public static final class drawable {
         public static final int bg_map=0x7f020000;
-        public static final int bt_bluetooth_off=0x7f020001;
-        public static final int bt_bluetooth_on=0x7f020002;
-        public static final int bt_disconnect=0x7f020003;
-        public static final int bt_park_now=0x7f020004;
-        public static final int bt_park_this=0x7f020005;
-        public static final int bt_pause=0x7f020006;
-        public static final int bt_scout=0x7f020007;
-        public static final int bt_sensorinfo=0x7f020008;
-        public static final int ic_action_search=0x7f020009;
-        public static final int ic_launcher=0x7f02000a;
-        public static final int ic_launcher_nxt=0x7f02000b;
-        public static final int infobalken_z=0x7f02000c;
-        public static final int menubg_barelandscape=0x7f02000d;
-        public static final int spr_ptr_nxtbot=0x7f02000e;
-        public static final int spr_self=0x7f02000f;
+        public static final int bg_map_old=0x7f020001;
+        public static final int bt_bluetooth_off=0x7f020002;
+        public static final int bt_bluetooth_on=0x7f020003;
+        public static final int bt_disconnect=0x7f020004;
+        public static final int bt_park_now=0x7f020005;
+        public static final int bt_park_this=0x7f020006;
+        public static final int bt_pause=0x7f020007;
+        public static final int bt_scout=0x7f020008;
+        public static final int bt_sensorinfo=0x7f020009;
+        public static final int ic_action_search=0x7f02000a;
+        public static final int ic_launcher=0x7f02000b;
+        public static final int ic_launcher_nxt=0x7f02000c;
+        public static final int infobalken_z=0x7f02000d;
+        public static final int menubg_barelandscape=0x7f02000e;
+        public static final int spr_ptr_nxtbot=0x7f02000f;
+        public static final int spr_self=0x7f020010;
     }
     public static final class id {
         public static final int Button_followVirtualPos=0x7f090023;
@@ -84,14 +85,14 @@ public final class R {
         public static final int textViewValueY=0x7f09000d;
         public static final int textView_AngleValue=0x7f090033;
         public static final int textView_AngleValue_Label=0x7f09002d;
-        public static final int textView_DistBack=0x7f09002b;
-        public static final int textView_DistBack_Label=0x7f090029;
+        public static final int textView_DistBack=0x7f090035;
+        public static final int textView_DistBack_Label=0x7f090030;
         public static final int textView_DistFront=0x7f090034;
         public static final int textView_DistFront_Label=0x7f09002e;
-        public static final int textView_DistLeft=0x7f090035;
+        public static final int textView_DistLeft=0x7f090036;
         public static final int textView_DistLeft_Label=0x7f09002f;
-        public static final int textView_DistRight=0x7f090036;
-        public static final int textView_DistRight_Label=0x7f090030;
+        public static final int textView_DistRight=0x7f09002b;
+        public static final int textView_DistRight_Label=0x7f090029;
         public static final int textView_Info=0x7f090025;
         public static final int textView_State=0x7f09001e;
         public static final int textView_XValue=0x7f090031;

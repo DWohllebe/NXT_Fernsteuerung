@@ -372,7 +372,7 @@ public class MapActivity extends Activity {
 		
 		//give the coordinate data to the MapView
 		((de.amr.plt.rcTestapp.MapView) MapView).setVPos(vxpos, vypos);
-		//----------------------------------------------<   TODO replace with updateVPos()
+		//----------------------------------------------<
 	}
 	
 	public void onUpdateVirtualPosClicked(View View) {
@@ -405,7 +405,6 @@ public class MapActivity extends Activity {
 		catch (Exception e) {
 			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
 		}
-		//FIXME Get this to work.
 	}
 	
 	/**
@@ -549,7 +548,7 @@ public class MapActivity extends Activity {
 		}
 		
 		if (fld_distback.isShown()) {
-			fld_distbackL.setVisibility(android.view.View.INVISIBLE);
+			fld_distback.setVisibility(android.view.View.INVISIBLE);
 			fld_distbackL.setVisibility(android.view.View.INVISIBLE);
 		}
 		else {
@@ -729,7 +728,6 @@ new Timer().schedule(new TimerTask() {
                     	}
                     	
                     	
-                    	
                     	//propagate changes to additional sensor info text
                     	//display x value
                     	final TextView fld_xPos = (TextView) findViewById(R.id.textView_XValue);
@@ -743,8 +741,15 @@ new Timer().schedule(new TimerTask() {
                 		//display distance to front
                 		final TextView fld_distfront = (TextView) findViewById(R.id.textView_DistFront);
                 		fld_distfront.setText(String.valueOf(cDISTFRONT)+" cm");
+                		//display distance to back
                 		final TextView fld_distback = (TextView) findViewById(R.id.textView_DistBack);
                 		fld_distback.setText(String.valueOf(cDISTBACK)+ "cm");
+                		//display distance to frontside
+                		final TextView fld_distleft = (TextView) findViewById(R.id.textView_DistLeft);
+                		fld_distleft.setText(String.valueOf(cDISTLEFT)+" cm");
+                		//display distance to backside
+                		final TextView fld_distright = (TextView) findViewById(R.id.textView_DistRight);
+                		fld_distright.setText(String.valueOf(cDISTRIGHT)+" cm");
                 		
                 		//restart activity when disconnecting
                 		if(hmiModule.getCurrentStatus()==CurrentStatus.EXIT){

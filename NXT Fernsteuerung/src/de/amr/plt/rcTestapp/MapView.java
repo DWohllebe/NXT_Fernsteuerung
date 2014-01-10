@@ -38,7 +38,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	/**
 	 * Thread of class MapView. Handles all drawing functionality.
 	 * @author Daniel Wohllebe
-	 * @version 0.1.2
+	 * @version 0.8.0
 	 */
 	static class MapThread extends Thread {
 		//finals
@@ -357,15 +357,15 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			}
 				
 			
-			//draw all known ParkingSlots //TODO Scale to map and navigation coordinates!
+			//draw all known ParkingSlots
 			try {
 				aParkingSlotRectF.clear();
 				for (int i=0; i < this.ParkingSlot.size(); i++) {
 					RectF ParkingSlotRect = new RectF(
-							this.ParkingSlot.get(i).getBackBoundaryPosition().x,
-							this.ParkingSlot.get(i).getBackBoundaryPosition().y,
-							this.ParkingSlot.get(i).getFrontBoundaryPosition().x,
-							this.ParkingSlot.get(i).getFrontBoundaryPosition().y);
+							this.ParkingSlot.get(i).getBackBoundaryPosition().x*PX_SCALE,
+							this.ParkingSlot.get(i).getBackBoundaryPosition().y*PX_SCALE,
+							this.ParkingSlot.get(i).getFrontBoundaryPosition().x*PX_SCALE,
+							this.ParkingSlot.get(i).getFrontBoundaryPosition().y*PX_SCALE);
 					aParkingSlotRectF.add(ParkingSlotRect); //save the slot in a list
 					
 					//check if the last MotionEvent marks the RectF as selected and propagate
@@ -395,22 +395,6 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 				Log.e("doDraw", e.getMessage()+ ": Skipping drawing of ParkingSlots!");
 			}
 			
-			//draw the info bar  TODO remove
-			/* if (info_bar_visible) {
-			Bitmap mInfobar = BitmapFactory.decodeResource(res, R.drawable.infobalken_z);
-			mInfobar=Bitmap.createScaledBitmap(mInfobar, c.getWidth(), mInfobar.getHeight()-20, false);
-			c.drawBitmap(mInfobar, 0, c.getHeight()-mInfobar.getHeight(), null);
-			} */
-			
-			//draw the Buttons on right-hand side  TODO remove
-			/*for (int i=0; (i<BUTTON_COUNT); i++) {
-				c.drawRect(new RectF(c.getWidth()-BUTTON_WIDTH, 
-						i*c.getHeight()/BUTTON_COUNT, 
-						c.getWidth(),
-						c.getHeight()/BUTTON_COUNT*(1+i)), 
-						BUTTON_COLOR);
-						//c.getHeight()/BUTTON_COUNT+i*c.getHeight()/BUTTON_COUNT);
-			} */
 		}
 		
 		/**
@@ -454,7 +438,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 					c = mSurfaceHolder.lockCanvas(null);
 					synchronized (mSurfaceHolder) {
 						if (c != null) {//FIXME This strangely leads to a freeze, without this line you get a NullPointerException						
-							doDraw(c); //
+							doDraw(c);
 						}
 					}
 				
@@ -472,11 +456,11 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		 * @param POSY0
 		 * @return success
 		 */
-		private boolean alignPath(float POSX0, float POSY0) { //TODO integrate / cleanup
+		private boolean alignPath(float POSX0, float POSY0) {
 			try {
 			if (pathcount < MAX_PATH_PTS && pathcount>=0) {
-				path[pathcount]=dPOSX*PX_SCALE+POSX0;
-				path[pathcount+1]=dPOSY*PX_SCALE+POSY0;
+				path[pathcount]=POSX0+dPOSX*PX_SCALE;
+				path[pathcount+1]=POSY0-dPOSY*PX_SCALE;
 				pathcount=pathcount+2;
 				return true;
 			}
@@ -585,7 +569,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		 */
 		private Bitmap rotateBitmap(Bitmap source, float angle) {
 			matrix.reset();
-			matrix.postRotate(angle);
+			matrix.postRotate( (-angle) );
 			return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
 		}
 		
@@ -623,7 +607,6 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
         public boolean onSingleTapConfirmed(MotionEvent event) {
             Log.d(DEBUG_TAG, "onSingleTapConfirmed: " + event.toString());
             histEvent=event;
-           // event.getX(); //TODO get X and compare with a RectF
             return true;
         }
         
@@ -758,7 +741,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	
 	
 	@Override
-	public boolean onTouchEvent(MotionEvent event) { //FIXME implement Touch-Detection
+	public boolean onTouchEvent(MotionEvent event) {
 		this.mDetector.onTouchEvent(event);
 		return super.onTouchEvent(event);
 	}
