@@ -46,7 +46,40 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		final private int CLEAR=0xff000000;
 		
 		//Scaling parameter for drawing Pose in cm on screen
-		final private float PX_SCALE = ((110/27));
+		   //old: 110/27
+		// x scale Messungen: 	690px zu 184cm -> 690/184 = 3.75
+		//						110px zu  35cm -> 110/34  =  3.24
+		
+		// y scale Messungen:	245 px zu 64 cm -> 245/64 =	3.83
+		//						122 px zu 30 cm -> 122/30 = 4.067
+		//final private float PX_SCALE_X = ( (690/184)+(110/34) ) / 2;
+		//final private float PX_SCALE_X = (690/181);
+		final private float PX_SCALE_X = 451/100;
+		final private float PX_SCALE_Y = ( (245/64) + (122/30) ) / 2;
+		//final private float PX_SCALE_R = (PX_SCALE_X+PX_SCALE_Y) / 2; 
+		
+								
+		
+		//Variables concerning the offset of the distance sensor
+				//the offsets are seen from the middle point of the robot
+				final private float SENSOR_FRONT_OFFSET_X=		0;
+				final private float SENSOR_FRONT_OFFSET_Y=		0;
+				final private float SENSOR_FRONT_ANGLE=			-45;
+				final private float SENSOR_FRONTSIDE_OFFSET_X=	0;
+				final private float SENSOR_FRONTSIDE_OFFSET_Y=	0;
+				final private float SENSOR_FRONTSIDE_ANGLE=		45;
+				final private float SENSOR_BACK_OFFSET_X=		0;
+				final private float SENSOR_BACK_OFFSET_Y=		0;
+				final private float SENSOR_BACK_ANGLE=			-200;
+				final private float SENSOR_BACKSIDE_OFFSET_X=	0;
+				final private float SENSOR_BACKSIDE_OFFSET_Y=	0;
+				final private float SENSOR_BACKSIDE_ANGLE=		200;
+
+		//sensor information variables
+				private double dDISTFRONT=0;
+				private double dDISTFRONTSIDE=0;
+				private double dDISTBACK=0;
+				private double dDISTBACKSIDE=0;
 		
 		//Bitmap matrix
 		Matrix matrix;
@@ -96,7 +129,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		Paint PARKINGSLOT_GOOD; //color for parking slots, which fit the robot
 		Paint PARKINGSLOT_BAD; //color for parking slots, which do not fit the robot
 		Paint PARKINGSLOT_RESCAN;
-		Paint PARKINGSLOT_SELECTED; //color for selected slots|
+		Paint PARKINGSLOT_SELECTED; //color for selected slots
+		Paint DISTANCE_SENSOR_COLOR; //color for distance sensor visualisation
 		int paintcounter=0x00;
 		boolean stepdir=true;
 		
@@ -135,6 +169,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			PARKINGSLOT_BAD=new Paint();
 			PARKINGSLOT_RESCAN=new Paint();
 			PARKINGSLOT_SELECTED=new Paint();
+			DISTANCE_SENSOR_COLOR=new Paint();
 				
 			BUTTON_COLOR.setColor(Color.YELLOW);
 			BUTTON_COLOR.setStyle(Paint.Style.STROKE); 
@@ -155,6 +190,10 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			PARKINGSLOT_SELECTED.setColor(Color.CYAN);
 			PARKINGSLOT_SELECTED.setStyle(Paint.Style.STROKE);
 			PARKINGSLOT_SELECTED.setStrokeWidth(4.5f);
+			
+			DISTANCE_SENSOR_COLOR.setColor(Color.BLUE);
+			DISTANCE_SENSOR_COLOR.setStyle(Paint.Style.STROKE);
+			DISTANCE_SENSOR_COLOR.setStrokeWidth(1.5f);
 			
 		}
 		
@@ -254,40 +293,6 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			
 		}
 		
-/*		/**
-		 * Draws graphics which are supposed to be static background or
-		 * not part of a regular screen update.
-		 * @param c
-		 
-		private void doInitDraw(Canvas c) {
-			Paint BUTTON_COLOR= new Paint();
-			BUTTON_COLOR.setColor(Color.RED);
-			BUTTON_COLOR.setStyle(Paint.Style.STROKE); 
-			BUTTON_COLOR.setStrokeWidth(4.5f);
-			
-			final float POSY0= c.getHeight()*(float)((1.1/7)+ (4.2/9));
-			final float POSX0= c.getWidth()*(float)(1.3/15.5);
-			
-			//clear the Screen
-			c.drawColor(CLEAR);
-			
-			//draw the background image, scale it so that it is left to the Buttons
-			Bitmap mBackground = null;
-			mBackground=Bitmap.createScaledBitmap(bBackground, c.getWidth()-BUTTON_WIDTH, c.getHeight(), false);
-			c.drawBitmap(mBackground, 0, 0, null);
-			
-			//draw the Buttons on right-hand side
-			for (int i=0; (i<BUTTON_COUNT); i++) {
-				c.drawRect(new RectF(c.getWidth()-BUTTON_WIDTH, 
-						i*c.getHeight()/BUTTON_COUNT, 
-						c.getWidth(),
-						c.getHeight()/BUTTON_COUNT*(1+i)), 
-						BUTTON_COLOR);
-			}
-			 
-		}
-*/
-		
 		/**
 		 * Draws all graphics which are supposed to change dynamically.
 		 * @param c
@@ -301,10 +306,6 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			float POSY0= c.getHeight()*(float)((1.1/7)+ (4.2/9));
 			float POSX0= c.getWidth()*(float)(1.3/15.5);
 
-			
-			
-			//load pointer image
-			//pointer = BitmapFactory.decodeResource(res, R.drawable.ic_launcher_nxt);
 			
 			//clear the Screen
 			c.drawColor(CLEAR);
@@ -324,8 +325,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			rPointer=rotateBitmap(pointer, dANGLE);
 			//Log.d("MapView","Drawing pointer X0="+POSX0+" Y0="+POSY0+" dX="+dPOSX+" dY="+dPOSY+" Angle:"+dANGLE);
 			c.drawBitmap(rPointer, 
-					POSX0+(dPOSX*PX_SCALE)-rPointer.getWidth()/2, //draw left-side on POS0X and shift to center
-					POSY0-(dPOSY*PX_SCALE)-rPointer.getHeight()/2, //draw top-side on POS0Y and shift to center
+					POSX0+(dPOSX*PX_SCALE_X)-rPointer.getWidth()/2, //draw left-side on POS0X and shift to center
+					POSY0-(dPOSY*PX_SCALE_Y)-rPointer.getHeight()/2, //draw top-side on POS0Y and shift to center
 					null);
 			} else {
 				alignPath(vPOSX, vPOSY);
@@ -356,16 +357,48 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 				}
 			}
 				
+			//draw Sensor Information as a line
+			//FRONT SENSOR
+			/*Log.d("Line","Drawing line:"+POSX0+(dPOSX+SENSOR_FRONT_OFFSET_X)*PX_SCALE_X+" "
+			+(POSY0-(dPOSY+SENSOR_FRONT_OFFSET_Y)*PX_SCALE_Y)+" "
+			+((float)(POSX0+(dPOSX+SENSOR_FRONT_OFFSET_X+convertToKartesianX(dDISTFRONT, SENSOR_FRONT_ANGLE+dANGLE) )*PX_SCALE_X) )+ " " +
+			+((float)(POSY0-(dPOSY+SENSOR_FRONT_OFFSET_Y-convertToKartesianY(dDISTFRONT, SENSOR_FRONT_ANGLE+dANGLE) )*PX_SCALE_Y))); */
+			
+			c.drawLine(POSX0+(dPOSX+SENSOR_FRONT_OFFSET_X)*PX_SCALE_X, 
+					POSY0-(dPOSY+SENSOR_FRONT_OFFSET_Y)*PX_SCALE_Y, 
+					(float)(POSX0+(dPOSX+SENSOR_FRONT_OFFSET_X+convertToKartesianX(dDISTFRONT, SENSOR_FRONT_ANGLE+dANGLE) )*PX_SCALE_X), 
+					(float)(POSY0-(dPOSY+SENSOR_FRONT_OFFSET_Y-convertToKartesianY(dDISTFRONT, SENSOR_FRONT_ANGLE+dANGLE) )*PX_SCALE_Y),
+					DISTANCE_SENSOR_COLOR);	
+			//FRONTSIDE SENSOR
+			c.drawLine(POSX0+(dPOSX+SENSOR_FRONTSIDE_OFFSET_X)*PX_SCALE_X, 
+					POSY0-(dPOSY+SENSOR_FRONTSIDE_OFFSET_Y)*PX_SCALE_Y, 
+					(float)(POSX0+ (dPOSX+SENSOR_FRONTSIDE_OFFSET_X+convertToKartesianX(dDISTFRONTSIDE, SENSOR_FRONTSIDE_ANGLE+dANGLE) )*PX_SCALE_X), 
+					(float)(POSY0- (dPOSY+SENSOR_FRONTSIDE_OFFSET_Y-convertToKartesianY(dDISTFRONTSIDE, SENSOR_FRONTSIDE_ANGLE+dANGLE) )*PX_SCALE_Y),
+					DISTANCE_SENSOR_COLOR);
+			//BACK SENSOR
+			c.drawLine(POSX0+(dPOSX+SENSOR_BACK_OFFSET_X)*PX_SCALE_X, 
+					POSY0-(dPOSY+SENSOR_BACK_OFFSET_Y)*PX_SCALE_Y, 
+					(float)(POSX0+ (dPOSX+SENSOR_BACK_OFFSET_X+convertToKartesianX(dDISTBACK, SENSOR_BACK_ANGLE+dANGLE))*PX_SCALE_X), 
+					(float)(POSY0- (dPOSY+SENSOR_BACK_OFFSET_Y-convertToKartesianY(dDISTBACK, SENSOR_BACK_ANGLE+dANGLE))*PX_SCALE_Y),
+					DISTANCE_SENSOR_COLOR);
+			
+			//BACKSIDE SENSOR
+			c.drawLine(POSX0+(dPOSX+SENSOR_BACKSIDE_OFFSET_X)*PX_SCALE_X, 
+					POSY0-(dPOSY+SENSOR_BACKSIDE_OFFSET_Y)*PX_SCALE_Y, 
+					(float)(POSX0+ (dPOSX+SENSOR_BACKSIDE_OFFSET_X+convertToKartesianX(dDISTBACKSIDE, SENSOR_BACKSIDE_ANGLE+dANGLE) )*PX_SCALE_X), 
+					(float)(POSY0- (dPOSY+SENSOR_BACKSIDE_OFFSET_Y-convertToKartesianY(dDISTBACKSIDE, SENSOR_BACKSIDE_ANGLE+dANGLE) )*PX_SCALE_Y),
+					DISTANCE_SENSOR_COLOR);
+	
 			
 			//draw all known ParkingSlots
 			try {
 				aParkingSlotRectF.clear();
 				for (int i=0; i < this.ParkingSlot.size(); i++) {
 					RectF ParkingSlotRect = new RectF(
-							this.ParkingSlot.get(i).getBackBoundaryPosition().x*PX_SCALE,
-							this.ParkingSlot.get(i).getBackBoundaryPosition().y*PX_SCALE,
-							this.ParkingSlot.get(i).getFrontBoundaryPosition().x*PX_SCALE,
-							this.ParkingSlot.get(i).getFrontBoundaryPosition().y*PX_SCALE);
+							this.ParkingSlot.get(i).getBackBoundaryPosition().x*PX_SCALE_X,
+							this.ParkingSlot.get(i).getBackBoundaryPosition().y*PX_SCALE_Y,
+							this.ParkingSlot.get(i).getFrontBoundaryPosition().x*PX_SCALE_X,
+							this.ParkingSlot.get(i).getFrontBoundaryPosition().y*PX_SCALE_Y);
 					aParkingSlotRectF.add(ParkingSlotRect); //save the slot in a list
 					
 					//check if the last MotionEvent marks the RectF as selected and propagate
@@ -459,8 +492,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		private boolean alignPath(float POSX0, float POSY0) {
 			try {
 			if (pathcount < MAX_PATH_PTS && pathcount>=0) {
-				path[pathcount]=POSX0+dPOSX*PX_SCALE;
-				path[pathcount+1]=POSY0-dPOSY*PX_SCALE;
+				path[pathcount]=POSX0+dPOSX*PX_SCALE_X;
+				path[pathcount+1]=POSY0-dPOSY*PX_SCALE_Y;
 				pathcount=pathcount+2;
 				return true;
 			}
@@ -545,6 +578,13 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			return ParkingSlotSelectionID;
 		}
 		
+		public void setSensorValues(double front, double frontside, double back, double backside) {
+			dDISTFRONT = front;
+			dDISTFRONTSIDE = frontside;
+			dDISTBACK = back;
+			dDISTBACKSIDE = backside;
+		}
+		
 		/**
 		 * Pauses or unpauses the thread.
 		 * @param b
@@ -571,6 +611,14 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			matrix.reset();
 			matrix.postRotate( (-angle) );
 			return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+		}
+		
+		private double convertToKartesianX(double r, double phi) {
+			return ( r*(Math.cos( Math.toRadians(phi) )) );
+		}
+		
+		private double convertToKartesianY(double r, double phi) {
+			return ( r*(Math.sin( Math.toRadians(phi) )) );
 		}
 		
 	}
@@ -804,6 +852,10 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 */
 	public int getParkingSlotSelectionID() {
 		return thread.getParkingSlotSelectionID();
+	}
+	
+	public void setSensorValues(double front, double frontside, double back, double backside) {
+		thread.setSensorValues(front, frontside, back, backside);
 	}
 	
 }

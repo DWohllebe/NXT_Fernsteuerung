@@ -699,16 +699,18 @@ new Timer().schedule(new TimerTask() {
                     	float cXPOS = hmiModule.getPosition().getX()*MEASUREMENT_SCALE;
                     	float cYPOS = hmiModule.getPosition().getY()*MEASUREMENT_SCALE;
                     	float cANGLE = hmiModule.getPosition().getAngle();
-                    	double cDISTFRONT = hmiModule.getPosition().getDistanceBack()*MEASUREMENT_SCALE;
-                    	double cDISTBACK = hmiModule.getPosition().getDistanceFront()*MEASUREMENT_SCALE;
+                    	double cDISTBACK = hmiModule.getPosition().getDistanceBack()*MEASUREMENT_SCALE;
+                    	double cDISTFRONT = hmiModule.getPosition().getDistanceFront()*MEASUREMENT_SCALE;
                     	double cDISTLEFT = hmiModule.getPosition().getDistanceBackSide()*MEASUREMENT_SCALE;
                     	double cDISTRIGHT = hmiModule.getPosition().getDistanceFrontSide()*MEASUREMENT_SCALE;
                     	
                     	
                     	final MapView map = (MapView) findViewById(R.id.map);
                     	
-                    	if (test==false)
+                    	if (test==false) {
                     	map.setPose(cXPOS, cYPOS, cANGLE);
+                    	map.setSensorValues(cDISTFRONT, cDISTRIGHT, cDISTBACK, cDISTLEFT);
+                    	}
                     	
                     	//get all current parking slots and pass them directly to MapView
                     	

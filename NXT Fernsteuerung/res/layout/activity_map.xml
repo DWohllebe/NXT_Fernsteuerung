@@ -148,7 +148,7 @@
     	    android:id="@+id/buttonTest"
     	    android:layout_width="wrap_content"
     	    android:layout_height="wrap_content"
-    	    android:layout_above="@+id/Button_updateVirtualPos"
+    	    android:layout_above="@+id/image_infobar"
     	    android:layout_alignParentLeft="true"
     	    android:text="Test" />
 
