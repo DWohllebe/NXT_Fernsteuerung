@@ -38,7 +38,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	/**
 	 * Thread of class MapView. Handles all drawing functionality.
 	 * @author Daniel Wohllebe
-	 * @version 0.8.0
+	 * @version 0.9.1
 	 */
 	static class MapThread extends Thread {
 		//finals
@@ -58,12 +58,14 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		final private float PX_SCALE_Y = ( (245/64) + (122/30) ) / 2;
 		//final private float PX_SCALE_R = (PX_SCALE_X+PX_SCALE_Y) / 2; 
 		
+		//Defines for drawing Method of ParkingSlots
+		
 		//Range, in which the Parking Slot is allowed to have a deviation
 		//when trying do draw a Rect for the PS-Selection
 		//the Range is 1-PS_RANGE to 1+_PSRANGE
 		final private double PS_RANGE=0.1;
 		//Width of the drawn Rectangle
-		final private int PS_WIDTH=20;
+		final private int PS_WIDTH=80;
 								
 		
 		//Variables concerning the offset of the distance sensor
@@ -90,7 +92,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		//Bitmap matrix
 		Matrix matrix;
 		
-		//Variables for Menu Button properties
+		//Variables for Menu Button properties TODO (deprecated)
 		final private int BUTTON_COUNT=4;
 		final private int BUTTON_WIDTH=60;
 		
@@ -99,7 +101,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		private float[] path = new float[MAX_PATH_PTS+2];	
 		private int pathcount=0;
 		
-		//last known motion event
+		//last known motion event (deprecated)
 		//private MotionEvent histMotionEvent = null;
 		
 		//variables for drawing
@@ -110,7 +112,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		boolean info_bar_visible=true;
 		boolean map_visible=true;
 		
-		//variables
+		// other variables
 		private SurfaceHolder mSurfaceHolder;
 		private Context mContext;
 		private Handler mHandler;
@@ -131,14 +133,14 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		Bitmap rPointer;
 		
 		//paint
-		Paint BUTTON_COLOR;  //color for general button rects
+		Paint BUTTON_COLOR;  //color for general button rectangles (also default color for testing)
 		Paint PARKINGSLOT_GOOD; //color for parking slots, which fit the robot
 		Paint PARKINGSLOT_BAD; //color for parking slots, which do not fit the robot
-		Paint PARKINGSLOT_RESCAN;
+		Paint PARKINGSLOT_RESCAN; //color for parking slots which need to be rescaned
 		Paint PARKINGSLOT_SELECTED; //color for selected slots
 		Paint DISTANCE_SENSOR_COLOR; //color for distance sensor visualisation
 		int paintcounter=0x00;
-		boolean stepdir=true;
+		boolean stepdir=true;  //direction for color-switching of path
 		
 		
 		//variables for parking slot
@@ -183,19 +185,19 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			
 			PARKINGSLOT_GOOD.setColor(Color.GREEN);
 			PARKINGSLOT_GOOD.setStyle(Paint.Style.STROKE);
-			PARKINGSLOT_GOOD.setStrokeWidth(4.5f);
+			PARKINGSLOT_GOOD.setStrokeWidth(2.5f);
 			
 			PARKINGSLOT_BAD.setColor(Color.RED);
 			PARKINGSLOT_BAD.setStyle(Paint.Style.STROKE);
-			PARKINGSLOT_BAD.setStrokeWidth(4.5f);
+			PARKINGSLOT_BAD.setStrokeWidth(2.5f);
 			
 			PARKINGSLOT_RESCAN.setColor(Color.DKGRAY);
 			PARKINGSLOT_RESCAN.setStyle(Paint.Style.STROKE);
-			PARKINGSLOT_RESCAN.setStrokeWidth(4.5f);
+			PARKINGSLOT_RESCAN.setStrokeWidth(2.5f);
 			
 			PARKINGSLOT_SELECTED.setColor(Color.CYAN);
 			PARKINGSLOT_SELECTED.setStyle(Paint.Style.STROKE);
-			PARKINGSLOT_SELECTED.setStrokeWidth(4.5f);
+			PARKINGSLOT_SELECTED.setStrokeWidth(3.5f);
 			
 			DISTANCE_SENSOR_COLOR.setColor(Color.BLUE);
 			DISTANCE_SENSOR_COLOR.setStyle(Paint.Style.STROKE);
@@ -237,6 +239,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		
 		/**
 		 * Draws the Map Background on the Canvas.
+		 * @deprecated
 		 */
 		public void drawMap() {
 			Canvas c= null;
@@ -268,10 +271,6 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			}			
 		}
 		
-		/**
-		 * Draws the coordinate system in which the robot is
-		 * supposed to move.
-		 */
 		/*  private void drawCoordinateSystem() {
 			Canvas c= null;
 			try {	
@@ -427,28 +426,28 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 					double mDeviation;
 					
 					//x: check if values are within range
-					mDeviation = ( this.ParkingSlot.get(i).getBackBoundaryPosition().x / this.ParkingSlot.get(i).getBackBoundaryPosition().x );
-					if ( (mDeviation > 1-PS_RANGE) || (mDeviation < 1+PS_RANGE) ) {
+					mDeviation = ( this.ParkingSlot.get(i).getBackBoundaryPosition().x / this.ParkingSlot.get(i).getFrontBoundaryPosition().x );
+					if ( (mDeviation > 1-PS_RANGE) && (mDeviation < 1+PS_RANGE) ) {
 						//then y: determine orientation based on y statements
 						if (this.ParkingSlot.get(i).getBackBoundaryPosition().y < this.ParkingSlot.get(i).getFrontBoundaryPosition().y) {
 							// yBack -> yFront    	| x const.
 							bottom = POSY0-this.ParkingSlot.get(i).getBackBoundaryPosition().y*PX_SCALE_Y;
-							top = POSY0-this.ParkingSlot.get(i).getBackBoundaryPosition().y*PX_SCALE_Y;
+							top = POSY0-this.ParkingSlot.get(i).getFrontBoundaryPosition().y*PX_SCALE_Y;
 							left = POSX0+this.ParkingSlot.get(i).getBackBoundaryPosition().x*PX_SCALE_X;
 							right = left+PS_WIDTH;
 						}
 						else {
 							//yFront -> yBack		| x const.
 							bottom = POSY0-this.ParkingSlot.get(i).getFrontBoundaryPosition().y*PX_SCALE_Y;
-							top = POSY0-this.ParkingSlot.get(i).getFrontBoundaryPosition().y*PX_SCALE_Y;
+							top = POSY0-this.ParkingSlot.get(i).getBackBoundaryPosition().y*PX_SCALE_Y;
 							right = POSX0+this.ParkingSlot.get(i).getBackBoundaryPosition().x*PX_SCALE_X;
 							left = right-PS_WIDTH;
 						}
 						
 					} //y: check if variables are within range
 					else {
-						mDeviation= (this.ParkingSlot.get(i).getBackBoundaryPosition().y / this.ParkingSlot.get(i).getBackBoundaryPosition().y);
-						if  ( (mDeviation > 1-PS_RANGE) || (mDeviation < 1+PS_RANGE) ) {
+						mDeviation= (this.ParkingSlot.get(i).getBackBoundaryPosition().y / this.ParkingSlot.get(i).getFrontBoundaryPosition().y);
+						if  ( (mDeviation > 1-PS_RANGE) && (mDeviation < 1+PS_RANGE) ) {
 							//then x: determine orientation based on x statements
 							if (this.ParkingSlot.get(i).getBackBoundaryPosition().x < this.ParkingSlot.get(i).getFrontBoundaryPosition().x) {
 								// xBack -> xFront		| y const.
@@ -653,6 +652,13 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			return ParkingSlotSelectionID;
 		}
 		
+		/**
+		 * Sets the sensor values, which are then drawn in doDraw();
+		 * @param front
+		 * @param frontside
+		 * @param back
+		 * @param backside
+		 */
 		public void setSensorValues(double front, double frontside, double back, double backside) {
 			dDISTFRONT = front;
 			dDISTFRONTSIDE = frontside;
@@ -680,7 +686,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		 * Rotates a bitmap. The rotation angle has to be specified.
 		 * @param source
 		 * @param angle
-		 * @return 
+		 * @return rotated bitmap
 		 */
 		private Bitmap rotateBitmap(Bitmap source, float angle) {
 			matrix.reset();
@@ -862,49 +868,94 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		}*/
 	}
 	
-	
+	/**
+	 * Callback for TouchEvents.
+	 */
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		this.mDetector.onTouchEvent(event);
 		return super.onTouchEvent(event);
 	}
 	
-	
+	/**
+	 * Tells the thread if the virtual pointer should be drawn instead of
+	 * the real one.
+	 * @param b
+	 */
 	public void setVPointer(boolean b) {
 		thread.activateVPos(b);
 	}
 	
+	/**
+	 * Sets coordinates, where the virtual pointer will be drawn.
+	 * These coordinates are affected by the general offset and
+	 * the scaling routine.
+	 * @param fx
+	 * @param fy
+	 */
 	public void setVPos(float fx, float fy) {
 		thread.setVPos(fx, fy);	
 	}
 	
+	/**
+	 * Returns true if the virtual pointer is currently
+	 * being drawn.
+	 * @return
+	 */
 	public boolean vPointerIsActive() {
 		return thread.vPointerIsActive();
 	}
 	
+	/**
+	 * Returns the amount virtual buttons.
+	 * @return BUTTON_COUNT
+	 * @deprecated
+	 */
 	public int getMenuButtonCount() {
 		return thread.BUTTON_COUNT;	
 	}
 	
+	/**
+	 * Returns the width of all virtual buttons.
+	 * @return BUTTON_WIDTH
+	 * @deprecated
+	 */
 	public int getMenuButtonWidth() {
 		return thread.BUTTON_WIDTH;
 	}
 	
+	/**
+	 * Determines if the background should be drawn.
+	 * @param b
+	 */
 	public void setMapVisibility(boolean b) {
 		thread.map_visible=b;
 	}
 	
+	/**
+	 * Determines if an InfoBar inside the View
+	 * should be drawn.
+	 * @param b
+	 * @deprecated
+	 */
 	public void setInfoBarVisibility(boolean b) {
 		thread.info_bar_visible=b;
 	}
 	
+	/**
+	 * Sets the pose information for the pointer and pushes it
+	 * to the thread.
+	 * @param posx
+	 * @param posy
+	 * @param angle
+	 */
 	public void setPose(float posx, float posy, float angle) {
 		thread.setDPos(posx, posy);
 		thread.setDAngle(angle);
 	}
 	
 	/**
-	 * Adds a ParkingSlot to the List of Elements
+	 * Adds a ParkingSlot to the list of elements
 	 * that should be drawn.
 	 * @param ps
 	 */
@@ -923,12 +974,20 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	
 	/**
 	 * Returns the currently selected ParkingSlots' index number.
-	 * @return
+	 * @return ParkingSlot ID
 	 */
 	public int getParkingSlotSelectionID() {
 		return thread.getParkingSlotSelectionID();
 	}
 	
+	/**
+	 * Passes the values of the Sensor for the doDraw()-Method to
+	 * the thread.
+	 * @param front
+	 * @param frontside
+	 * @param back
+	 * @param backside
+	 */
 	public void setSensorValues(double front, double frontside, double back, double backside) {
 		thread.setSensorValues(front, frontside, back, backside);
 	}

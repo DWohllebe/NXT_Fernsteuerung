@@ -115,8 +115,8 @@ public class MapActivity extends Activity {
         			map.setPose((float)(i/10000), 0,(float) (i/1000));
         			
             			map.addParkingSlot(new ParkingSlot(0, new PointF(0, 1), new PointF(180, 1), ParkingSlot.ParkingSlotStatus.GOOD));
-            			//map.addParkingSlot(new ParkingSlot(1, new PointF(250, 250), new PointF(360, 360), ParkingSlot.ParkingSlotStatus.BAD));
-            			//map.addParkingSlot(new ParkingSlot(2, new PointF(500,400), new PointF( 585, 480), ParkingSlot.ParkingSlotStatus.RESCAN));
+            			map.addParkingSlot(new ParkingSlot(1, new PointF(181, 1), new PointF(181, 64), ParkingSlot.ParkingSlotStatus.BAD));
+            			map.addParkingSlot(new ParkingSlot(2, new PointF(101,54), new PointF( 1, 56), ParkingSlot.ParkingSlotStatus.RESCAN));
             			map.propagateParkingSlots();
         		}
         		test = false;
