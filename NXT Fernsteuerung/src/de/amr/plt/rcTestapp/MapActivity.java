@@ -1,6 +1,5 @@
 package de.amr.plt.rcTestapp;
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -15,6 +14,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,21 +28,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.EditText;
 import android.widget.Button;
-import android.widget.ToggleButton;
 import android.widget.ImageButton;
 import android.app.ActionBar;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
-import parkingRobot.hsamr1.GuidanceAT;
 import parkingRobot.hsamr1.GuidanceAT.*;
-import parkingRobot.INavigation;
 
 
 public class MapActivity extends Activity {
@@ -118,9 +114,9 @@ public class MapActivity extends Activity {
         		for (int i=0; i < 250000; i++) {
         			map.setPose((float)(i/10000), 0,(float) (i/1000));
         			
-            			map.addParkingSlot(new ParkingSlot(0, new PointF(0, 0), new PointF(240,600), ParkingSlot.ParkingSlotStatus.GOOD));
-            			map.addParkingSlot(new ParkingSlot(1, new PointF(250, 250), new PointF(360, 360), ParkingSlot.ParkingSlotStatus.BAD));
-            			map.addParkingSlot(new ParkingSlot(2, new PointF(500,400), new PointF( 585, 480), ParkingSlot.ParkingSlotStatus.RESCAN));
+            			map.addParkingSlot(new ParkingSlot(0, new PointF(0, 1), new PointF(180, 1), ParkingSlot.ParkingSlotStatus.GOOD));
+            			//map.addParkingSlot(new ParkingSlot(1, new PointF(250, 250), new PointF(360, 360), ParkingSlot.ParkingSlotStatus.BAD));
+            			//map.addParkingSlot(new ParkingSlot(2, new PointF(500,400), new PointF( 585, 480), ParkingSlot.ParkingSlotStatus.RESCAN));
             			map.propagateParkingSlots();
         		}
         		test = false;
@@ -164,6 +160,12 @@ public class MapActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.map, menu);
+		return true;	
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Toast.makeText(this, "To access the PREMIUM OPTIONS menu,  please purchase the PBOT MAPCONTROL GOLD PACKAGE for only 5.99$!",Toast.LENGTH_LONG).show();
 		return true;
 	}
 	
@@ -278,42 +280,6 @@ public class MapActivity extends Activity {
 		
 		//now prepare the Spinner which links the Module with the user
 		createModeSpinner();
-	}
-	
-	/**
-     * Display the current data of NXT
-     */
-	private void displayDataNXT(){
-		
-		new Timer().schedule(new TimerTask() {
-			
-			@Override
-            public void run() {
-				
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                    	if(hmiModule != null){
-                    		//display x value
-                        	final TextView fld_xPos = (TextView) findViewById(R.id.textView_XValue);
-                    		fld_xPos.setText(String.valueOf(hmiModule.getPosition().getX()+" cm"));
-                    		//display y value
-                    		final TextView fld_yPos = (TextView) findViewById(R.id.textView_YValue);
-                    		fld_yPos.setText(String.valueOf(hmiModule.getPosition().getY()+" cm"));
-                    		//display angle value
-                    		final TextView fld_angle = (TextView) findViewById(R.id.textView_AngleValue); 
-                    		fld_angle.setText(String.valueOf(hmiModule.getPosition().getAngle()+"°"));
-                    		
-                    		//restart activity when disconnecting
-                    		if(hmiModule.getCurrentStatus()==CurrentStatus.EXIT){
-                    			terminateBluetoothConnection();
-                    			restartActivity();
-                    		}
-                    	}
-                    }
-                });
-            }
-        }, 200, 100);
-				
 	}
 	
 	/**

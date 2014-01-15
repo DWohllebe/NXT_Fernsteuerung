@@ -80,7 +80,7 @@
     	    android:inputType="numberDecimal"
     	    android:text="@string/map_editText_PosX"
     	    android:textColor="@android:color/white"
-    	    android:visibility="visible" />
+    	    android:visibility="gone" />
     	
     	<EditText
     	    android:id="@+id/editText_PosY"
@@ -93,7 +93,7 @@
     	    android:inputType="numberDecimal"
     	    android:text="@string/map_editText_PosY"
     	    android:textColor="@android:color/white"
-    	    android:visibility="visible" />
+    	    android:visibility="gone" />
     	
     	<Button
     	    android:id="@+id/Button_followVirtualPos"
@@ -103,7 +103,7 @@
     	    android:layout_toLeftOf="@+id/editText_PosX"
     	    android:onClick="onFollowVirtualPosClicked"
     	    android:text="@string/map_Button_followVirtualPos"
-    	    android:visibility="visible" />
+    	    android:visibility="gone" />
 
     	<Button
     	    android:id="@+id/Button_updateVirtualPos"
@@ -113,7 +113,7 @@
     	    android:layout_alignRight="@+id/editText_PosY"
     	    android:onClick="onUpdateVirtualPosClicked"
     	    android:text="@string/map_Button_updateVirtualPos"
-    	    android:visibility="invisible" />
+    	    android:visibility="gone" />
 
     	<TextView
     	    android:id="@+id/textView_State"

@@ -58,6 +58,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		final private float PX_SCALE_Y = ( (245/64) + (122/30) ) / 2;
 		//final private float PX_SCALE_R = (PX_SCALE_X+PX_SCALE_Y) / 2; 
 		
+		//Range, in which the Parking Slot is allowed to have a deviation
+		//when trying do draw a Rect for the PS-Selection
+		//the Range is 1-PS_RANGE to 1+_PSRANGE
+		final private double PS_RANGE=0.1;
+		//Width of the drawn Rectangle
+		final private int PS_WIDTH=20;
 								
 		
 		//Variables concerning the offset of the distance sensor
@@ -94,7 +100,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		private int pathcount=0;
 		
 		//last known motion event
-		private MotionEvent histMotionEvent = null;
+		//private MotionEvent histMotionEvent = null;
 		
 		//variables for drawing
 		boolean draw_initialized;
@@ -116,7 +122,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		private float vPOSY = 0;
 		private float dPOSX = 0;
 		private float dPOSY = 0;
-		private float ANGLE0 = 0;
+		//private float ANGLE0 = 0;
 		private float dANGLE = 0;
 		Bitmap bBackground;  //original bitmap of Background
 		Bitmap mBackground;  //scaled bitmap of Background
@@ -266,7 +272,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		 * Draws the coordinate system in which the robot is
 		 * supposed to move.
 		 */
-		private void drawCoordinateSystem() {
+		/*  private void drawCoordinateSystem() {
 			Canvas c= null;
 			try {	
 				c = mSurfaceHolder.lockCanvas(null);
@@ -291,7 +297,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 					mSurfaceHolder.unlockCanvasAndPost(c);
 			}			
 			
-		}
+		} */
 		
 		/**
 		 * Draws all graphics which are supposed to change dynamically.
@@ -305,8 +311,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			 */
 			float POSY0= c.getHeight()*(float)((1.1/7)+ (4.2/9));
 			float POSX0= c.getWidth()*(float)(1.3/15.5);
-
-			
+		
 			//clear the Screen
 			c.drawColor(CLEAR);
 			
@@ -359,6 +364,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 				
 			//draw Sensor Information as a line
 			//FRONT SENSOR
+			
 			/*Log.d("Line","Drawing line:"+POSX0+(dPOSX+SENSOR_FRONT_OFFSET_X)*PX_SCALE_X+" "
 			+(POSY0-(dPOSY+SENSOR_FRONT_OFFSET_Y)*PX_SCALE_Y)+" "
 			+((float)(POSX0+(dPOSX+SENSOR_FRONT_OFFSET_X+convertToKartesianX(dDISTFRONT, SENSOR_FRONT_ANGLE+dANGLE) )*PX_SCALE_X) )+ " " +
@@ -394,11 +400,80 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			try {
 				aParkingSlotRectF.clear();
 				for (int i=0; i < this.ParkingSlot.size(); i++) {
-					RectF ParkingSlotRect = new RectF(
+					
+					/*
+					 * Check the orientation of the Rect
+					 * This works as follows: 
+					 * check if there are pos variables of same dimension within a certain acceptable
+					 * range
+					 * -> divide BackPos by FrontPos and get deviation
+					 * -> if within acceptable range, this is not the changing variable
+					 * -> check the actual changing variable for orientation
+					 * -> determine drawing values correctly
+					 * This is necessary, so that the values can be properly chosen later.
+					 * 
+					 * TODO Attention: If the values are too small, then the RectF can
+					 * not be drawn. This can be applied as a filter for very small
+					 * ParkingSlots (which are an error anyway).
+					 * 
+					 * FIXME Zero is a problem.
+					 * 
+					 *  Notice: Back is passed first, front is passed last
+					 */
+					float top=0;
+					float right=0;
+					float bottom=0;
+					float left=0;
+					double mDeviation;
+					
+					//x: check if values are within range
+					mDeviation = ( this.ParkingSlot.get(i).getBackBoundaryPosition().x / this.ParkingSlot.get(i).getBackBoundaryPosition().x );
+					if ( (mDeviation > 1-PS_RANGE) || (mDeviation < 1+PS_RANGE) ) {
+						//then y: determine orientation based on y statements
+						if (this.ParkingSlot.get(i).getBackBoundaryPosition().y < this.ParkingSlot.get(i).getFrontBoundaryPosition().y) {
+							// yBack -> yFront    	| x const.
+							bottom = POSY0-this.ParkingSlot.get(i).getBackBoundaryPosition().y*PX_SCALE_Y;
+							top = POSY0-this.ParkingSlot.get(i).getBackBoundaryPosition().y*PX_SCALE_Y;
+							left = POSX0+this.ParkingSlot.get(i).getBackBoundaryPosition().x*PX_SCALE_X;
+							right = left+PS_WIDTH;
+						}
+						else {
+							//yFront -> yBack		| x const.
+							bottom = POSY0-this.ParkingSlot.get(i).getFrontBoundaryPosition().y*PX_SCALE_Y;
+							top = POSY0-this.ParkingSlot.get(i).getFrontBoundaryPosition().y*PX_SCALE_Y;
+							right = POSX0+this.ParkingSlot.get(i).getBackBoundaryPosition().x*PX_SCALE_X;
+							left = right-PS_WIDTH;
+						}
+						
+					} //y: check if variables are within range
+					else {
+						mDeviation= (this.ParkingSlot.get(i).getBackBoundaryPosition().y / this.ParkingSlot.get(i).getBackBoundaryPosition().y);
+						if  ( (mDeviation > 1-PS_RANGE) || (mDeviation < 1+PS_RANGE) ) {
+							//then x: determine orientation based on x statements
+							if (this.ParkingSlot.get(i).getBackBoundaryPosition().x < this.ParkingSlot.get(i).getFrontBoundaryPosition().x) {
+								// xBack -> xFront		| y const.
+								top = POSY0-this.ParkingSlot.get(i).getBackBoundaryPosition().y*PX_SCALE_Y;
+								bottom = POSY0+PS_WIDTH;
+								left = POSX0+this.ParkingSlot.get(i).getBackBoundaryPosition().x*PX_SCALE_X;
+								right = POSX0+this.ParkingSlot.get(i).getFrontBoundaryPosition().x*PX_SCALE_X;
+							}
+							else {
+								// xFront -> xBack		| y const.
+								bottom = POSY0-this.ParkingSlot.get(i).getBackBoundaryPosition().y*PX_SCALE_Y;
+								top = bottom-PS_WIDTH;
+								right = POSX0+this.ParkingSlot.get(i).getBackBoundaryPosition().x*PX_SCALE_X;
+								left = POSX0+this.ParkingSlot.get(i).getFrontBoundaryPosition().x*PX_SCALE_X;			
+							}
+						}
+					}
+					
+					/*RectF ParkingSlotRect = new RectF(
 							this.ParkingSlot.get(i).getBackBoundaryPosition().x*PX_SCALE_X,
 							this.ParkingSlot.get(i).getBackBoundaryPosition().y*PX_SCALE_Y,
 							this.ParkingSlot.get(i).getFrontBoundaryPosition().x*PX_SCALE_X,
-							this.ParkingSlot.get(i).getFrontBoundaryPosition().y*PX_SCALE_Y);
+							this.ParkingSlot.get(i).getFrontBoundaryPosition().y*PX_SCALE_Y); */
+					RectF ParkingSlotRect = new RectF(left, top, right, bottom);
+					
 					aParkingSlotRectF.add(ParkingSlotRect); //save the slot in a list
 					
 					//check if the last MotionEvent marks the RectF as selected and propagate
@@ -699,8 +774,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	
 	private MapThread thread;
 	private SurfaceHolder mapholder;
-	private Context context;
-	private MapGestureListener GestureListener;
+	//private Context context;
+	//private MapGestureListener GestureListener;
 	private GestureDetector mDetector;
 	private ArrayList<ParkingSlot> atParkingSlot;
 	
@@ -710,7 +785,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		super(context, attrs);
 		
 		//register interest to hear about surface changes
-		SurfaceHolder mapholder=getHolder();
+		mapholder=getHolder();
 		mapholder.addCallback(this);
 		
 		//create a thread, this will be started on surface creation
