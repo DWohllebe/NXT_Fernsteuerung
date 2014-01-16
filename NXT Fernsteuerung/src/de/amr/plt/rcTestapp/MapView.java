@@ -1,6 +1,8 @@
 package de.amr.plt.rcTestapp;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import de.amr.plt.rcParkingRobot.IAndroidHmi.ParkingSlot;
 import de.amr.plt.rcParkingRobot.IAndroidHmi.ParkingSlot.ParkingSlotStatus;
@@ -54,9 +56,14 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		//						122 px zu 30 cm -> 122/30 = 4.067
 		//final private float PX_SCALE_X = ( (690/184)+(110/34) ) / 2;
 		//final private float PX_SCALE_X = (690/181);
-		final private float PX_SCALE_X = 451/100;
-		final private float PX_SCALE_Y = ( (245/64) + (122/30) ) / 2;
+		final private float PX_SCALE_X = (float)383/100;  //451/100
+		final private float PX_SCALE_Y = (float)394/100;
 		//final private float PX_SCALE_R = (PX_SCALE_X+PX_SCALE_Y) / 2; 
+		
+		//Scale variables for the pointer
+		//pointer size = original size / POINTER_DIV
+		final private double POINTER_DIV_WIDTH=1.5;
+		final private double POINTER_DIV_HEIGHT=1.5;
 		
 		//Defines for drawing Method of ParkingSlots
 		
@@ -70,29 +77,32 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		
 		//Variables concerning the offset of the distance sensor
 				//the offsets are seen from the middle point of the robot
-				final private float SENSOR_FRONT_OFFSET_X=		0;
-				final private float SENSOR_FRONT_OFFSET_Y=		0;
-				final private float SENSOR_FRONT_ANGLE=			-45;
+				final private float SENSOR_FRONT_OFFSET_X=		12;
+				final private float SENSOR_FRONT_OFFSET_Y=		-4;
+				final private float SENSOR_FRONT_ANGLE=			0;
 				final private float SENSOR_FRONTSIDE_OFFSET_X=	0;
-				final private float SENSOR_FRONTSIDE_OFFSET_Y=	0;
-				final private float SENSOR_FRONTSIDE_ANGLE=		45;
-				final private float SENSOR_BACK_OFFSET_X=		0;
-				final private float SENSOR_BACK_OFFSET_Y=		0;
-				final private float SENSOR_BACK_ANGLE=			-200;
-				final private float SENSOR_BACKSIDE_OFFSET_X=	0;
-				final private float SENSOR_BACKSIDE_OFFSET_Y=	0;
-				final private float SENSOR_BACKSIDE_ANGLE=		200;
+				final private float SENSOR_FRONTSIDE_OFFSET_Y=	-4;
+				final private float SENSOR_FRONTSIDE_ANGLE=		-90;
+				final private float SENSOR_BACK_OFFSET_X=		-12;
+				final private float SENSOR_BACK_OFFSET_Y=		-4;
+				final private float SENSOR_BACK_ANGLE=			180;
+				final private float SENSOR_BACKSIDE_OFFSET_X=	-2;
+				final private float SENSOR_BACKSIDE_OFFSET_Y=	-4;
+				final private float SENSOR_BACKSIDE_ANGLE=		-90;
 
 		//sensor information variables
 				private double dDISTFRONT=0;
 				private double dDISTFRONTSIDE=0;
 				private double dDISTBACK=0;
 				private double dDISTBACKSIDE=0;
+				
+				final private double dDISTSCALE=0.1;
+				private double ptr_std_height;
 		
 		//Bitmap matrix
 		Matrix matrix;
 		
-		//Variables for Menu Button properties TODO (deprecated)
+		//Variables for Menu Button properties (deprecated)
 		final private int BUTTON_COUNT=4;
 		final private int BUTTON_WIDTH=60;
 		
@@ -144,7 +154,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		
 		
 		//variables for parking slot
-		ArrayList<ParkingSlot> ParkingSlot;
+		//ArrayList<ParkingSlot> ParkingSlot;
+		List<ParkingSlot> ParkingSlot;
 		ArrayList<RectF> aParkingSlotRectF;
 		int ParkingSlotSelectionID = (-1);
 		
@@ -162,12 +173,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			
 			//build ArrayLists
 			aParkingSlotRectF = new ArrayList<RectF>();
-			ParkingSlot = new ArrayList<ParkingSlot>();
+			ParkingSlot = Collections.synchronizedList(new ArrayList<ParkingSlot>());
+			//ParkingSlot = new ArrayList<ParkingSlot>();
 			
 			//initialize all Bitmaps
 			//BitmapFactory.Options options=new BitmapFactory.Options();
-			//options.inSampleSize = 8;
-			
+			//options.inSampleSize = 8;	
 			bBackground = BitmapFactory.decodeResource(res, R.drawable.bg_map);	
 			pointer = BitmapFactory.decodeResource(res, R.drawable.spr_ptr_nxtbot);			
 			
@@ -211,6 +222,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		
 		/**
 		 * Method for testing various Draw-related functions.
+		 * @deprecated
 		 */
 		public void drawTestImage() {
 			Canvas c= null;
@@ -320,7 +332,6 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			c.drawBitmap(mBackground, 0, 0, null);
 			}
 			
-			
 			//c.drawPoints(pts, offset, count, paint)
 			//draw the Pointer
 			if (vPosActive == false) {
@@ -361,40 +372,54 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 				}
 			}
 				
-			//draw Sensor Information as a line
+			//*-----draw Sensor Information as a line----*   <- a friggin' MASTERPIECE!
+			/*
+			 * Basic way this works:
+			 * - set a starting point on a circle (with the same middlepoint as the pointer)
+			 * - set a second point from this point to the destination determined by the sensor values
+			 * - draw it
+			 * - enjoy
+			 */
+			double frontside_anchor_pt_x=dPOSX*PX_SCALE_X+convertToCartesianX(ptr_std_height=30,dANGLE-45);
+			double frontside_anchor_pt_y=dPOSY*PX_SCALE_Y+convertToCartesianY(ptr_std_height=30,dANGLE-45);
+			
+			double backside_anchor_pt_x=dPOSX*PX_SCALE_X+convertToCartesianX(30, dANGLE-90);
+			double backside_anchor_pt_y=dPOSY*PX_SCALE_Y+convertToCartesianY(30, dANGLE-90);
+			
+			double front_anchor_pt_x=dPOSX*PX_SCALE_X+convertToCartesianX(ptr_std_height=30, dANGLE);
+			double front_anchor_pt_y=dPOSY*PX_SCALE_Y+convertToCartesianY(ptr_std_height=30, dANGLE);
+			
+			double back_anchor_pt_x=dPOSX*PX_SCALE_X+convertToCartesianX(ptr_std_height=30, dANGLE+180);
+			double back_anchor_pt_y=dPOSY*PX_SCALE_Y+convertToCartesianY(ptr_std_height=30, dANGLE+180);
+			
 			//FRONT SENSOR
-			
-			/*Log.d("Line","Drawing line:"+POSX0+(dPOSX+SENSOR_FRONT_OFFSET_X)*PX_SCALE_X+" "
-			+(POSY0-(dPOSY+SENSOR_FRONT_OFFSET_Y)*PX_SCALE_Y)+" "
-			+((float)(POSX0+(dPOSX+SENSOR_FRONT_OFFSET_X+convertToKartesianX(dDISTFRONT, SENSOR_FRONT_ANGLE+dANGLE) )*PX_SCALE_X) )+ " " +
-			+((float)(POSY0-(dPOSY+SENSOR_FRONT_OFFSET_Y-convertToKartesianY(dDISTFRONT, SENSOR_FRONT_ANGLE+dANGLE) )*PX_SCALE_Y))); */
-			
-			c.drawLine(POSX0+(dPOSX+SENSOR_FRONT_OFFSET_X)*PX_SCALE_X, 
-					POSY0-(dPOSY+SENSOR_FRONT_OFFSET_Y)*PX_SCALE_Y, 
-					(float)(POSX0+(dPOSX+SENSOR_FRONT_OFFSET_X+convertToKartesianX(dDISTFRONT, SENSOR_FRONT_ANGLE+dANGLE) )*PX_SCALE_X), 
-					(float)(POSY0-(dPOSY+SENSOR_FRONT_OFFSET_Y-convertToKartesianY(dDISTFRONT, SENSOR_FRONT_ANGLE+dANGLE) )*PX_SCALE_Y),
-					DISTANCE_SENSOR_COLOR);	
-			//FRONTSIDE SENSOR
-			c.drawLine(POSX0+(dPOSX+SENSOR_FRONTSIDE_OFFSET_X)*PX_SCALE_X, 
-					POSY0-(dPOSY+SENSOR_FRONTSIDE_OFFSET_Y)*PX_SCALE_Y, 
-					(float)(POSX0+ (dPOSX+SENSOR_FRONTSIDE_OFFSET_X+convertToKartesianX(dDISTFRONTSIDE, SENSOR_FRONTSIDE_ANGLE+dANGLE) )*PX_SCALE_X), 
-					(float)(POSY0- (dPOSY+SENSOR_FRONTSIDE_OFFSET_Y-convertToKartesianY(dDISTFRONTSIDE, SENSOR_FRONTSIDE_ANGLE+dANGLE) )*PX_SCALE_Y),
+			c.drawLine(	(float)	(POSX0+front_anchor_pt_x), 
+					(float)	(POSY0-front_anchor_pt_y), 
+					(float)	(POSX0+front_anchor_pt_x+convertToCartesianX(dDISTFRONT, SENSOR_FRONT_ANGLE+dANGLE)*PX_SCALE_X), 
+					(float)	(POSY0-(front_anchor_pt_y+convertToCartesianY(dDISTFRONT, SENSOR_FRONT_ANGLE+dANGLE)*PX_SCALE_Y)),
 					DISTANCE_SENSOR_COLOR);
+			
+			//FRONTSIDE SENSOR
+			c.drawLine(	(float)	(POSX0+frontside_anchor_pt_x), 
+						(float)	(POSY0-frontside_anchor_pt_y), 
+						(float)	(POSX0+frontside_anchor_pt_x+convertToCartesianX(dDISTFRONTSIDE, SENSOR_FRONTSIDE_ANGLE+dANGLE)*PX_SCALE_X), 
+						(float)	(POSY0-(frontside_anchor_pt_y+convertToCartesianY(dDISTFRONTSIDE, SENSOR_FRONTSIDE_ANGLE+dANGLE)*PX_SCALE_Y)),
+						DISTANCE_SENSOR_COLOR);
+			
 			//BACK SENSOR
-			c.drawLine(POSX0+(dPOSX+SENSOR_BACK_OFFSET_X)*PX_SCALE_X, 
-					POSY0-(dPOSY+SENSOR_BACK_OFFSET_Y)*PX_SCALE_Y, 
-					(float)(POSX0+ (dPOSX+SENSOR_BACK_OFFSET_X+convertToKartesianX(dDISTBACK, SENSOR_BACK_ANGLE+dANGLE))*PX_SCALE_X), 
-					(float)(POSY0- (dPOSY+SENSOR_BACK_OFFSET_Y-convertToKartesianY(dDISTBACK, SENSOR_BACK_ANGLE+dANGLE))*PX_SCALE_Y),
+			c.drawLine(	(float)	(POSX0+back_anchor_pt_x), 
+					(float)	(POSY0-back_anchor_pt_y), 
+					(float)	(POSX0+back_anchor_pt_x+convertToCartesianX(dDISTBACK, SENSOR_BACK_ANGLE+dANGLE)*PX_SCALE_X), 
+					(float)	(POSY0-(back_anchor_pt_y+convertToCartesianY(dDISTBACK, SENSOR_BACK_ANGLE+dANGLE)*PX_SCALE_Y)),
 					DISTANCE_SENSOR_COLOR);
 			
 			//BACKSIDE SENSOR
-			c.drawLine(POSX0+(dPOSX+SENSOR_BACKSIDE_OFFSET_X)*PX_SCALE_X, 
-					POSY0-(dPOSY+SENSOR_BACKSIDE_OFFSET_Y)*PX_SCALE_Y, 
-					(float)(POSX0+ (dPOSX+SENSOR_BACKSIDE_OFFSET_X+convertToKartesianX(dDISTBACKSIDE, SENSOR_BACKSIDE_ANGLE+dANGLE) )*PX_SCALE_X), 
-					(float)(POSY0- (dPOSY+SENSOR_BACKSIDE_OFFSET_Y-convertToKartesianY(dDISTBACKSIDE, SENSOR_BACKSIDE_ANGLE+dANGLE) )*PX_SCALE_Y),
+			c.drawLine(	(float)	(POSX0+backside_anchor_pt_x), 
+					(float)	(POSY0-backside_anchor_pt_y), 
+					(float)	(POSX0+backside_anchor_pt_x+convertToCartesianX(dDISTBACKSIDE, SENSOR_BACKSIDE_ANGLE+dANGLE)*PX_SCALE_X), 
+					(float)	(POSY0-(backside_anchor_pt_y+convertToCartesianY(dDISTBACKSIDE, SENSOR_BACKSIDE_ANGLE+dANGLE)*PX_SCALE_Y)),
 					DISTANCE_SENSOR_COLOR);
 	
-			
 			//draw all known ParkingSlots
 			try {
 				aParkingSlotRectF.clear();
@@ -476,7 +501,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 					aParkingSlotRectF.add(ParkingSlotRect); //save the slot in a list
 					
 					//check if the last MotionEvent marks the RectF as selected and propagate
-					Log.d("doDraw","histEvent[" + histEvent.getX() + " | "+histEvent.getY()+"] ParkingSlot [left:"+ParkingSlotRect.left+" right:"+ParkingSlotRect.right+" bottom:"+ParkingSlotRect.bottom+" top:"+ParkingSlotRect.top+"]");
+					//Log.d("doDraw","histEvent[" + histEvent.getX() + " | "+histEvent.getY()+"] ParkingSlot [left:"+ParkingSlotRect.left+" right:"+ParkingSlotRect.right+" bottom:"+ParkingSlotRect.bottom+" top:"+ParkingSlotRect.top+"]");
 					if ( (histEvent.getX() > ParkingSlotRect.left) //is the touch point inside the RectF?
 							&& (histEvent.getX() < ParkingSlotRect.right) 
 							&& (histEvent.getY() < ParkingSlotRect.bottom)
@@ -522,9 +547,10 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 							false);
 					
 					pointer=Bitmap.createScaledBitmap(pointer,
-							pointer.getWidth()/2,
-							pointer.getHeight()/2,
+							(int)(pointer.getWidth()/POINTER_DIV_WIDTH),
+							(int)(pointer.getHeight()/POINTER_DIV_HEIGHT),
 							false);
+					ptr_std_height=pointer.getScaledWidth(c);
 				}
 			}
 			finally {
@@ -634,12 +660,18 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		/**
 		 * Sets the ParkingSlot Array. Only passes the list
 		 * if it contains elements.
-		 * @param sa
+		 * @param atParkingSlot
 		 */
-		public void setParkingSlots(ArrayList<ParkingSlot> sa) {
+		public synchronized void setParkingSlots(List<ParkingSlot> atParkingSlot) {
+			synchronized (mSurfaceHolder) {			
+				if (atParkingSlot != ParkingSlot)
+				ParkingSlot=atParkingSlot;
+			}
+		}
+		
+		public void addParkingSlot(ParkingSlot ps) {
 			synchronized (mSurfaceHolder) {
-				if (sa.size() > 0)
-				ParkingSlot=sa;
+				ParkingSlot.add(ps);
 			}
 		}
 		
@@ -653,17 +685,20 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 		
 		/**
-		 * Sets the sensor values, which are then drawn in doDraw();
+		 * Sets the sensor values, which are then drawn in doDraw().
+		 * Sensor values are required in mm and are converted to cm
+		 * (because the Perception module is returning the wrong
+		 * values)
 		 * @param front
 		 * @param frontside
 		 * @param back
 		 * @param backside
 		 */
 		public void setSensorValues(double front, double frontside, double back, double backside) {
-			dDISTFRONT = front;
-			dDISTFRONTSIDE = frontside;
-			dDISTBACK = back;
-			dDISTBACKSIDE = backside;
+			dDISTFRONT = front*dDISTSCALE;
+			dDISTFRONTSIDE = frontside*dDISTSCALE;
+			dDISTBACK = back*dDISTSCALE;
+			dDISTBACKSIDE = backside*dDISTSCALE;
 		}
 		
 		/**
@@ -694,11 +729,29 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
 		}
 		
-		private double convertToKartesianX(double r, double phi) {
+		/**
+		 * Converts polar coordinates to Cartesian x value.
+		 * The angle will be reserved to account for difference
+		 * between coordinates systems from NXT Robot to
+		 * Tablet.
+		 * @param radius r
+		 * @param angle phi
+		 * @return x value
+		 */
+		private double convertToCartesianX(double r, double phi) {
 			return ( r*(Math.cos( Math.toRadians(phi) )) );
 		}
 		
-		private double convertToKartesianY(double r, double phi) {
+		/**
+		 * Converts polar coordinates to Cartesian y value.
+		 * The angle will be reserved to account for difference
+		 * between coordinates systems from NXT Robot to
+		 * Tablet.
+		 * @param radius r
+		 * @param angle phi
+		 * @return y value
+		 */
+		private double convertToCartesianY(double r, double phi) {
 			return ( r*(Math.sin( Math.toRadians(phi) )) );
 		}
 		
@@ -783,7 +836,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	//private Context context;
 	//private MapGestureListener GestureListener;
 	private GestureDetector mDetector;
-	private ArrayList<ParkingSlot> atParkingSlot;
+	private List<ParkingSlot> atParkingSlot;
 	
 	
 	public MapView(Context context, AttributeSet attrs) {
@@ -801,7 +854,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		mDetector = new GestureDetector(context, new MapGestureListener(), new Handler()); //FIXME	
 		
 		//create temporary ArrayList
-		atParkingSlot = new ArrayList<ParkingSlot>();
+		atParkingSlot = Collections.synchronizedList(new ArrayList<ParkingSlot>());
+		//atParkingSlot = new ArrayList<ParkingSlot>();
 	}
 	
 	

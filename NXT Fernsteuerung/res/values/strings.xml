@@ -45,8 +45,8 @@
     <string name="map_textView_AngleValue_Label">Angle:</string>
     <string name="map_textView_DistFront_Label">Dist[front]:</string>
     <string name="map_textView_DistBack_Label">Dist[back]:</string>
-    <string name="map_textView_DistLeft_Label">Dist[left]:</string>
- 	<string name="map_textView_DistRight_Label">Dist[right]:</string>
+    <string name="map_textView_DistLeft_Label">Dist[bside]:</string>
+ 	<string name="map_textView_DistRight_Label">Dist[fside]:</string>
     <string name="map_textView_XValue">(undefined)</string>
     <string name="map_textView_YValue">(undefined)</string>
     <string name="map_textView_AngleValue">(undefined)</string>   

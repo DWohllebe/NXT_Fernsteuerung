@@ -55,8 +55,9 @@ public class MapActivity extends Activity {
 	
 	boolean test= false;
 	
-	//determines, how incoming Pos-Data should be valued
+	//determines, how incoming Position-Data should be valued
 	final float MEASUREMENT_SCALE= (1);   //(1/100)
+	final double DISTSENSOR_MEASUREMENT_SCALE = (1/10);
 	
 	//create a listener for the MapView Motion Events
     static Handler mMotionHandler = new Handler() {
@@ -117,6 +118,7 @@ public class MapActivity extends Activity {
             			map.addParkingSlot(new ParkingSlot(0, new PointF(0, 1), new PointF(180, 1), ParkingSlot.ParkingSlotStatus.GOOD));
             			map.addParkingSlot(new ParkingSlot(1, new PointF(181, 1), new PointF(181, 64), ParkingSlot.ParkingSlotStatus.BAD));
             			map.addParkingSlot(new ParkingSlot(2, new PointF(101,54), new PointF( 1, 56), ParkingSlot.ParkingSlotStatus.RESCAN));
+            			map.setSensorValues(20, 50, 20, 20);
             			map.propagateParkingSlots();
         		}
         		test = false;
@@ -665,10 +667,11 @@ new Timer().schedule(new TimerTask() {
                     	float cXPOS = hmiModule.getPosition().getX()*MEASUREMENT_SCALE;
                     	float cYPOS = hmiModule.getPosition().getY()*MEASUREMENT_SCALE;
                     	float cANGLE = hmiModule.getPosition().getAngle();
-                    	double cDISTBACK = hmiModule.getPosition().getDistanceBack()*MEASUREMENT_SCALE;
-                    	double cDISTFRONT = hmiModule.getPosition().getDistanceFront()*MEASUREMENT_SCALE;
-                    	double cDISTLEFT = hmiModule.getPosition().getDistanceBackSide()*MEASUREMENT_SCALE;
-                    	double cDISTRIGHT = hmiModule.getPosition().getDistanceFrontSide()*MEASUREMENT_SCALE;
+                    	double cDISTBACK = hmiModule.getPosition().getDistanceBack(); //*DISTSENSOR_MEASUREMENT_SCALE;
+                    	double cDISTFRONT = hmiModule.getPosition().getDistanceFront(); //*DISTSENSOR_MEASUREMENT_SCALE;
+                    	double cDISTLEFT = hmiModule.getPosition().getDistanceBackSide(); //*DISTSENSOR_MEASUREMENT_SCALE;
+                    	double cDISTRIGHT = hmiModule.getPosition().getDistanceFrontSide(); //*DISTSENSOR_MEASUREMENT_SCALE;
+                    	//Log.d("StatusListener","DISTFRONT:"+cDISTFRONT);
                     	
                     	
                     	final MapView map = (MapView) findViewById(R.id.map);
@@ -677,6 +680,8 @@ new Timer().schedule(new TimerTask() {
                     	map.setPose(cXPOS, cYPOS, cANGLE);
                     	map.setSensorValues(cDISTFRONT, cDISTRIGHT, cDISTBACK, cDISTLEFT);
                     	}
+                    	
+                    	
                     	
                     	//get all current parking slots and pass them directly to MapView
                     	
@@ -708,16 +713,16 @@ new Timer().schedule(new TimerTask() {
                 		fld_angle.setText(String.valueOf(cANGLE+"°"));
                 		//display distance to front
                 		final TextView fld_distfront = (TextView) findViewById(R.id.textView_DistFront);
-                		fld_distfront.setText(String.valueOf(cDISTFRONT)+" cm");
+                		fld_distfront.setText(String.valueOf(cDISTFRONT)+" mm");
                 		//display distance to back
                 		final TextView fld_distback = (TextView) findViewById(R.id.textView_DistBack);
-                		fld_distback.setText(String.valueOf(cDISTBACK)+ "cm");
+                		fld_distback.setText(String.valueOf(cDISTBACK)+ "mm");
                 		//display distance to frontside
                 		final TextView fld_distleft = (TextView) findViewById(R.id.textView_DistLeft);
-                		fld_distleft.setText(String.valueOf(cDISTLEFT)+" cm");
+                		fld_distleft.setText(String.valueOf(cDISTLEFT)+" mm");
                 		//display distance to backside
                 		final TextView fld_distright = (TextView) findViewById(R.id.textView_DistRight);
-                		fld_distright.setText(String.valueOf(cDISTRIGHT)+" cm");
+                		fld_distright.setText(String.valueOf(cDISTRIGHT)+" mm");
                 		
                 		//restart activity when disconnecting
                 		if(hmiModule.getCurrentStatus()==CurrentStatus.EXIT){

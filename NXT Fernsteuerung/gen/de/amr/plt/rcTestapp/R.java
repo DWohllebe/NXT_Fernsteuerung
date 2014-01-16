@@ -83,13 +83,13 @@ public final class R {
         public static final int textViewValueStatus=0x7f090009;
         public static final int textViewValueX=0x7f09000b;
         public static final int textViewValueY=0x7f09000d;
-        public static final int textView_AngleValue=0x7f090033;
+        public static final int textView_AngleValue=0x7f090034;
         public static final int textView_AngleValue_Label=0x7f09002d;
-        public static final int textView_DistBack=0x7f090035;
+        public static final int textView_DistBack=0x7f090036;
         public static final int textView_DistBack_Label=0x7f090030;
-        public static final int textView_DistFront=0x7f090034;
+        public static final int textView_DistFront=0x7f090035;
         public static final int textView_DistFront_Label=0x7f09002e;
-        public static final int textView_DistLeft=0x7f090036;
+        public static final int textView_DistLeft=0x7f090032;
         public static final int textView_DistLeft_Label=0x7f09002f;
         public static final int textView_DistRight=0x7f09002b;
         public static final int textView_DistRight_Label=0x7f090029;
@@ -97,7 +97,7 @@ public final class R {
         public static final int textView_State=0x7f09001e;
         public static final int textView_XValue=0x7f090031;
         public static final int textView_XValue_Label=0x7f09002a;
-        public static final int textView_YValue=0x7f090032;
+        public static final int textView_YValue=0x7f090033;
         public static final int textView_YValue_Label=0x7f09002c;
         public static final int toggleMode=0x7f090018;
     }
