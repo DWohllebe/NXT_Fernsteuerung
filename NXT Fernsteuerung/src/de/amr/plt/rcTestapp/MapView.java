@@ -32,6 +32,7 @@ import android.view.View;
  * hierarchy, to display related map information about the NXT robot.
  * 
  * @author Daniel Wohllebe
+ * @version 1.0
  *
  */
 public class MapView extends SurfaceView implements SurfaceHolder.Callback {
@@ -41,7 +42,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	/**
 	 * Thread of class MapView. Handles all drawing functionality.
 	 * @author Daniel Wohllebe
-	 * @version 0.9.1
+	 * @version 1.0.0
 	 */
 	static class MapThread extends Thread {
 		//::: Variable for default background color :::
@@ -79,7 +80,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 				private double dDISTBACKSIDE=0;
 				
 				final private double dDISTSCALE=0.1;
-				private double ptr_std_height;
+				final private double SENSOR_START_VECTOR_LENGTH=30;
 		
 		//::: Bitmap matrix :::
 		private Matrix matrix;
@@ -468,17 +469,17 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			 * - draw cool lines
 			 * - enjoy
 			 */
-			double frontside_anchor_pt_x=dPOSX*PX_SCALE_X+convertToCartesianX(ptr_std_height=30,dANGLE-45);
-			double frontside_anchor_pt_y=dPOSY*PX_SCALE_Y+convertToCartesianY(ptr_std_height=30,dANGLE-45);
+			double frontside_anchor_pt_x=dPOSX*PX_SCALE_X+convertToCartesianX(SENSOR_START_VECTOR_LENGTH,dANGLE-45);
+			double frontside_anchor_pt_y=dPOSY*PX_SCALE_Y+convertToCartesianY(SENSOR_START_VECTOR_LENGTH,dANGLE-45);
 			
-			double backside_anchor_pt_x=dPOSX*PX_SCALE_X+convertToCartesianX(30, dANGLE-135);
-			double backside_anchor_pt_y=dPOSY*PX_SCALE_Y+convertToCartesianY(30, dANGLE-135);
+			double backside_anchor_pt_x=dPOSX*PX_SCALE_X+convertToCartesianX(SENSOR_START_VECTOR_LENGTH, dANGLE-135);
+			double backside_anchor_pt_y=dPOSY*PX_SCALE_Y+convertToCartesianY(SENSOR_START_VECTOR_LENGTH, dANGLE-135);
 			
-			double front_anchor_pt_x=dPOSX*PX_SCALE_X+convertToCartesianX(ptr_std_height=30, dANGLE);
-			double front_anchor_pt_y=dPOSY*PX_SCALE_Y+convertToCartesianY(ptr_std_height=30, dANGLE);
+			double front_anchor_pt_x=dPOSX*PX_SCALE_X+convertToCartesianX(SENSOR_START_VECTOR_LENGTH, dANGLE);
+			double front_anchor_pt_y=dPOSY*PX_SCALE_Y+convertToCartesianY(SENSOR_START_VECTOR_LENGTH, dANGLE);
 			
-			double back_anchor_pt_x=dPOSX*PX_SCALE_X+convertToCartesianX(ptr_std_height=30, dANGLE+180);
-			double back_anchor_pt_y=dPOSY*PX_SCALE_Y+convertToCartesianY(ptr_std_height=30, dANGLE+180);
+			double back_anchor_pt_x=dPOSX*PX_SCALE_X+convertToCartesianX(SENSOR_START_VECTOR_LENGTH, dANGLE+180);
+			double back_anchor_pt_y=dPOSY*PX_SCALE_Y+convertToCartesianY(SENSOR_START_VECTOR_LENGTH, dANGLE+180);
 			
 			//FRONT SENSOR
 			c.drawLine(	(float)	(POSX0+front_anchor_pt_x), 
@@ -530,7 +531,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 							(int)(pointer.getWidth()/POINTER_DIV_WIDTH),
 							(int)(pointer.getHeight()/POINTER_DIV_HEIGHT),
 							false);
-					ptr_std_height=pointer.getScaledWidth(c);
+					//ptr_std_height=pointer.getScaledWidth(c);
 				}
 			}
 			finally {
@@ -978,6 +979,13 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 	}
 	
+	/**
+	 * Sets a ParkingSlot at a certain index.
+	 * The ParkingSlot is masked with a copy of all available
+	 * ParkingSlots and, if successful, is pushed to the thread.
+	 * @param ps
+	 * @param index
+	 */
 	public synchronized void setParkingSlot(ParkingSlot ps, int index) {
 		if (!atParkingSlot.contains(ps)) {
 			atParkingSlot.set(index, ps);

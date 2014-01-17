@@ -8,8 +8,8 @@ import de.amr.plt.rcParkingRobot.AndroidHmiPLT;
 import de.amr.plt.rcParkingRobot.IAndroidHmi.ParkingSlot;
 import de.amr.plt.rcTestapp.R;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+//import android.os.Handler;
+//import android.os.Message;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.util.Log;
@@ -40,6 +40,14 @@ import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import parkingRobot.hsamr1.GuidanceAT.*;
 
+/**
+ * The MapActivity is the main crossroad for the entire
+ * NXT Remote-control. This class links all
+ * functionality together.
+ * @author Daniel
+ * @version 1.0
+ *
+ */
 
 public class MapActivity extends Activity {
 	
@@ -53,30 +61,21 @@ public class MapActivity extends Activity {
 	//request code 
 	final int REQUEST_SETUP_BT_CONNECTION = 1;
 	
-	boolean test= false;
+	private boolean test= false;
 	
 	//determines, how incoming Position-Data should be valued
-	final float MEASUREMENT_SCALE= (1);   //(1/100)
-	final double DISTSENSOR_MEASUREMENT_SCALE = (1/10);
-	
-	//create a listener for the MapView Motion Events
-    /*static Handler mMotionHandler = new Handler() {
-    	@Override
-		public void handleMessage(Message msg) {
-    		Log.d("Motion Handler","Message recieved");
-    	}
-    	
-    }; */ //TODO checkout
+	private final float MEASUREMENT_SCALE= (1);   //(1/100)
+	//private final double DISTSENSOR_MEASUREMENT_SCALE = (1/10);
     
     //prepare picture resources
-    Bitmap bScout; //TODO create routine that updates image buttons
-    Bitmap bPark_this;
-    Bitmap bPark_now;
-    Bitmap bPause;
-    Bitmap bDisconnect;
-    Bitmap bSensorInfoToggle;
-    Bitmap bBluetoothOn;
-    Bitmap bBluetoothOff;
+    private Bitmap bScout;
+    private Bitmap bPark_this;
+    private Bitmap bPark_now;
+    private Bitmap bPause;
+    private Bitmap bDisconnect;
+    //private Bitmap bSensorInfoToggle;
+    private Bitmap bBluetoothOn;
+    private Bitmap bBluetoothOff;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -299,7 +298,7 @@ public class MapActivity extends Activity {
 	}
 	
 	/**
-	 * restart the activity
+	 * Restarts the activity
 	 */
 	private void restartActivity(){
 		Intent restartIntent = new Intent(getApplicationContext(),MapActivity.class);                    			
