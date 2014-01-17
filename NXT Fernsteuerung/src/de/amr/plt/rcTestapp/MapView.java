@@ -990,6 +990,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		if (!atParkingSlot.contains(ps)) {
 			atParkingSlot.set(index, ps);
 			thread.setParkingSlot(ps, index);
+			Log.d("MapView","Pushing PS ["+ps.getID()+"] xb:"
+			+ps.getBackBoundaryPosition().x+" yb:"
+			+ps.getBackBoundaryPosition().y+" xf:"
+			+ps.getFrontBoundaryPosition().x+" yf:"
+			+ps.getFrontBoundaryPosition().y+" State:"+
+			ps.getParkingSlotStatus());
 		}
 	}
 	

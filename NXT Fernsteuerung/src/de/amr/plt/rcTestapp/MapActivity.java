@@ -44,7 +44,7 @@ import parkingRobot.hsamr1.GuidanceAT.*;
  * The MapActivity is the main crossroad for the entire
  * NXT Remote-control. This class links all
  * functionality together.
- * @author Daniel
+ * @author Daniel Wohllebe
  * @version 1.0
  *
  */
@@ -148,7 +148,7 @@ public class MapActivity extends Activity {
 		bPark_now = BitmapFactory.decodeResource(res, R.drawable.bt_park_now);
 		bPause = BitmapFactory.decodeResource(res, R.drawable.bt_pause);
 		bDisconnect = BitmapFactory.decodeResource(res, R.drawable.bt_disconnect);
-		//bSensorInfoToggle = BitmapFactory.decodeResource(res, ...); //TODO draw something
+		//bSensorInfoToggle = BitmapFactory.decodeResource(res, ...);
 		bBluetoothOn = BitmapFactory.decodeResource(res, R.drawable.bt_bluetooth_on);
 		bBluetoothOff = BitmapFactory.decodeResource(res, R.drawable.bt_bluetooth_off);
         
@@ -569,64 +569,6 @@ public class MapActivity extends Activity {
 		spinner.performClick();
 	}
 	
-	/* private void createTestModeSpinner() {
-		//TODO DELETE THIS LATER
-		//prepare Spinner
-        //Source: http://developer.android.com/guide/topics/ui/controls/spinner.html
-        final Spinner Spinner = (Spinner) findViewById(R.id.modeSpinner);
-        ArrayAdapter<CharSequence> Adapter = ArrayAdapter.createFromResource(this,
-        R.array.controlmodes, android.R.layout.simple_spinner_item);
-        Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        Spinner.setAdapter(Adapter);
-		
-        //create a listener for the Spinner
-        Spinner.post(new Runnable() {
-        	public void run() {
-        		Spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-        			public void onItemSelected(AdapterView<?> arg0, View arg1,
-        					int arg2, long arg3) {
-        				//TextView which shows the target state
-        				TextView textview = (TextView)findViewById(R.id.textView_State);
-        				//change Mode depending on the selected item
-        				switch(arg2) {
-        				case 0: 
-        					textview.setText("TEST!PAUSE");
-        					Log.d("Spinner", "PAUSE selected");
-        					break;
-        				case 1: 
-        					textview.setText("TEST!SCOUT");
-        					Log.d("Spinner", "SCOUT selected");
-        					break;
-        				case 2:
-        					textview.setText("TEST!PARK THIS");
-        					Log.d("Spinner", "PARK_THIS selected");
-        					break;
-        				case 3:
-        					textview.setText("TEST!PARK NOW");
-        					Log.d("Spinner", "PARK_NOW selected");
-        					break;
-        				case 4:
-        					textview.setText("TEST!DISCONNECTED");
-        					Log.d("Spinner", "DISCONNECT selected");
-        					break;
-        				default:
-        					Log.e("Spinner","Could not settle for any case in onItemSelected(...)");		
-        				}
-        				
-        			}
-
-        			public void onNothingSelected(AdapterView<?> arg0) {
-        				Log.d("Spinner","No Item was selected.");	
-        			}
-                });
-        	}
-        	
-        });
-        
-		
-	} */
-	
 	/**
 	 * This method starts the StatusListener,
 	 * which regularly checks the AndroidPLT-interface
@@ -716,6 +658,7 @@ new Timer().schedule(new TimerTask() {
                     		if (test==false)
                     			for (int i=0; i < hmiModule.getNoOfParkingSlots(); i++) {
                     				map.setParkingSlot(hmiModule.getParkingSlot(i), i);
+                    				Log.d("StatusListener", "Got ParkingSlot: ID["+i+"]");
                     		}
                     			
                     		//send them to the Draw-Thread

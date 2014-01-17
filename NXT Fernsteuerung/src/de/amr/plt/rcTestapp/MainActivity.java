@@ -26,6 +26,7 @@ import de.amr.plt.rcParkingRobot.AndroidHmiPLT;
 /**
  * The activity visualizes NXT data such as bluetooth connection, current status, x-,y-coordinate, angle and distance values. 
  * @author PLT
+ * @deprecated
  */
 
 public class MainActivity extends Activity {

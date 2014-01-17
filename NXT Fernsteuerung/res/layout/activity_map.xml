@@ -150,7 +150,8 @@
     	    android:layout_height="wrap_content"
     	    android:layout_above="@+id/image_infobar"
     	    android:layout_alignParentLeft="true"
-    	    android:text="Test" />
+    	    android:text="Test"
+    	    android:visibility="gone" />
 
 
     	<ProgressBar
