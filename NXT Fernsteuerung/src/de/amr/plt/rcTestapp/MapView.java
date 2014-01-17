@@ -161,6 +161,10 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		private List<RectF> aParkingSlotRectF;
 		private int ParkingSlotSelectionID = (-1);
 		
+		//maximum capacity of ParkingSlots to be saved
+		//always ensure this is the same values as aPS_LIST_CAPACITY
+		final private int PS_LIST_CAPACITY = 10;
+		
 		//Constructor
 		public MapThread(SurfaceHolder surfaceHolder, Context context, Handler handler) {
 			mSurfaceHolder=surfaceHolder;
@@ -176,7 +180,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			//build ArrayLists
 			aParkingSlotRectF = Collections.synchronizedList(new ArrayList<RectF>());
 			ParkingSlot = Collections.synchronizedList(new ArrayList<ParkingSlot>());
-			for (int i=0; i<10; i++) {
+			for (int i=0; i<PS_LIST_CAPACITY; i++) {
 				ParkingSlot.add(new ParkingSlot(i, null, null, null));
 			}
 			
@@ -532,10 +536,11 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 				}
 			} 
 			catch (NullPointerException e) {
-				Log.e("doDraw", e.getMessage() + ": Skipping drawing of ParkingSlots!");
+				//this is expected behaviour for all unfilled slots
+				//Log.e("doDraw", e.getMessage() + ": Skipping drawing of ParkingSlots!");
 			}
 			catch (IndexOutOfBoundsException e) {
-				Log.e("doDraw", e.getMessage()+ ": Skipping drawing of ParkingSlots!");
+				//Log.e("doDraw", e.getMessage()+ ": Skipping drawing of ParkingSlots!");
 			}
 			
 		}
@@ -856,6 +861,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	private List<ParkingSlot> atParkingSlot;
 	private List<ParkingSlot> histParkingSlot;
 	
+	final private int aPS_LIST_CAPACITY = 10;
+	
 	
 	public MapView(Context context, AttributeSet attrs) {
 		//initialize with given context
@@ -874,7 +881,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		//create temporary ArrayList
 		atParkingSlot = Collections.synchronizedList(new ArrayList<ParkingSlot>());
 		histParkingSlot = Collections.synchronizedList(new ArrayList<ParkingSlot>());
-		for (int i=0; i<10; i++) {
+		for (int i=0; i<aPS_LIST_CAPACITY; i++) {
 			atParkingSlot.add(new ParkingSlot(i, null, null, null));
 		}
 		//atParkingSlot = new ArrayList<ParkingSlot>();
