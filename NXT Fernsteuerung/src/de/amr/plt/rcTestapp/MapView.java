@@ -2,6 +2,7 @@ package de.amr.plt.rcTestapp;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.amr.plt.rcParkingRobot.IAndroidHmi.ParkingSlot;
@@ -15,6 +16,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -100,7 +102,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 				private double ptr_std_height;
 		
 		//Bitmap matrix
-		Matrix matrix;
+		private Matrix matrix;
 		
 		//Variables for Menu Button properties (deprecated)
 		final private int BUTTON_COUNT=4;
@@ -115,12 +117,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		//private MotionEvent histMotionEvent = null;
 		
 		//variables for drawing
-		boolean draw_initialized;
-		boolean button_hover;
-		boolean button_pressed;
-		boolean button_visible;
-		boolean info_bar_visible=true;
-		boolean map_visible=true;
+		private boolean draw_initialized;
+		private boolean button_hover;
+		private boolean button_pressed;
+		private boolean button_visible;
+		private boolean info_bar_visible=true;
+		private boolean map_visible=true;
 		
 		// other variables
 		private SurfaceHolder mSurfaceHolder;
@@ -136,28 +138,28 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		private float dPOSY = 0;
 		//private float ANGLE0 = 0;
 		private float dANGLE = 0;
-		Bitmap bBackground;  //original bitmap of Background
-		Bitmap mBackground;  //scaled bitmap of Background
-		Bitmap bRobot;
-		Bitmap pointer;
-		Bitmap rPointer;
+		private Bitmap bBackground;  //original bitmap of Background
+		private Bitmap mBackground;  //scaled bitmap of Background
+		private Bitmap bRobot;
+		private Bitmap pointer;
+		private Bitmap rPointer;
 		
 		//paint
-		Paint BUTTON_COLOR;  //color for general button rectangles (also default color for testing)
-		Paint PARKINGSLOT_GOOD; //color for parking slots, which fit the robot
-		Paint PARKINGSLOT_BAD; //color for parking slots, which do not fit the robot
-		Paint PARKINGSLOT_RESCAN; //color for parking slots which need to be rescaned
-		Paint PARKINGSLOT_SELECTED; //color for selected slots
-		Paint DISTANCE_SENSOR_COLOR; //color for distance sensor visualisation
-		int paintcounter=0x00;
-		boolean stepdir=true;  //direction for color-switching of path
+		private Paint BUTTON_COLOR;  //color for general button rectangles (also default color for testing)
+		private Paint PARKINGSLOT_GOOD; //color for parking slots, which fit the robot
+		private Paint PARKINGSLOT_BAD; //color for parking slots, which do not fit the robot
+		private Paint PARKINGSLOT_RESCAN; //color for parking slots which need to be rescaned
+		private Paint PARKINGSLOT_SELECTED; //color for selected slots
+		private Paint DISTANCE_SENSOR_COLOR; //color for distance sensor visualisation
+		private int paintcounter=0x00;
+		private boolean stepdir=true;  //direction for color-switching of path
 		
 		
 		//variables for parking slot
 		//ArrayList<ParkingSlot> ParkingSlot;
-		List<ParkingSlot> ParkingSlot;
-		ArrayList<RectF> aParkingSlotRectF;
-		int ParkingSlotSelectionID = (-1);
+		private List<ParkingSlot> ParkingSlot;
+		private List<RectF> aParkingSlotRectF;
+		private int ParkingSlotSelectionID = (-1);
 		
 		//Constructor
 		public MapThread(SurfaceHolder surfaceHolder, Context context, Handler handler) {
@@ -172,8 +174,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			res = mContext.getResources();
 			
 			//build ArrayLists
-			aParkingSlotRectF = new ArrayList<RectF>();
+			aParkingSlotRectF = Collections.synchronizedList(new ArrayList<RectF>());
 			ParkingSlot = Collections.synchronizedList(new ArrayList<ParkingSlot>());
+			for (int i=0; i<10; i++) {
+				ParkingSlot.add(new ParkingSlot(i, null, null, null));
+			}
+			
 			//ParkingSlot = new ArrayList<ParkingSlot>();
 			
 			//initialize all Bitmaps
@@ -214,6 +220,11 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			DISTANCE_SENSOR_COLOR.setStyle(Paint.Style.STROKE);
 			DISTANCE_SENSOR_COLOR.setStrokeWidth(1.5f);
 			
+			//ParkingSlot.add(new ParkingSlot(0, new PointF(180 ,1), new PointF(1,1), ParkingSlotStatus.GOOD));
+			//ParkingSlot.add(new ParkingSlot(0, new PointF(180 ,5), new PointF(180,40), ParkingSlotStatus.GOOD));
+			//ParkingSlot.add(new ParkingSlot(0, new PointF(1 ,40), new PointF(1,20), ParkingSlotStatus.BAD));
+			//ParkingSlot.add(new ParkingSlot(0, new PointF(1 ,1), new PointF(180,1), ParkingSlotStatus.GOOD));
+
 		}
 		
 		public void setRunning(boolean b) {
@@ -383,8 +394,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			double frontside_anchor_pt_x=dPOSX*PX_SCALE_X+convertToCartesianX(ptr_std_height=30,dANGLE-45);
 			double frontside_anchor_pt_y=dPOSY*PX_SCALE_Y+convertToCartesianY(ptr_std_height=30,dANGLE-45);
 			
-			double backside_anchor_pt_x=dPOSX*PX_SCALE_X+convertToCartesianX(30, dANGLE-90);
-			double backside_anchor_pt_y=dPOSY*PX_SCALE_Y+convertToCartesianY(30, dANGLE-90);
+			double backside_anchor_pt_x=dPOSX*PX_SCALE_X+convertToCartesianX(30, dANGLE-135);
+			double backside_anchor_pt_y=dPOSY*PX_SCALE_Y+convertToCartesianY(30, dANGLE-135);
 			
 			double front_anchor_pt_x=dPOSX*PX_SCALE_X+convertToCartesianX(ptr_std_height=30, dANGLE);
 			double front_anchor_pt_y=dPOSY*PX_SCALE_Y+convertToCartesianY(ptr_std_height=30, dANGLE);
@@ -422,7 +433,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	
 			//draw all known ParkingSlots
 			try {
-				aParkingSlotRectF.clear();
+				//aParkingSlotRectF.clear();
 				for (int i=0; i < this.ParkingSlot.size(); i++) {
 					
 					/*
@@ -498,7 +509,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 							this.ParkingSlot.get(i).getFrontBoundaryPosition().y*PX_SCALE_Y); */
 					RectF ParkingSlotRect = new RectF(left, top, right, bottom);
 					
-					aParkingSlotRectF.add(ParkingSlotRect); //save the slot in a list
+					//aParkingSlotRectF.add(ParkingSlotRect); //save the slot in a list
 					
 					//check if the last MotionEvent marks the RectF as selected and propagate
 					//Log.d("doDraw","histEvent[" + histEvent.getX() + " | "+histEvent.getY()+"] ParkingSlot [left:"+ParkingSlotRect.left+" right:"+ParkingSlotRect.right+" bottom:"+ParkingSlotRect.bottom+" top:"+ParkingSlotRect.top+"]");
@@ -664,7 +675,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		 */
 		public synchronized void setParkingSlots(List<ParkingSlot> atParkingSlot) {
 			synchronized (mSurfaceHolder) {			
-				if (atParkingSlot != ParkingSlot)
+				//if (atParkingSlot != ParkingSlot)
 				ParkingSlot=atParkingSlot;
 			}
 		}
@@ -672,6 +683,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		public void addParkingSlot(ParkingSlot ps) {
 			synchronized (mSurfaceHolder) {
 				ParkingSlot.add(ps);
+			}
+		}
+		
+		public synchronized void setParkingSlot(ParkingSlot ps, int index) {
+			synchronized (mSurfaceHolder) {
+				ParkingSlot.set(index, ps);
 			}
 		}
 		
@@ -837,6 +854,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	//private MapGestureListener GestureListener;
 	private GestureDetector mDetector;
 	private List<ParkingSlot> atParkingSlot;
+	private List<ParkingSlot> histParkingSlot;
 	
 	
 	public MapView(Context context, AttributeSet attrs) {
@@ -855,6 +873,10 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		
 		//create temporary ArrayList
 		atParkingSlot = Collections.synchronizedList(new ArrayList<ParkingSlot>());
+		histParkingSlot = Collections.synchronizedList(new ArrayList<ParkingSlot>());
+		for (int i=0; i<10; i++) {
+			atParkingSlot.add(new ParkingSlot(i, null, null, null));
+		}
 		//atParkingSlot = new ArrayList<ParkingSlot>();
 	}
 	
@@ -1013,17 +1035,30 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 * that should be drawn.
 	 * @param ps
 	 */
-	public void addParkingSlot(ParkingSlot ps) {
-		atParkingSlot.add(ps);
+	public synchronized void addParkingSlot(ParkingSlot ps) {
+		if (!atParkingSlot.contains(ps)) {
+			atParkingSlot.add(ps);
+			thread.addParkingSlot(ps);
+		}
+	}
+	
+	public synchronized void setParkingSlot(ParkingSlot ps, int index) {
+		if (!atParkingSlot.contains(ps)) {
+			atParkingSlot.set(index, ps);
+			thread.setParkingSlot(ps, index);
+		}
 	}
 	
 	/**
 	 * Pushes all Parking slots to the draw thread
-	 * and clears the list of Parking slots.
+	 * and clears the list of Parking slots. Only does so,
+	 * if the list as changed.
 	 */
-	public void propagateParkingSlots() {
-		thread.setParkingSlots(atParkingSlot);
-		atParkingSlot.clear();
+	public synchronized void propagateParkingSlots() {
+		//if (!(atParkingSlot.hashCode() == histParkingSlot.hashCode()) && !(atParkingSlot.isEmpty()))
+		//thread.setParkingSlots(atParkingSlot);
+		//histParkingSlot=atParkingSlot;
+		//atParkingSlot.clear();	
 	}
 	
 	/**

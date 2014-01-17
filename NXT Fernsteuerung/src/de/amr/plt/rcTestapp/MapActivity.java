@@ -115,9 +115,9 @@ public class MapActivity extends Activity {
         		for (int i=0; i < 250000; i++) {
         			map.setPose((float)(i/10000), 0,(float) (i/1000));
         			
-            			map.addParkingSlot(new ParkingSlot(0, new PointF(0, 1), new PointF(180, 1), ParkingSlot.ParkingSlotStatus.GOOD));
-            			map.addParkingSlot(new ParkingSlot(1, new PointF(181, 1), new PointF(181, 64), ParkingSlot.ParkingSlotStatus.BAD));
-            			map.addParkingSlot(new ParkingSlot(2, new PointF(101,54), new PointF( 1, 56), ParkingSlot.ParkingSlotStatus.RESCAN));
+            			map.setParkingSlot(new ParkingSlot(0, new PointF(0, 1), new PointF(180, 1), ParkingSlot.ParkingSlotStatus.GOOD), 0);
+            			map.setParkingSlot(new ParkingSlot(1, new PointF(181, 1), new PointF(181, 64), ParkingSlot.ParkingSlotStatus.BAD), 1);
+            			map.setParkingSlot(new ParkingSlot(2, new PointF(101,54), new PointF( 1, 56), ParkingSlot.ParkingSlotStatus.RESCAN), 2);
             			map.setSensorValues(20, 50, 20, 20);
             			map.propagateParkingSlots();
         		}
@@ -689,7 +689,7 @@ new Timer().schedule(new TimerTask() {
                     		//populate the list of ParkingSlots
                     		if (test==false)
                     			for (int i=0; i < hmiModule.getNoOfParkingSlots(); i++) {
-                    				map.addParkingSlot(hmiModule.getParkingSlot(i));
+                    				map.setParkingSlot(hmiModule.getParkingSlot(i), i);
                     		}
                     		
                     		
