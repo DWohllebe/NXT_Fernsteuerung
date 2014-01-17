@@ -60,13 +60,13 @@ public class MapActivity extends Activity {
 	final double DISTSENSOR_MEASUREMENT_SCALE = (1/10);
 	
 	//create a listener for the MapView Motion Events
-    static Handler mMotionHandler = new Handler() {
+    /*static Handler mMotionHandler = new Handler() {
     	@Override
 		public void handleMessage(Message msg) {
-    		Log.d("Motion Handler","Message recieved"); //TODO insert stuff
+    		Log.d("Motion Handler","Message recieved");
     	}
     	
-    };
+    }; */ //TODO checkout
     
     //prepare picture resources
     Bitmap bScout; //TODO create routine that updates image buttons
@@ -95,7 +95,7 @@ public class MapActivity extends Activity {
             return;
         } 
            
-        final ImageButton connectButton = (ImageButton) findViewById(R.id.imageButton_BluetoothConnect); //TODO change button
+        final ImageButton connectButton = (ImageButton) findViewById(R.id.imageButton_BluetoothConnect);
         //on click call the BluetoothActivity to choose a listed device
         connectButton.setOnClickListener(new OnClickListener() {
         	public void onClick(View v){
@@ -119,7 +119,7 @@ public class MapActivity extends Activity {
             			map.setParkingSlot(new ParkingSlot(1, new PointF(181, 1), new PointF(181, 64), ParkingSlot.ParkingSlotStatus.BAD), 1);
             			map.setParkingSlot(new ParkingSlot(2, new PointF(101,54), new PointF( 1, 56), ParkingSlot.ParkingSlotStatus.RESCAN), 2);
             			map.setSensorValues(20, 50, 20, 20);
-            			map.propagateParkingSlots();
+            			//map.propagateParkingSlots();
         		}
         		test = false;
         			}
@@ -410,7 +410,7 @@ public class MapActivity extends Activity {
 						Log.d("Spinner", "PAUSE selected");
 						break;
 					case 1:
-						hmiModule.setMode(parkingRobot.INxtHmi.Mode.SCOUT); //TODO outsource setText to actual State?
+						hmiModule.setMode(parkingRobot.INxtHmi.Mode.SCOUT);
 						btMode.setImageBitmap(bScout);
 						infotext.setText("SCOUT-mode selected!");	
 						Log.d("Spinner", "SCOUT selected");
@@ -477,8 +477,7 @@ public class MapActivity extends Activity {
 		
 		//check if TextViewLabels are visible, 
 		//if yes, make them and their values invisible
-		//and reverse
-		
+		//same in reverse	
 		if (fld_xPos.isShown()) {
 			fld_xPos.setVisibility(android.view.View.INVISIBLE);
 			fld_xPosL.setVisibility(android.view.View.INVISIBLE);
@@ -550,6 +549,11 @@ public class MapActivity extends Activity {
 		}
 	}
 	
+	/**
+	 * Performs the OnClick() for the ChangeMode-Button.
+	 * Opens the change-mode spinner and changes the graphics.
+	 * @param View
+	 */
 	public void onChangeModeClicked(View View) {
 		//make Spinner visible
 		final Spinner spinner = (Spinner) findViewById(R.id.modeSpinner);
@@ -562,12 +566,11 @@ public class MapActivity extends Activity {
 		else
 			infotext.setText("No Connection-Interface known. Try connecting!");
 		
-		//activate the Spinner
-		
+		//activate the Spinner	
 		spinner.performClick();
 	}
 	
-	private void createTestModeSpinner() {
+	/* private void createTestModeSpinner() {
 		//TODO DELETE THIS LATER
 		//prepare Spinner
         //Source: http://developer.android.com/guide/topics/ui/controls/spinner.html
@@ -623,8 +626,14 @@ public class MapActivity extends Activity {
         });
         
 		
-	}
+	} */
 	
+	/**
+	 * This method starts the StatusListener,
+	 * which regularly checks the AndroidPLT-interface
+	 * for updates and passes the information to all
+	 * View components.
+	 */
 	private void startStatusListener() {
 new Timer().schedule(new TimerTask() {
 			
@@ -651,12 +660,30 @@ new Timer().schedule(new TimerTask() {
                     			switch (hmiModule.getCurrentStatus()) {
                     				case DRIVING:
                     					tvState.setText("DRIVING"); break;
-                    				//case PARKING:  TODO add later when declared
-                    					//	tvState.setText("PARKING"); break;
                     				case INACTIVE:
                     					tvState.setText("INACTIVE"); break;
                     				case EXIT:
                     					tvState.setText("ABORTING"); break;
+                    				case PARKED:
+                    					tvState.setText("PARKED"); break;
+                    				case PARKOUT_CURVE_FOLLOWING:
+                    					tvState.setText("FOLLOWING CURVE"); break;
+                    				case PARKOUT_GO_BACK:
+                    					tvState.setText("GOING BACK"); break;
+                    				case PN_CORRECTION_ANGLE:
+									    tvState.setText("CORRECTING ANGLE"); break;
+                    				case PN_CORRECTION_DISTANCE:
+                    					tvState.setText("CORRECTING DISTANCE"); break;
+                    				case PN_CURVE_FOLLOWING:
+                    					tvState.setText("FOLLOWING CURVE"); break;
+                    				case PT_CORRECTION_ANGLE:
+                    					tvState.setText("CORRECTING ANGLE"); break;
+                    				case PT_CORRECTION_DISTANCE:
+                    					tvState.setText("CORRECTING DISTANCE"); break;
+                    				case PT_CURVE_FOLLOWING:
+                    					tvState.setText("FOLLOWING CURVE");break;
+                    				default:
+										tvState.setText("UNDETERMINED"); break;
                     			}
                     		} catch (NullPointerException e) {
                     			Log.e("hmiModule", e.getMessage()+"! Cause:"+e.getCause()+". Does a state exist?");
@@ -691,10 +718,9 @@ new Timer().schedule(new TimerTask() {
                     			for (int i=0; i < hmiModule.getNoOfParkingSlots(); i++) {
                     				map.setParkingSlot(hmiModule.getParkingSlot(i), i);
                     		}
-                    		
-                    		
+                    			
                     		//send them to the Draw-Thread
-                    		map.propagateParkingSlots();
+                    		//map.propagateParkingSlots();
                     	}
                     	catch (NullPointerException e) {
                     		Log.e("StatusListener", e.getMessage() + " Continuing without propagating ParkingSlots!");
