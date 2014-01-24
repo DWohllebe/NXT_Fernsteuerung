@@ -3,6 +3,7 @@ package de.amr.plt.rcTestapp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.math.*;
 
 import de.amr.plt.rcParkingRobot.IAndroidHmi.ParkingSlot;
 import de.amr.plt.rcParkingRobot.IAndroidHmi.ParkingSlot.ParkingSlotStatus;
@@ -61,7 +62,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		//Range, in which the Parking Slot is allowed to have a deviation
 		//when trying do draw a Rectangle for the PS-Selection
 		//the Range is 1-PS_RANGE to 1+_PSRANGE
-		final private double PS_RANGE=0.1;
+		final private double PS_RANGE=5;
 		//Width of the drawn Rectangle
 		final private int PS_WIDTH=80;
 								
@@ -351,8 +352,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 						yfrontboundary += 0.1;
 					
 					//x: check if values are within range
-					mDeviation = ( xbackboundary / xfrontboundary );
-					if ( (mDeviation > 1-PS_RANGE) && (mDeviation < 1+PS_RANGE) ) {
+					mDeviation = ( Math.abs(xbackboundary - xfrontboundary) );
+					if ( mDeviation < PS_RANGE ) {
 						//then y: determine orientation based on y statements
 						//Log.d("MapView", "y-centric PS determined!");
 						if (ybackboundary < yfrontboundary) {
@@ -374,8 +375,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 						
 					} //y: check if variables are within range
 					else {
-						mDeviation= (ybackboundary / yfrontboundary);
-						if  ( (mDeviation > 1-PS_RANGE) && (mDeviation < 1+PS_RANGE) ) {
+						mDeviation= (Math.abs(ybackboundary - yfrontboundary));
+						if  ( mDeviation < PS_RANGE ) {
 							//then x: determine orientation based on x statements
 							//Log.d("MapView", "x-centric PS determined!");
 							if (xbackboundary < xfrontboundary) {
