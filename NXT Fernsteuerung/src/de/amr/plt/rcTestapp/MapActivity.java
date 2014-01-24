@@ -111,12 +111,13 @@ public class MapActivity extends Activity {
         			public void run() {
         				test= true;
                 		final MapView map = (MapView)findViewById(R.id.map);
+                		map.setParkingSlot(new ParkingSlot(0, new PointF((float)1.80, (float)0.01), new PointF(0, (float)0.01), ParkingSlot.ParkingSlotStatus.GOOD), 0);
+            			map.setParkingSlot(new ParkingSlot(1, new PointF((float)1.81, (float)0.01), new PointF((float)1.81, (float) 0.64), ParkingSlot.ParkingSlotStatus.GOOD), 1);
+            			//map.setParkingSlot(new ParkingSlot(2, new PointF(101,54), new PointF( 1, 56), ParkingSlot.ParkingSlotStatus.RESCAN), 2);
         		for (int i=0; i < 250000; i++) {
         			map.setPose((float)(i/10000), 0,(float) (i/1000));
         			
-            			map.setParkingSlot(new ParkingSlot(0, new PointF(0, 1), new PointF(180, 1), ParkingSlot.ParkingSlotStatus.GOOD), 0);
-            			map.setParkingSlot(new ParkingSlot(1, new PointF(181, 1), new PointF(181, 64), ParkingSlot.ParkingSlotStatus.BAD), 1);
-            			map.setParkingSlot(new ParkingSlot(2, new PointF(101,54), new PointF( 1, 56), ParkingSlot.ParkingSlotStatus.RESCAN), 2);
+            			
             			map.setSensorValues(20, 50, 20, 20);
             			//map.propagateParkingSlots();
         		}

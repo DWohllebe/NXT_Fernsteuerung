@@ -140,6 +140,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		//::: variables for parking slot :::
 		private List<ParkingSlot> ParkingSlot;	
 		private int ParkingSlotSelectionID = (-1);
+		final private double PS_MEASUREMENT_SCALE = 100; //conversion from m to cm
+		final private int PS_OFFSET = 15; //in cm
 		//ArrayList<ParkingSlot> ParkingSlot;
 		//private List<RectF> aParkingSlotRectF;
 		
@@ -328,10 +330,12 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 					float left=0;
 					double mDeviation;
 					
-					double xbackboundary=(double)(this.ParkingSlot.get(i).getBackBoundaryPosition().x);				
-					double xfrontboundary=(double)(this.ParkingSlot.get(i).getFrontBoundaryPosition().x);
-					double ybackboundary=(double)(this.ParkingSlot.get(i).getBackBoundaryPosition().y);
-					double yfrontboundary=(double)(this.ParkingSlot.get(i).getBackBoundaryPosition().y);
+					//boundarys are inverted, because the interface is behaving strangely
+					//TODO change this whenever the orientation of the boundarys changes
+					double xfrontboundary=(double) (this.ParkingSlot.get(i).getBackBoundaryPosition().x)*PS_MEASUREMENT_SCALE;				
+					double xbackboundary=(double)(this.ParkingSlot.get(i).getFrontBoundaryPosition().x)*PS_MEASUREMENT_SCALE;
+					double yfrontboundary=(double)(this.ParkingSlot.get(i).getBackBoundaryPosition().y)*PS_MEASUREMENT_SCALE;
+					double ybackboundary=(double)(this.ParkingSlot.get(i).getFrontBoundaryPosition().y)*PS_MEASUREMENT_SCALE;
 					
 					//filter zeros
 					if (xbackboundary == 0)
@@ -350,19 +354,22 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 					mDeviation = ( xbackboundary / xfrontboundary );
 					if ( (mDeviation > 1-PS_RANGE) && (mDeviation < 1+PS_RANGE) ) {
 						//then y: determine orientation based on y statements
-						if (this.ParkingSlot.get(i).getBackBoundaryPosition().y < this.ParkingSlot.get(i).getFrontBoundaryPosition().y) {
+						//Log.d("MapView", "y-centric PS determined!");
+						if (ybackboundary < yfrontboundary) {
 							// yBack -> yFront    	| x const.
-							bottom = POSY0-this.ParkingSlot.get(i).getBackBoundaryPosition().y*PX_SCALE_Y;
-							top = POSY0-this.ParkingSlot.get(i).getFrontBoundaryPosition().y*PX_SCALE_Y;
-							left = POSX0+this.ParkingSlot.get(i).getBackBoundaryPosition().x*PX_SCALE_X;
+							bottom = POSY0-(float)ybackboundary*PX_SCALE_Y;
+							top = POSY0-(float)yfrontboundary*PX_SCALE_Y;
+							left = POSX0+(float)(xbackboundary+PS_OFFSET)*PX_SCALE_X;
 							right = left+PS_WIDTH;
+							//Log.d("MapView", "yBack bottom: "+bottom+" top:"+top);
 						}
 						else {
 							//yFront -> yBack		| x const.
-							bottom = POSY0-this.ParkingSlot.get(i).getFrontBoundaryPosition().y*PX_SCALE_Y;
-							top = POSY0-this.ParkingSlot.get(i).getBackBoundaryPosition().y*PX_SCALE_Y;
-							right = POSX0+this.ParkingSlot.get(i).getBackBoundaryPosition().x*PX_SCALE_X;
+							bottom = POSY0-(float)yfrontboundary*PX_SCALE_Y;
+							top = POSY0-(float)ybackboundary*PX_SCALE_Y;
+							right = POSX0+(float)(xbackboundary-PS_OFFSET)*PX_SCALE_X;
 							left = right-PS_WIDTH;
+							//Log.d("MapView", "yFront bottom: "+bottom+" top:"+top);
 						}
 						
 					} //y: check if variables are within range
@@ -370,23 +377,25 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 						mDeviation= (ybackboundary / yfrontboundary);
 						if  ( (mDeviation > 1-PS_RANGE) && (mDeviation < 1+PS_RANGE) ) {
 							//then x: determine orientation based on x statements
-							if (this.ParkingSlot.get(i).getBackBoundaryPosition().x < this.ParkingSlot.get(i).getFrontBoundaryPosition().x) {
-								// xBack -> xFront		| y const.
-								top = POSY0-this.ParkingSlot.get(i).getBackBoundaryPosition().y*PX_SCALE_Y;
-								bottom = POSY0+PS_WIDTH;
-								left = POSX0+this.ParkingSlot.get(i).getBackBoundaryPosition().x*PX_SCALE_X;
-								right = POSX0+this.ParkingSlot.get(i).getFrontBoundaryPosition().x*PX_SCALE_X;
+							//Log.d("MapView", "x-centric PS determined!");
+							if (xbackboundary < xfrontboundary) {
+								// xBack -> xFront		| y const.	
+								top = POSY0+(float)(ybackboundary+PS_OFFSET)*PX_SCALE_Y;
+								bottom = top+PS_WIDTH;
+								left = POSX0+(float)xbackboundary*PX_SCALE_X;
+								right = POSX0+(float)xfrontboundary*PX_SCALE_X;
 							}
 							else {
-								// xFront -> xBack		| y const.
-								bottom = POSY0-this.ParkingSlot.get(i).getBackBoundaryPosition().y*PX_SCALE_Y;
+								// xFront -> xBack		| y const.		
+								bottom = POSY0-(float)(ybackboundary+PS_OFFSET)*PX_SCALE_Y;
 								top = bottom-PS_WIDTH;
-								right = POSX0+this.ParkingSlot.get(i).getBackBoundaryPosition().x*PX_SCALE_X;
-								left = POSX0+this.ParkingSlot.get(i).getFrontBoundaryPosition().x*PX_SCALE_X;			
+								right = POSX0+(float)xbackboundary*PX_SCALE_X;
+								left = POSX0+(float)xfrontboundary*PX_SCALE_X;			
 							}
 						}
 					}
 					
+					Log.d("MapView", "Rect left:"+left+" top:"+top+" right:"+right+" bottom:"+bottom);
 					RectF ParkingSlotRect = new RectF(left, top, right, bottom);
 					
 					//check if the last MotionEvent marks the RectF as selected and propagate

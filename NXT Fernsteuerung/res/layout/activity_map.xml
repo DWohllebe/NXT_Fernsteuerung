@@ -151,7 +151,7 @@
     	    android:layout_above="@+id/image_infobar"
     	    android:layout_alignParentLeft="true"
     	    android:text="Test"
-    	    android:visibility="gone" />
+    	    android:visibility="visible" />
 
 
     	<ProgressBar
