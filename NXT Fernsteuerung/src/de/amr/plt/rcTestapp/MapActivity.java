@@ -7,6 +7,7 @@ import parkingRobot.INxtHmi.Mode;
 import de.amr.plt.rcParkingRobot.AndroidHmiPLT;
 import de.amr.plt.rcParkingRobot.IAndroidHmi.ParkingSlot;
 import de.amr.plt.rcTestapp.R;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 //import android.os.Handler;
 //import android.os.Message;
@@ -60,6 +61,9 @@ public class MapActivity extends Activity {
 	AndroidHmiPLT hmiModule = null;	
 	//request code 
 	final int REQUEST_SETUP_BT_CONNECTION = 1;
+	
+	private MediaPlayer starPlayer = null;
+	private int eastereggcounter = 0;
 	
 	private boolean test= false;
 	
@@ -167,7 +171,37 @@ public class MapActivity extends Activity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Toast.makeText(this, "To access the PREMIUM OPTIONS menu,  please purchase the PBOT MAPCONTROL GOLD PACKAGE for only 5.99$!",Toast.LENGTH_LONG).show();
+		//a little easter egg
+		switch (eastereggcounter) {
+		case 0: Toast.makeText(this, "To access the PREMIUM OPTIONS menu,  please purchase the PBOT MAPCONTROL GOLD PACKAGE for only 5.99$!",Toast.LENGTH_LONG).show();
+				eastereggcounter++;
+				break;
+		case 1:
+				if (starPlayer==null)
+				starPlayer=MediaPlayer.create(getBaseContext(), R.raw.starvoyage);
+		
+				if (starPlayer.isPlaying()) {
+					starPlayer.stop();
+				}
+				else {
+					starPlayer.start();
+					MapView map = (MapView) findViewById(R.id.map);
+					Resources res = getBaseContext().getResources();
+					Bitmap newbg = BitmapFactory.decodeResource(res, R.drawable.starfield);	
+					Bitmap newpointer = BitmapFactory.decodeResource(res, R.drawable.spr_enterprise);
+					
+					map.setBackgroundImage(newbg);
+					map.setPointerImage(newpointer);
+					Toast.makeText(this, "Enterprise mode activated!", Toast.LENGTH_LONG).show();
+					Toast.makeText(this, "Boldly going where no ParkBot has gone before!", Toast.LENGTH_LONG).show();		
+				}
+		
+				eastereggcounter++;
+				break;
+		case 4:
+				eastereggcounter=0;
+				break;
+		}
 		return true;
 	}
 	

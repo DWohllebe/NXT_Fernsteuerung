@@ -67,7 +67,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 		final private int PS_WIDTH=80;
 								
 		
-		//::: Variables concerning the offset of the distance sensor :::
+		//::: Variables of the offset of the distance sensor :::
 				//the offsets are seen from the middle point of the robot
 				final private float SENSOR_FRONT_ANGLE=			0;
 				final private float SENSOR_FRONTSIDE_ANGLE=		-90;
@@ -763,6 +763,22 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 			return ( r*(Math.sin( Math.toRadians(phi) )) );
 		}
 		
+		/**
+		 * Sets a new Bitmap for the pointer.
+		 * @param b
+		 */
+		public void setPointerImage(Bitmap b) {
+			pointer=b;
+		}
+		
+		/**
+		 * Sets a new Background Bitmap.
+		 * @param b
+		 */
+		public void setBackgroundImage(Bitmap b) {
+			mBackground=b;
+		}
+		
 	}
 	
 	/**
@@ -1048,6 +1064,14 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 	 */
 	public void setSensorValues(double front, double frontside, double back, double backside) {
 		thread.setSensorValues(front, frontside, back, backside);
+	}
+	
+	public void setPointerImage(Bitmap b) {
+		thread.setPointerImage(b);
+	}
+	
+	public void setBackgroundImage(Bitmap b) {
+		thread.setBackgroundImage(b);
 	}
 	
 }
