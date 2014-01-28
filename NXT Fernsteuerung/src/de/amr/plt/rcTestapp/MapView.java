@@ -33,7 +33,7 @@ import android.view.View;
  * hierarchy, to display related map information about the NXT robot.
  * 
  * @author Daniel Wohllebe
- * @version 1.0
+ * @version 1.1
  *
  */
 public class MapView extends SurfaceView implements SurfaceHolder.Callback {

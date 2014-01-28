@@ -46,7 +46,7 @@ import parkingRobot.hsamr1.GuidanceAT.*;
  * NXT Remote-control. This class links all
  * functionality together.
  * @author Daniel Wohllebe
- * @version 1.0
+ * @version 1.1
  *
  */
 
@@ -171,9 +171,10 @@ public class MapActivity extends Activity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		//a little easter egg
+		//a little easter egg, idea of enterprise mode by Arne Hendrik Klaaﬂ
 		switch (eastereggcounter) {
-		case 0: Toast.makeText(this, "To access the PREMIUM OPTIONS menu,  please purchase the PBOT MAPCONTROL GOLD PACKAGE for only 5.99$!",Toast.LENGTH_LONG).show();
+		case 0: Toast.makeText(this, "To access the PREMIUM SETTINGS menu,  please purchase the PBOT MAPCONTROL GOLD PACKAGE for only 5.99$!",Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "Click again to confirm your purchase", Toast.LENGTH_LONG).show();
 				eastereggcounter++;
 				break;
 		case 1:
@@ -198,8 +199,20 @@ public class MapActivity extends Activity {
 		
 				eastereggcounter++;
 				break;
+		case 2: Toast.makeText(this, "I am as suprised as you are", Toast.LENGTH_SHORT).show();
+				eastereggcounter++;
+				break;
+		case 3: Toast.makeText(this, "Fun Fact!", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "Did you know?", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "To exit enterprise mode, restart the application or disconnect", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "Also...", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "The sum of all numbers from one to infinity is -1/12", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "It is true!", Toast.LENGTH_SHORT).show();
+				eastereggcounter++;
+				break;
 		case 4:
-				eastereggcounter=0;
+				Toast.makeText(this, "You keep pressing this button...", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "Sadly, you already witnessed all eastereggs", Toast.LENGTH_LONG).show();
 				break;
 		}
 		return true;
