@@ -136,6 +136,7 @@ public final class R {
         public static final int hello_world=0x7f06001b;
         public static final int map_Button_followVirtualPos=0x7f060023;
         public static final int map_Button_updateVirtualPos=0x7f060024;
+        public static final int map_buttonTest=0x7f060035;
         public static final int map_editText_PosX=0x7f06001f;
         public static final int map_editText_PosX_Hint=0x7f060021;
         public static final int map_editText_PosY=0x7f060020;

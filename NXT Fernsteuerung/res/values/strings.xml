@@ -30,7 +30,7 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="bt_OpenMap">Map</string>
-    <string name="map_view_text">MAP VIEW</string>
+    <string name="map_view_text"></string>
     <string name="map_info_button">Info</string>
     <string name="map_editText_PosX"></string>
     <string name="map_editText_PosY"></string>
@@ -54,6 +54,7 @@
     <string name="map_textView_DistBack">(undefined)</string>
     <string name="map_textView_DistLeft">(undefined)</string>
     <string name="map_textView_DistRight">(undefined)</string>
+    <string name="map_buttonTest">Test</string>
  	
     
     <string-array name="controlmodes">
