@@ -9,6 +9,8 @@ import de.amr.plt.rcParkingRobot.IAndroidHmi.ParkingSlot;
 import de.amr.plt.rcTestapp.R;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 //import android.os.Handler;
 //import android.os.Message;
 import android.app.Activity;
@@ -24,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -131,6 +134,13 @@ public class MapActivity extends Activity {
         		
         	}
         });
+        
+        final ImageView RestartButton = (ImageView)findViewById(R.id.imageView_Restart);
+        RestartButton.setOnClickListener(new OnClickListener() {
+        	public void onClick(View v) {     		
+        				restartActivity();
+        	}
+        });
 		
 		//STEP 2: BUILD THE UI-ELEMENTS
         //------------------------------------------------------------------
@@ -159,7 +169,7 @@ public class MapActivity extends Activity {
         
 		//instruct the user to connect to the parking robot
 		TextView infotext = (TextView) findViewById(R.id.textView_Info);
-		infotext.setText("Please connect your device via Bluetooth.");
+		infotext.setText("Please connect your device.   Tap the map to see parking slots.");
     }
 
 	@Override
@@ -198,6 +208,9 @@ public class MapActivity extends Activity {
 				}
 		
 				eastereggcounter++;
+				ImageView restartButton = (ImageView)findViewById(R.id.imageView_Restart);
+				restartButton.setVisibility(android.view.View.VISIBLE);
+				
 				break;
 		case 2: Toast.makeText(this, "I am as suprised as you are", Toast.LENGTH_SHORT).show();
 				eastereggcounter++;
@@ -506,94 +519,39 @@ public class MapActivity extends Activity {
 	 * @param View
 	 */
 	public void onToggleSensorInfoClicked(View View) {	
-		final TextView fld_xPos = (TextView) findViewById(R.id.textView_XValue);
-		final TextView fld_xPosL = (TextView) findViewById(R.id.textView_XValue_Label);
-		final TextView fld_yPos = (TextView) findViewById(R.id.textView_YValue);
-		final TextView fld_yPosL = (TextView) findViewById(R.id.textView_YValue_Label);
-		final TextView fld_angle = (TextView) findViewById(R.id.textView_AngleValue);
-		final TextView fld_angleL = (TextView) findViewById(R.id.textView_AngleValue_Label);
-		final TextView fld_distfront = (TextView) findViewById(R.id.textView_DistFront);
-		final TextView fld_distfrontL = (TextView) findViewById(R.id.textView_DistFront_Label);
-		final TextView fld_distback = (TextView) findViewById(R.id.textView_DistBack);
-		final TextView fld_distbackL = (TextView) findViewById(R.id.textView_DistBack_Label);
-		final TextView fld_distleft = (TextView) findViewById(R.id.textView_DistLeft);
-		final TextView fld_distleftL = (TextView) findViewById(R.id.textView_DistLeft_Label);
-		final TextView fld_distright = (TextView) findViewById(R.id.textView_DistRight);
-		final TextView fld_distrightL = (TextView) findViewById(R.id.textView_DistRight_Label);
-		final ImageView infobox = (ImageView) findViewById(R.id.image_infobox);
+		final int mAnimationDuration=500;
 		
-		//check if TextViewLabels are visible, 
-		//if yes, make them and their values invisible
-		//same in reverse	
-		if (fld_xPos.isShown()) {
-			fld_xPos.setVisibility(android.view.View.INVISIBLE);
-			fld_xPosL.setVisibility(android.view.View.INVISIBLE);
-		}
-		else {
-			fld_xPos.setVisibility(android.view.View.VISIBLE);
-			fld_xPosL.setVisibility(android.view.View.VISIBLE);
-		}
-		
-		if (fld_yPos.isShown()) {
-			fld_yPos.setVisibility(android.view.View.INVISIBLE);
-			fld_yPosL.setVisibility(android.view.View.INVISIBLE);
-		}
-		else {
-			fld_yPos.setVisibility(android.view.View.VISIBLE);
-			fld_yPosL.setVisibility(android.view.View.VISIBLE);
-		}
-		
-		if (fld_angle.isShown()) {
-			fld_angle.setVisibility(android.view.View.INVISIBLE);
-			fld_angleL.setVisibility(android.view.View.INVISIBLE);
-		}
-		else {
-			fld_angle.setVisibility(android.view.View.VISIBLE);
-			fld_angleL.setVisibility(android.view.View.VISIBLE);
-		}
-		
-		if (fld_distfront.isShown()) {
-			fld_distfront.setVisibility(android.view.View.INVISIBLE);
-			fld_distfrontL.setVisibility(android.view.View.INVISIBLE);
-		}
-		else {
-			fld_distfront.setVisibility(android.view.View.VISIBLE);
-			fld_distfrontL.setVisibility(android.view.View.VISIBLE);
-		}
-		
-		if (fld_distback.isShown()) {
-			fld_distback.setVisibility(android.view.View.INVISIBLE);
-			fld_distbackL.setVisibility(android.view.View.INVISIBLE);
-		}
-		else {
-			fld_distback.setVisibility(android.view.View.VISIBLE);
-			fld_distbackL.setVisibility(android.view.View.VISIBLE);
-		}
-		
-		if (fld_distleft.isShown()) {
-			fld_distleft.setVisibility(android.view.View.INVISIBLE);
-			fld_distleftL.setVisibility(android.view.View.INVISIBLE);
-		}
-		else {
-			fld_distleft.setVisibility(android.view.View.VISIBLE);
-			fld_distleftL.setVisibility(android.view.View.VISIBLE);
-		}
-		
-		if (fld_distright.isShown()) {
-			fld_distright.setVisibility(android.view.View.INVISIBLE);
-			fld_distrightL.setVisibility(android.view.View.INVISIBLE);
-		}
-		else {
-			fld_distright.setVisibility(android.view.View.VISIBLE);
-			fld_distrightL.setVisibility(android.view.View.VISIBLE);
-		}
-		
+		runOnUiThread(new Runnable() {
+			
+		public void run() {
+		final RelativeLayout infobox = (RelativeLayout) findViewById(R.id.relativeLayout_Infobox);
 		if (infobox.isShown()) {
-			infobox.setVisibility(android.view.View.INVISIBLE);
+			 infobox.setAlpha(1f);
+			 infobox.setVisibility(android.view.View.VISIBLE);
+			infobox.animate()
+			.alpha(0f)
+			.setDuration(mAnimationDuration)
+            .setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                   infobox.setVisibility(android.view.View.GONE);
+                }
+            });
 		}
 		else {
-			infobox.setVisibility(android.view.View.VISIBLE);
+			 infobox.setAlpha(0f);
+			 infobox.setVisibility(android.view.View.VISIBLE);
+			infobox.animate()
+			.alpha(1f)
+			.setDuration(mAnimationDuration)
+            .setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                   infobox.setVisibility(android.view.View.VISIBLE);             
+            }});
 		}
+		}});
+
 	}
 	
 	/**

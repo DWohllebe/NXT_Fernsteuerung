@@ -411,10 +411,15 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
 								Log.d("doDraw", "ParkingSlotSelection: "+i);
 					}									
 					else {
-								switch (this.ParkingSlot.get(i).getParkingSlotStatus()) {  //switch draw color depending on Status of Parking Slot
-								case GOOD: c.drawRect(ParkingSlotRect, PARKINGSLOT_GOOD); break;
-								case BAD: c.drawRect(ParkingSlotRect, PARKINGSLOT_BAD); break;
-								case RESCAN: c.drawRect(ParkingSlotRect, PARKINGSLOT_RESCAN); break;
+								if (this.ParkingSlot.get(i).getID()== ParkingSlotSelectionID) { //if the slot has already been designated as selected, keep it drawn that way
+									c.drawRect(ParkingSlotRect, PARKINGSLOT_SELECTED);
+								}
+								else {
+									switch (this.ParkingSlot.get(i).getParkingSlotStatus()) {  //if not selected slot, switch draw color depending on Status of ParkingSlot
+									case GOOD: c.drawRect(ParkingSlotRect, PARKINGSLOT_GOOD); break;
+									case BAD: c.drawRect(ParkingSlotRect, PARKINGSLOT_BAD); break;
+									case RESCAN: c.drawRect(ParkingSlotRect, PARKINGSLOT_RESCAN); break;
+									}
 								}
 							}			
 				}

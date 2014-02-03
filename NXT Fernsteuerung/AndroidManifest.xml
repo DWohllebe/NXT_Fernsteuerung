@@ -25,7 +25,7 @@
         <activity
             android:name="de.amr.plt.rcTestapp.BluetoothActivity"
             android:label="@string/title_activity_bluetooth"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="landscape" >
         </activity>
         <activity
             android:name="de.amr.plt.rcTestapp.MapActivity"

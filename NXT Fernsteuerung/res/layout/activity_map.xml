@@ -44,7 +44,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_toLeftOf="@+id/imageButton_SensorInfoToggle" >
+        android:layout_alignRight="@+id/map" >
         
         <ImageView
     	    android:id="@+id/image_infobar"
@@ -56,6 +56,7 @@
     	    android:focusable="false"
     	    android:focusableInTouchMode="false"
     	    android:scaleType="fitXY"
+    	    android:contentDescription="Infobar"
     	    android:src="@drawable/infobalken_z" />
        
     	<TextView
@@ -87,7 +88,6 @@
     	    android:layout_width="80dp"
     	    android:layout_height="wrap_content"
     	    android:layout_alignParentBottom="true"
-    	    android:layout_toLeftOf="@+id/progressBar1"
     	    android:ems="10"
     	    android:hint="@string/map_editText_PosY_Hint"
     	    android:inputType="numberDecimal"
@@ -152,25 +152,16 @@
     	    android:layout_alignParentLeft="true"
     	    android:text="Test"
     	    android:visibility="visible" />
-
-
-    	<ProgressBar
-    	    android:id="@+id/progressBar1"
-    	    android:layout_width="wrap_content"
-    	    android:layout_height="wrap_content"
-    	    android:layout_alignParentBottom="true"
-    	    android:layout_alignParentRight="true" />
     	
-    	<ImageView
-    	    android:id="@+id/image_infobox"
-    	    android:layout_width="wrap_content"
+    	<RelativeLayout
+    	    android:id="@+id/relativeLayout_Infobox"
+    	    android:layout_width="150dp"
     	    android:layout_height="wrap_content"
-    	    android:layout_alignBottom="@+id/textView_DistRight_Label"
-    	    android:layout_alignTop="@+id/textView_XValue_Label"
-    	    android:layout_alignRight="@+id/textView_DistRight"
-    	    android:layout_below="@+id/textView_XValue_Label"
-    	    android:scaleType="fitXY"
-    	    android:src="@drawable/infobalken_z" />
+    	    android:layout_alignParentLeft="true"
+    	    android:layout_alignParentTop="true"
+    	    android:background="@drawable/infobalken_z"
+    	    android:animateLayoutChanges="true"
+  			>
 
     	<TextView
     	    android:id="@+id/textView_XValue_Label"
@@ -317,7 +308,19 @@
     	    android:text="@string/map_textView_DistRight"
     	    android:textAppearance="?android:attr/textAppearanceSmall"
     	    android:textColor="@android:color/holo_orange_light" />
-    	
+		
+		</RelativeLayout>
+
+		<ImageView
+		    android:id="@+id/imageView_Restart"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentRight="true"
+		    android:layout_alignParentBottom="true"
+		    android:layout_marginRight="21dp"
+		    android:visibility="invisible"
+		    android:contentDescription="Restart Button"
+		    android:src="@android:drawable/ic_menu_revert" />
          
     </RelativeLayout>   
         
